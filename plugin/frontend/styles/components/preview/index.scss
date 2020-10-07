@@ -1,0 +1,63 @@
+.bngine--previews {
+  &-build {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    select {
+      max-width: 200px;
+    }
+    button {
+      min-width: max-content;
+    }
+  }
+  &-active {
+    &-title {
+      font-size: 28px;
+      line-height: 1.285;
+      font-weight: 300;
+      margin-top: 50px;
+      margin-bottom: 20px;
+    }
+    &-table {
+      width: 100%;
+      border-collapse: collapse;
+      td,
+      th {
+        padding: 5px 10px;
+      }
+      thead {
+        background-color: var(--c-gray-light);
+        text-align: left;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      tbody {
+        tr {
+          border-bottom: 1px solid var(--c-gray-light);
+        }
+        .number {
+          text-align: center;
+        }
+        .remove {
+          text-align: center;
+          max-width: max-content;
+          display: flex;
+          justify-content: center;
+          margin-left: auto;
+          button {
+            color: var(--c-primary);
+            background-color: var(--c-light);
+            display: flex;
+            span {
+              margin: auto;
+            }
+          }
+        }
+        a {
+          text-decoration: none;
+          color: var(--c-primary);
+        }
+      }
+    }
+  }
+}

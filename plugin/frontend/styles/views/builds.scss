@@ -1,0 +1,70 @@
+.bngine--builds {
+  &-top {
+    margin-top: 20px;
+    display: flex;
+  }
+  &-running-job {
+    margin-top: 20px;
+  }
+  &-jobs {
+    margin-top: 50px;
+    width: 100%;
+    &-title {
+      font-size: 32px;
+      line-height: 1.25;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+    &-none {
+      font-size: xx-large;
+      font-weight: 300;
+      text-align: center;
+      color: var(--c-gray);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      td,
+      th {
+        padding: 5px 10px;
+      }
+      thead {
+        background-color: var(--c-gray-light);
+        text-align: left;
+        font-size: 16px;
+        font-weight: bold;
+        .details {
+          width: 50px;
+        }
+      }
+      tbody {
+        tr {
+          border-bottom: 1px solid var(--c-gray-light);
+        }
+        .number {
+          text-align: center;
+        }
+        i {
+          font-style: italic;
+        }
+        .status {
+          text-align: center;
+          font-weight: bold;
+          // color: var(--c-neutral);
+          &-success {
+            color: var(--c-success);
+          }
+          &-fail {
+            color: var(--c-error);
+          }
+          &-queue {
+            color: var(--c-gray);
+          }
+          &-running {
+            color: var(--c-primary);
+          }
+        }
+      }
+    }
+  }
+}

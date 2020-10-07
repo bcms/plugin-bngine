@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "sourceMap": true,
+    "baseUrl": "./",
+    "outDir": "dist/backend",
+    "incremental": true,
+    "esModuleInterop": true
+  },
+  "include": ["plugin/backend/*"],
+  "exclude": ["node_modules", "dist"]
+}

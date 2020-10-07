@@ -1,0 +1,49 @@
+.bngine--job-details {
+  display: flex;
+  &-basic {
+    width: 100%;
+    &-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+  }
+  &-project {
+    font-size: 28px;
+    line-height: 1.285;
+  }
+  &-branch {
+    font-size: 16px;
+    line-height: 1.375;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  &-date {
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: 0.16px;
+    margin-bottom: 10px;
+  }
+  &-time {
+    letter-spacing: 0.16px;
+  }
+  &-status {
+    font-weight: bold;
+    height: 100%;
+    padding: 5px 10px;
+    color: var(--c-white);
+    &-success {
+      background-color: var(--c-success);
+    }
+    &-fail {
+      background-color: var(--c-error);
+    }
+    &-queue {
+      background-color: var(--c-gray);
+    }
+    &-running {
+      background-color: var(--c-primary);
+    }
+  }
+}

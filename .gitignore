@@ -1,0 +1,15 @@
+/node_modules/
+/dist
+/plugin/**/*.js
+/plugin/**/*.js.map
+/plugin/**/*.d.ts
+/plugin/**/*.js
+/plugin/**/*.js.map
+/plugin/**/*.d.ts
+/workspace
+/bngine-workspace
+/uploads
+
+/tsconfig.backend.tsbuildinfo
+
+.DS_Store
