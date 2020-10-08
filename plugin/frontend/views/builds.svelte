@@ -248,7 +248,6 @@
         .filter((e) => e.status !== 'RUNNING')
         .map((job) => parseJob(job));
     }
-    console.log(stagingProject);
   });
   onMount(async () => {
     if (!runningJob) {
