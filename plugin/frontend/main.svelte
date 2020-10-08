@@ -9,26 +9,25 @@
   let jobs: JobLite[] = [];
   let selectedView = 'builds';
 
-  async function getJobs() {
-    const j = await GeneralService.errorWrapper(
+  async function getNewJob(jobId: string) {
+    const newJob: JobLite = await GeneralService.errorWrapper(
       async () => {
         return sdk.send({
-          url: '/plugin/bngine/job/all/lite',
+          url: `/plugin/bngine//job/lite/${jobId}`,
           method: 'GET',
           headers: {
             Authorization: '',
           },
         });
       },
-      async (result: { jobs: Job[] }) => {
-        return result.jobs;
+      async (result: { job: JobLite }) => {
+        return result.job;
       },
     );
-    if (!j) {
+    if (!newJob) {
       return;
     }
-    jobs = j;
-    jobs.sort((a, b) => b.createdAt - a.createdAt);
+    jobs = [newJob, ...jobs];
   }
 
   onMount(async () => {
@@ -55,7 +54,25 @@
         show: false,
       };
     });
-    getJobs();
+    const j = await GeneralService.errorWrapper(
+      async () => {
+        return sdk.send({
+          url: '/plugin/bngine/job/all/lite',
+          method: 'GET',
+          headers: {
+            Authorization: '',
+          },
+        });
+      },
+      async (result: { jobs: Job[] }) => {
+        return result.jobs;
+      },
+    );
+    if (!j) {
+      return;
+    }
+    jobs = j;
+    jobs.sort((a, b) => b.createdAt - a.createdAt);
   });
 </script>
 
@@ -70,7 +87,12 @@
         {#if selectedView === 'projects'}
           <ProjectsView {projects} />
         {:else if selectedView === 'builds'}
-          <BuildsView {projects} {jobs} on:getJobs={getJobs} />
+          <BuildsView
+            {projects}
+            {jobs}
+            on:new={(event) => {
+              getNewJob(event.detail);
+            }} />
         {/if}
       </div>
     </div>

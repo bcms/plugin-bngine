@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { beforeUpdate, onDestroy, createEventDispatcher } from 'svelte';
+  import {
+    onMount,
+    beforeUpdate,
+    onDestroy,
+    createEventDispatcher,
+  } from 'svelte';
   import {
     Button,
     StoreService,
@@ -52,65 +57,67 @@
       pipeId?: string;
       pipeTitle?: string;
     }) => {
-      switch (data.state) {
-        case 'job-started':
-          {
-            if (!runningJob) {
-              runningJob = parseJob(await getJobLite(data.jobId));
-              runningJob.pipe = [];
-            } else {
+      if (runningJob) {
+        switch (data.state) {
+          case 'job-started':
+            {
               runningJob.status = 'RUNNING' as JobStatus;
               runningJob.inQueueFor = data.inQueueFor;
             }
-          }
-          break;
-        case 'new-pipe':
-          {
-            runningJob.pipe = [...runningJob.pipe, parsePipe(data.pipe)];
-          }
-          break;
-        case 'pipe-update-err':
-          {
-            for (const i in runningJob.pipe) {
-              const pipe = runningJob.pipe[i];
-              if (pipe.id === data.pipeId) {
-                runningJob.pipe[i].err += data.err;
-                break;
+            break;
+          case 'new-pipe':
+            {
+              runningJob.pipe = [...runningJob.pipe, parsePipe(data.pipe)];
+            }
+            break;
+          case 'pipe-update-err':
+            {
+              for (const i in runningJob.pipe) {
+                const pipe = runningJob.pipe[i];
+                if (pipe.id === data.pipeId) {
+                  runningJob.pipe[i].err += data.err;
+                  break;
+                }
               }
             }
-          }
-          break;
-        case 'pipe-update-out':
-          {
-            for (const i in runningJob.pipe) {
-              const pipe = runningJob.pipe[i];
-              if (pipe.id === data.pipeId) {
-                runningJob.pipe[i].out += data.out;
-                break;
+            break;
+          case 'pipe-update-out':
+            {
+              for (const i in runningJob.pipe) {
+                const pipe = runningJob.pipe[i];
+                if (pipe.id === data.pipeId) {
+                  runningJob.pipe[i].out += data.out;
+                  break;
+                }
               }
             }
-          }
-          break;
-        case 'pipe-done':
-          {
-            const pipe = parsePipe(data.pipe);
-            pipe.timeToExec = parseMillis(data.pipe.timeToExec);
-            for (const i in runningJob.pipe) {
-              if (pipe.id === runningJob.pipe[i].id) {
-                runningJob.pipe[i] = pipe;
-                break;
+            break;
+          case 'pipe-done':
+            {
+              const pipe = parsePipe(data.pipe);
+              pipe.timeToExec = parseMillis(data.pipe.timeToExec);
+              for (const i in runningJob.pipe) {
+                if (pipe.id === runningJob.pipe[i].id) {
+                  runningJob.pipe[i] = pipe;
+                  break;
+                }
               }
             }
-          }
-          break;
-        case 'done':
-          {
-            setTimeout(async () => {
-              runningJob = undefined;
-            }, 100);
-            dispatch('getJobs');
-          }
-          break;
+            break;
+          case 'done':
+            {
+              setTimeout(async () => {
+                runningJob = undefined;
+              }, 100);
+              dispatch('new', data.jobId);
+            }
+            break;
+        }
+      } else {
+        runningJob = parseJob(await getJobLite(data.jobId));
+        if (!runningJob.pipe) {
+          runningJob.pipe = [];
+        }
       }
     },
   );
@@ -238,6 +245,32 @@
     }
     if (jobs) {
       jobsModified = jobs.map((job) => parseJob(job));
+    }
+  });
+  onMount(async () => {
+    if (!runningJob) {
+      const currentlyRunningJob = jobsModified.find(
+        (e) => e.status === 'RUNNING',
+      );
+      if (currentlyRunningJob) {
+        const j = await GeneralService.errorWrapper(
+          async () => {
+            return sdk.send({
+              url: `/plugin/bngine/job/${currentlyRunningJob._id}`,
+              method: 'GET',
+              headers: {
+                Authorization: '',
+              },
+            });
+          },
+          async (result: { job: Job }) => {
+            return result.job;
+          },
+        );
+        console.log('JOB ON MOUNT', j);
+        currentlyRunningJob.pipe = j.pipe;
+        runningJob = currentlyRunningJob;
+      }
     }
   });
   onDestroy(() => {
