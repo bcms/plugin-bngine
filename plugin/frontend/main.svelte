@@ -9,6 +9,28 @@
   let jobs: JobLite[] = [];
   let selectedView = 'builds';
 
+  async function getJobs() {
+    const j = await GeneralService.errorWrapper(
+      async () => {
+        return sdk.send({
+          url: '/plugin/bngine/job/all/lite',
+          method: 'GET',
+          headers: {
+            Authorization: '',
+          },
+        });
+      },
+      async (result: { jobs: Job[] }) => {
+        return result.jobs;
+      },
+    );
+    if (!j) {
+      return;
+    }
+    jobs = j;
+    jobs.sort((a, b) => b.createdAt - a.createdAt);
+  }
+
   onMount(async () => {
     const p: Project[] = await GeneralService.errorWrapper(
       async () => {
@@ -33,25 +55,7 @@
         show: false,
       };
     });
-    const j = await GeneralService.errorWrapper(
-      async () => {
-        return sdk.send({
-          url: '/plugin/bngine/job/all/lite',
-          method: 'GET',
-          headers: {
-            Authorization: '',
-          },
-        });
-      },
-      async (result: { jobs: Job[] }) => {
-        return result.jobs;
-      },
-    );
-    if (!j) {
-      return;
-    }
-    jobs = j;
-    jobs.sort((a, b) => b.createdAt - a.createdAt);
+    getJobs();
   });
 </script>
 
@@ -66,7 +70,7 @@
         {#if selectedView === 'projects'}
           <ProjectsView {projects} />
         {:else if selectedView === 'builds'}
-          <BuildsView {projects} {jobs} />
+          <BuildsView {projects} {jobs} on:getJobs={getJobs} />
         {/if}
       </div>
     </div>

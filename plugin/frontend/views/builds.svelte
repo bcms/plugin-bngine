@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { beforeUpdate, onDestroy } from 'svelte';
+  import { beforeUpdate, onDestroy, createEventDispatcher } from 'svelte';
   import {
     Button,
     StoreService,
@@ -23,6 +23,7 @@
     BngineJobDetailsModal,
   } from '../components';
 
+  const dispatch = createEventDispatcher();
   export let projects: Project[];
   export let jobs: JobLite[] = [
     {
@@ -104,11 +105,10 @@
           break;
         case 'done':
           {
-            jobs = [await getJobLite(data.jobId), ...jobs];
             setTimeout(async () => {
               runningJob = undefined;
             }, 100);
-            // getJobs();
+            dispatch('getJobs');
           }
           break;
       }
