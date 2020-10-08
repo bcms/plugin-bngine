@@ -244,7 +244,9 @@
       previewProject = projects.find((e) => e.name === 'preview');
     }
     if (jobs) {
-      jobsModified = jobs.map((job) => parseJob(job));
+      jobsModified = jobs
+        .filter((e) => e.status !== 'RUNNING')
+        .map((job) => parseJob(job));
     }
   });
   onMount(async () => {
@@ -267,7 +269,6 @@
             return result.job;
           },
         );
-        console.log('JOB ON MOUNT', j);
         currentlyRunningJob.pipe = j.pipe;
         runningJob = currentlyRunningJob;
       }
