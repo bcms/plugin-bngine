@@ -248,6 +248,7 @@
         .filter((e) => e.status !== 'RUNNING')
         .map((job) => parseJob(job));
     }
+    console.log(stagingProject);
   });
   onMount(async () => {
     if (!runningJob) {
@@ -288,7 +289,7 @@
   <h3>Builds</h3>
   {#if projects && jobsModified}
     <div class="bngine--builds-top">
-      {#if stagingProject}
+      {#if stagingProject && stagingProject.run.length > 0}
         <Button
           disabled={runningJob ? true : false}
           on:click={() => {
@@ -297,7 +298,7 @@
           Staging
         </Button>
       {/if}
-      {#if productionProject}
+      {#if productionProject && productionProject.run.length > 0}
         <Button
           class="ml--auto"
           kind="secondary"
@@ -308,7 +309,7 @@
           Production
         </Button>
       {/if}
-      {#if previewProject}
+      {#if previewProject && previewProject.run.length > 0}
         <Button
           class="ml--20"
           kind="ghost"
