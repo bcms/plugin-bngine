@@ -13,7 +13,7 @@
     const newJob: JobLite = await GeneralService.errorWrapper(
       async () => {
         return sdk.send({
-          url: `/plugin/bngine//job/lite/${jobId}`,
+          url: `/plugin/bngine/job/lite/${jobId}`,
           method: 'GET',
           headers: {
             Authorization: '',
