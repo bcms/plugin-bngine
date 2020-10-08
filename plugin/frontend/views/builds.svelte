@@ -127,6 +127,7 @@
   let productionProject: Project;
   let stagingProject: Project;
   let previewProject: Project;
+  let hasRunningJob: boolean = false;
 
   async function startJob(
     projectName: string,
@@ -244,6 +245,12 @@
       previewProject = projects.find((e) => e.name === 'preview');
     }
     if (jobs) {
+      const runningJob = jobs.find((e) => e.status === 'RUNNING');
+      if (runningJob) {
+        hasRunningJob = true;
+      } else {
+        hasRunningJob = false;
+      }
       jobsModified = jobs
         .filter((e) => e.status !== 'RUNNING')
         .map((job) => parseJob(job));
@@ -290,7 +297,7 @@
     <div class="bngine--builds-top">
       {#if stagingProject && stagingProject.run.length > 0}
         <Button
-          disabled={runningJob ? true : false}
+          disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             startJob(stagingProject.name);
           }}>
@@ -301,7 +308,7 @@
         <Button
           class="ml--auto"
           kind="secondary"
-          disabled={runningJob ? true : false}
+          disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             startJob(productionProject.name);
           }}>
@@ -312,7 +319,7 @@
         <Button
           class="ml--20"
           kind="ghost"
-          disabled={runningJob ? true : false}
+          disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             StoreService.update('BnginePreviewBuildsModal', true);
           }}>

@@ -27,7 +27,7 @@
     if (!newJob) {
       return;
     }
-    jobs = [newJob, ...jobs];
+    jobs = [newJob, ...jobs.filter((e) => e._id !== jobId)];
   }
 
   onMount(async () => {
