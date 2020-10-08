@@ -2,6 +2,20 @@
   &-top {
     margin-top: 20px;
     display: flex;
+    .btn {
+      &:disabled {
+        opacity: 0.5;
+      }
+      &:hover {
+        &:disabled {
+          cursor: not-allowed;
+          background: initial;
+        }
+      }
+      &:focus {
+        border: none;
+      }
+    }
   }
   &-running-job {
     margin-top: 20px;
