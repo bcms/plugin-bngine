@@ -1,6 +1,6 @@
 import type { ObjectSchema } from '@becomes/purple-cheetah';
 import {
-  ProjectRepo,
+  ProjectGitRepo,
   ProjectRunCmd,
   ProjectVar,
   ProjectRepoSchema,
@@ -10,7 +10,7 @@ import {
 
 export interface CreateProjectData {
   name: string;
-  repo: ProjectRepo;
+  repo: ProjectGitRepo;
   vars: ProjectVar[];
   run: ProjectRunCmd[];
 }

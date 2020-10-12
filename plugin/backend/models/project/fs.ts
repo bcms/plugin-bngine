@@ -1,5 +1,5 @@
 import type { FSDBEntity } from '@becomes/purple-cheetah';
-import type { ProjectRepo, ProjectRunCmd, ProjectVar } from './mongo';
+import type { ProjectGitRepo, ProjectRunCmd, ProjectVar } from './mongo';
 
 export class ProjectFS implements FSDBEntity {
   constructor(
@@ -7,7 +7,7 @@ export class ProjectFS implements FSDBEntity {
     public createdAt: number,
     public updatedAt: number,
     public name: string,
-    public repo: ProjectRepo,
+    public repo: ProjectGitRepo,
     public vars: ProjectVar[],
     public run: ProjectRunCmd[],
   ) {}

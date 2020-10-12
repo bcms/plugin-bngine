@@ -1,9 +1,7 @@
 import type { ObjectSchema } from '@becomes/purple-cheetah';
 import {
-  ProjectRepo,
   ProjectRunCmd,
   ProjectVar,
-  ProjectRepoSchema,
   ProjectVarSchema,
   ProjectRunCmdSchema,
 } from '../../models';
