@@ -14,11 +14,12 @@ import {
   ProjectVar,
 } from './models';
 import { JobRepo } from './repository';
-import { SocketUtil } from '@becomes/cms-backend';
+import { SocketUtil, EventManager } from '@becomes/cms-backend';
 
 export class BuildEngine {
   private static logger = new Logger('BuildEngine');
   private static queueable = Queueable('start');
+  private static readonly BCMSEventScope = 'BNGINE';
 
   static async start(
     job: Job | JobFS,
@@ -51,6 +52,10 @@ export class BuildEngine {
         await JobRepo.update(job as Job & JobFS);
         SocketUtil.pluginEmit('bngine', {
           state: 'job-started',
+          jobId: job._id,
+          inQueueFor: job.inQueueFor,
+        });
+        await EventManager.emit(this.BCMSEventScope, 'JOB_STARTED', {
           jobId: job._id,
           inQueueFor: job.inQueueFor,
         });
@@ -98,6 +103,9 @@ export class BuildEngine {
         await JobRepo.update(job as Job & JobFS);
         SocketUtil.pluginEmit('bngine', {
           state: 'done',
+          jobId: job._id,
+        });
+        await EventManager.emit(this.BCMSEventScope, 'JOB_DONE', {
           jobId: job._id,
         });
       });
@@ -245,6 +253,10 @@ export class BuildEngine {
         jobId: job._id,
         pipe,
       });
+      await EventManager.emit(this.BCMSEventScope, 'JOB_NEW_PIPE', {
+        jobId: job._id,
+        pipe,
+      });
     }
     try {
       await this.exec(pipe.cmd, (type, chunk) => {
@@ -259,6 +271,16 @@ export class BuildEngine {
               pipeTitle: pipe.title,
               err: chunk,
             });
+            EventManager.emit(this.BCMSEventScope, 'JOB_UPDATE_PIPE', {
+              type: 'err',
+              jobId: job._id,
+              pipeId: pipe.id,
+              pipeCreatedAt: pipe.createdAt,
+              pipeTitle: pipe.title,
+              err: chunk,
+            }).catch((error) => {
+              console.log('Failed to at event manager.');
+            });
           }
         } else {
           pipe.out += chunk;
@@ -270,6 +292,16 @@ export class BuildEngine {
               pipeCreatedAt: pipe.createdAt,
               pipeTitle: pipe.title,
               out: chunk,
+            });
+            EventManager.emit(this.BCMSEventScope, 'JOB_UPDATE_PIPE', {
+              type: 'out',
+              jobId: job._id,
+              pipeId: pipe.id,
+              pipeCreatedAt: pipe.createdAt,
+              pipeTitle: pipe.title,
+              out: chunk,
+            }).catch((error) => {
+              console.log('Failed to at event manager.');
             });
           }
         }
@@ -286,6 +318,10 @@ export class BuildEngine {
         jobId: job._id,
         pipe,
       });
+      await EventManager.emit(this.BCMSEventScope, 'JOB_PIPE_DONE', {
+        jobId: job._id,
+        pipe,
+      })
     }
   }
 

@@ -1,7 +1,7 @@
 import type { Entity, IEntity, ObjectSchema } from '@becomes/purple-cheetah';
 import { Types, Schema } from 'mongoose';
 
-export interface ProjectRepo {
+export interface ProjectGitRepo {
   name: string;
   url: string;
   sshKey: string;
@@ -27,7 +27,7 @@ export interface ProjectRunCmd {
 
 export interface IProject extends IEntity {
   name: string;
-  repo: ProjectRepo;
+  repo: ProjectGitRepo;
   vars: ProjectVar[];
   run: ProjectRunCmd[];
 }
@@ -48,7 +48,7 @@ export class Project implements Entity {
     public createdAt: number,
     public updatedAt: number,
     public name: string,
-    public repo: ProjectRepo,
+    public repo: ProjectGitRepo,
     public vars: ProjectVar[],
     public run: ProjectRunCmd[],
   ) {}
