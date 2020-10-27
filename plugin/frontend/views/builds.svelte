@@ -139,22 +139,24 @@
       }>;
     },
   ) {
-    const job = await GeneralService.errorWrapper(
-      async () => {
-        return await sdk.send({
-          url: `/plugin/bngine/job/start/${projectName}`,
-          method: 'POST',
-          headers: {
-            Authorization: '',
-          },
-          data,
-        });
-      },
-      async (result: { job: Job }) => {
-        return result.job;
-      },
-    );
-    runningJob = job;
+    if (confirm('Are you sure you want to start a job?')) {
+      const job = await GeneralService.errorWrapper(
+        async () => {
+          return await sdk.send({
+            url: `/plugin/bngine/job/start/${projectName}`,
+            method: 'POST',
+            headers: {
+              Authorization: '',
+            },
+            data,
+          });
+        },
+        async (result: { job: Job }) => {
+          return result.job;
+        },
+      );
+      runningJob = job;
+    }
   }
   async function getJobLite(jobId: string): Promise<JobLite> {
     return await GeneralService.errorWrapper(

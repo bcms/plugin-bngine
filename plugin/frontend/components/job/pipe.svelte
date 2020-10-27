@@ -19,7 +19,8 @@
 
 <div class="{className} pipe">
   {#each jobPipe as pipe}
-    <div class="pipe--cmd pipe--cmd-{pipe.status.toLowerCase()}">
+    <div
+      class="pipe--cmd pipe--cmd-{pipe.status === 'FAIL' && pipe.ignoreIfFail === true ? 'warning' : pipe.status.toLowerCase()}">
       <button
         class="title"
         on:click={() => {

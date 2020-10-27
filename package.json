@@ -14,7 +14,7 @@
   "devDependencies": {
     "@becomes/cms-bundler": "^2.0.4",
     "@becomes/cms-sdk": "^2.0.2",
-    "@tsconfig/svelte": "^1.0.0",
+    "@tsconfig/svelte": "^1.0.10",
     "@types/express": "^4.17.8",
     "@types/node": "^14.11.8",
     "@types/uuid": "^8.3.0",
