@@ -12,4 +12,6 @@
 
 /tsconfig.backend.tsbuildinfo
 
+.env
+
 .DS_Store

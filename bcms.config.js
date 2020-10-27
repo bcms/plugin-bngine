@@ -12,13 +12,12 @@ module.exports = BCMSConfigBuilder({
     database: {
       // fs: 'bcms',
       mongodb: {
-        selfHosted: {
-          host: '192.168.1.10',
-          port: 27017,
-          name: 'pinkerton_v2',
-          user: 'test',
-          password: 'test1234',
+        atlas: {
+          name: process.env.DB_NAME,
+          user: process.env.DB_USER,
+          password: process.env.DB_PASS,
           prefix: 'pinkerton',
+          cluster: process.env.DB_CLUSTER,
         },
       },
     },

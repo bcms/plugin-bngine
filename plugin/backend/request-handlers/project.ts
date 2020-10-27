@@ -159,7 +159,7 @@ export class ProjectRequestHandler {
     }
     if (
       (await util.promisify(fs.exists)(
-        path.join(process.cwd(), 'workspace', project.repo.name),
+        path.join(process.cwd(), 'bngine-workspace', project.repo.name),
       )) === false
     ) {
       return [];
@@ -168,7 +168,7 @@ export class ProjectRequestHandler {
       await GeneralUtil.exec(
         `cd ${path.join(
           process.cwd(),
-          'workspace',
+          'bngine-workspace',
           project.repo.name,
         )} && git pull`,
         () => {},
@@ -185,7 +185,7 @@ export class ProjectRequestHandler {
       await GeneralUtil.exec(
         `cd ${path.join(
           process.cwd(),
-          'workspace',
+          'bngine-workspace',
           project.repo.name,
         )}  && git branch -a | grep "origin"`,
         (chunk, type) => {

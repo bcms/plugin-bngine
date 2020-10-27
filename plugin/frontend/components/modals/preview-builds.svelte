@@ -113,6 +113,7 @@
         return result.branches;
       },
     );
+    console.log(branches);
   });
 </script>
 
