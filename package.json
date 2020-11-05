@@ -1,6 +1,6 @@
 {
   "name": "@becomes/cms-plugin-bngine",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "scripts": {
     "dev:ui": "env-cmd bcms --dev --plugin --ui",
     "dev:backend": "env-cmd bcms --dev --plugin --backend",
