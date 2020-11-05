@@ -32,6 +32,7 @@ export class BuildEngine {
         value: process.cwd(),
       });
       if (vars) {
+        console.log(vars)
         for (const i in vars) {
           let found = false;
           for (const j in project.vars) {
@@ -40,6 +41,9 @@ export class BuildEngine {
               found = true;
               break;
             }
+          }
+          if (vars[i].key === 'branch') {
+            project.repo.branch = vars[i].value;
           }
           if (!found) {
             project.vars.push(vars[i]);
@@ -321,7 +325,7 @@ export class BuildEngine {
       await EventManager.emit(this.BCMSEventScope, 'JOB_PIPE_DONE', {
         jobId: job._id,
         pipe,
-      })
+      });
     }
   }
 

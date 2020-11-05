@@ -396,6 +396,10 @@
           key: 'id',
           value: event.detail.branch,
         },
+        {
+          key: 'branch',
+          value: event.detail.branch,
+        },
       ],
     });
   }} />
