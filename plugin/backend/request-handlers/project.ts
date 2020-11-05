@@ -14,8 +14,14 @@ import {
   FSUtil,
 } from '@becomes/purple-cheetah';
 import { ResponseCode } from '@becomes/cms-backend';
-import type { Project, ProjectFS, ProjectProtected } from '../models';
-import { ProjectRepo } from '../repository';
+import type {
+  Job,
+  JobFS,
+  Project,
+  ProjectFS,
+  ProjectProtected,
+} from '../models';
+import { JobRepo, ProjectRepo } from '../repository';
 import { ProjectFactory } from '../factory/project';
 import {
   CreateProjectData,
@@ -24,6 +30,8 @@ import {
   UpdateProjectDataSchema,
 } from '../interfaces';
 import { GeneralUtil } from '../util';
+import { BuildEngine } from '../engine';
+import { JobFactory } from '../factory';
 
 ResponseCode.register([
   {
@@ -162,7 +170,18 @@ export class ProjectRequestHandler {
         path.join(process.cwd(), 'bngine-workspace', project.repo.name),
       )) === false
     ) {
-      return [];
+      const job = JobFactory.instance;
+      job.project = project.name;
+      job.repo = {
+        name: project.repo.name,
+        branch: project.repo.branch,
+      };
+      project.run = [];
+      await JobRepo.add(job as Job & JobFS);
+      await BuildEngine.start(job, project).catch((error) => {
+        console.error(error);
+        this.logger.error(`job_${job._id}`, error);
+      });
     }
     try {
       await GeneralUtil.exec(
