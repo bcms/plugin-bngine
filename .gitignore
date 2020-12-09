@@ -9,7 +9,10 @@
 /workspace
 /bngine-workspace
 /uploads
+bcms.db.json
 /logs
+/log
+*.log
 
 /tsconfig.backend.tsbuildinfo
 

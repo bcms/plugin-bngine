@@ -3,7 +3,6 @@ import {
   ControllerPrototype,
   Delete,
   Get,
-  HttpErrorFactory,
   JWTConfigService,
   JWTEncryptionAlg,
   Logger,

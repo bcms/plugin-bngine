@@ -6,6 +6,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src/**/*", "plugins/**/*"],
+  "include": ["src/**/*", "plugin/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
 }

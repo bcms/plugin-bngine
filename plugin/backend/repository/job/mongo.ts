@@ -15,7 +15,7 @@ import { IJob, Job } from '../../models';
 })
 export class JobMongoDBRepository
   implements MongoDBRepositoryPrototype<Job, IJob> {
-  repo: Model<IJob, {}>;
+  repo: Model<IJob>;
   logger: Logger;
   findAll: () => Promise<Job[]>;
   findAllById: (ids: string[]) => Promise<Job[]>;
@@ -76,10 +76,10 @@ export class JobMongoDBRepository
   }
 
   async findLiteById(_id: string): Promise<JobLite> {
-    return await this.repo
+    return (await this.repo
       .findOne({
         _id,
       })
-      .select(this.liteModelPropsToInclude());
+      .select(this.liteModelPropsToInclude())) as any;
   }
 }

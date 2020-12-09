@@ -41,9 +41,7 @@
       </div>
       {#if disableDetails === false}
         <Button
-          class="mt-20"
           kind="ghost"
-          icon="fas fa-eye"
           on:click={async () => {
             dispatch('details');
           }}>

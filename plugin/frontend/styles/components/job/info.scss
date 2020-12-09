@@ -32,18 +32,18 @@
     font-weight: bold;
     height: 100%;
     padding: 5px 10px;
-    color: var(--c-white);
+    color: rgba(var(--light), 1);
     &-success {
-      background-color: var(--c-success);
+      background-color: rgba(var(--green), 1);
     }
     &-fail {
-      background-color: var(--c-error);
+      background-color: rgba(var(--red), 1);
     }
     &-queue {
-      background-color: var(--c-gray);
+      background-color: rgba(var(--grey), 1);
     }
     &-running {
-      background-color: var(--c-primary);
+      background-color: rgba(var(--dark), 1);
     }
   }
 }

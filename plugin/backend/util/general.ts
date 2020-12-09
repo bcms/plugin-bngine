@@ -17,9 +17,9 @@ export class GeneralUtil {
       }
       proc.on('close', (code) => {
         if (code !== 0) {
-          reject();
+          reject(undefined);
         } else {
-          resolve();
+          resolve(undefined);
         }
       });
     });

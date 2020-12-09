@@ -2,13 +2,14 @@
   import {
     Button,
     GeneralService,
+    NotificationService,
     PasswordInput,
-    popup,
     sdk,
     TextArea,
     TextInput,
     ToggleInput,
   } from '@becomes/cms-ui';
+  import { TrashIcon } from '@becomes/cms-ui/src/components/icons';
   import type { ProjectModified } from '../types';
 
   export let projects: ProjectModified[] = [];
@@ -49,7 +50,7 @@
       }
       return e;
     });
-    popup.success('Project successfully updated.');
+    NotificationService.success('Project successfully updated.');
   }
 
   function addVar(projectIndex: number) {
@@ -83,12 +84,7 @@
   }
 </script>
 
-<style global lang="scss">
-  @import '../styles/main.scss';
-</style>
-
 <div class="bngine--projects">
-  <h3>Projects</h3>
   {#if projects}
     {#each projects as project, projectIndex}
       <div class="bngine--project">
@@ -105,9 +101,9 @@
           <div class="bngine--project-section">
             <h4>General</h4>
             <div class="vars">
-              <div class="var mt--20">
+              <div class="var">
                 <TextInput
-                  class="mr--10"
+                  class="name mr-10"
                   label="Name"
                   placeholder="Name"
                   value={project.name}
@@ -115,7 +111,7 @@
                     project.name = event.detail;
                   }} />
                 <TextInput
-                  class="ml--10"
+                  class="url ml-10"
                   label="URL"
                   placeholder="URL"
                   value={project.repo.url}
@@ -123,9 +119,9 @@
                     project.repo.url = event.detail;
                   }} />
               </div>
-              <div class="var mt--20">
+              <div class="var">
                 <TextInput
-                  class="mr--10"
+                  class="repo mr-10"
                   label="Repository name"
                   placeholder="Repository name"
                   value={project.repo.name}
@@ -133,7 +129,7 @@
                     project.repo.name = event.detail;
                   }} />
                 <TextInput
-                  class="ml--10"
+                  class="branch ml-10"
                   label="Repository branch"
                   placeholder="Repository branch"
                   value={project.repo.branch}
@@ -160,7 +156,7 @@
                     on:input={(event) => {
                       v.key = event.detail;
                     }} />
-                  <span class="fas fa-equals" />
+                  <span style="margin: auto 10px; font-size: 24px;">=</span>
                   <PasswordInput
                     placeholder="Value"
                     value={v.value}
@@ -175,9 +171,7 @@
                 </div>
               {/each}
               <Button
-                class="ml--auto mr--auto"
                 kind="ghost"
-                icon="fas fa-plus"
                 on:click={() => {
                   addVar(projectIndex);
                 }}>
@@ -192,6 +186,7 @@
                 <div class="command">
                   <div class="top">
                     <TextInput
+                      class="title"
                       label="Title"
                       placeholder="Title"
                       value={run.title}
@@ -199,20 +194,22 @@
                         run.title = event.detail;
                       }} />
                     <ToggleInput
-                      class="ml--auto"
+                      class="ignore"
                       label="Ignore if fail"
                       value={run.ignoreIfFail}
                       on:input={(event) => {
                         run.ignoreIfFail = event.detail;
                       }} />
                     <button
-                      class="remove fas fa-times"
+                      class="remove"
                       on:click={() => {
                         removeCommand(projectIndex, commandIndex);
-                      }} />
+                      }}>
+                      <TrashIcon />
+                    </button>
                   </div>
                   <TextInput
-                    class="mt--20"
+                    class="mt-20"
                     label="Command"
                     placeholder="Command"
                     value={run.command}
@@ -222,9 +219,7 @@
                 </div>
               {/each}
               <Button
-                class="mt--20 ml--auto mr--auto"
                 kind="ghost"
-                icon="fas fa-plus"
                 on:click={() => {
                   addCommand(projectIndex);
                 }}>
@@ -233,8 +228,7 @@
             </div>
           </div>
           <Button
-            class="ml--auto mt--50"
-            icon="fas fa-check"
+            class="bngine--project-update"
             on:click={() => {
               updateProject(projectIndex);
             }}>

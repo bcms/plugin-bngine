@@ -1,13 +1,24 @@
 <script lang="ts">
-  import { GeneralService, Layout, sdk } from '@becomes/cms-ui';
+  import { GeneralService, Layout, ManagerLayout, sdk } from '@becomes/cms-ui';
   import { onMount } from 'svelte';
-  import { BngineNav } from './components';
   import type { Project, JobLite, Job, ProjectModified } from './types';
   import { BuildsView, ProjectsView } from './views';
 
+  const navItems = [
+    {
+      link: '',
+      name: 'Builds',
+      selected: false,
+    },
+    {
+      link: '',
+      name: 'Projects',
+      selected: false,
+    },
+  ];
   let projects: ProjectModified[] = [];
   let jobs: JobLite[] = [];
-  let selectedView = 'builds';
+  let selectedView = 'Builds';
 
   async function getNewJob(jobId: string) {
     const newJob: JobLite = await GeneralService.errorWrapper(
@@ -76,25 +87,33 @@
   });
 </script>
 
+<style global lang="scss">
+  @import './styles/main.scss';
+</style>
+
 <Layout>
-  <div class="manager-layout bngine--layout">
-    <BngineNav
-      on:select={(event) => {
-        selectedView = event.detail;
-      }} />
-    <div class="manager-layout--content">
-      <div class="manager-layout--content-wrapper">
-        {#if selectedView === 'projects'}
-          <ProjectsView {projects} />
-        {:else if selectedView === 'builds'}
-          <BuildsView
-            {projects}
-            {jobs}
-            on:new={(event) => {
-              getNewJob(event.detail);
-            }} />
-        {/if}
-      </div>
-    </div>
-  </div>
+  <ManagerLayout
+    label="Bngine"
+    on:openItem={(event) => {
+      selectedView = event.detail.name;
+    }}
+    items={navItems.map((e) => {
+      if (e.name === selectedView) {
+        e.selected = true;
+      } else {
+        e.selected = false;
+      }
+      return e;
+    })}>
+    {#if selectedView === 'Projects'}
+      <ProjectsView {projects} />
+    {:else if selectedView === 'Builds'}
+      <BuildsView
+        {projects}
+        {jobs}
+        on:new={(event) => {
+          getNewJob(event.detail);
+        }} />
+    {/if}
+  </ManagerLayout>
 </Layout>

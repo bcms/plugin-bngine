@@ -19,7 +19,7 @@
       font-size: xx-large;
       font-weight: 300;
       text-align: center;
-      color: var(--c-gray);
+      color: rgba(var(--grey), 1);
     }
     table {
       width: 100%;
@@ -29,17 +29,20 @@
         padding: 5px 10px;
       }
       thead {
-        background-color: var(--c-gray-light);
+        background-color: rgba(var(--grey), 0.5);
         text-align: left;
         font-size: 16px;
         font-weight: bold;
         .details {
           width: 50px;
         }
+        .status {
+          text-align: center;
+        }
       }
       tbody {
         tr {
-          border-bottom: 1px solid var(--c-gray-light);
+          border-bottom: 1px solid rgba(var(--grey), 0.5);
         }
         .number {
           text-align: center;
@@ -52,16 +55,23 @@
           font-weight: bold;
           // color: var(--c-neutral);
           &-success {
-            color: var(--c-success);
+            color: rgba(var(--green), 1);
           }
           &-fail {
-            color: var(--c-error);
+            color: rgba(var(--red), 1);
           }
           &-queue {
-            color: var(--c-gray);
+            color: rgba(var(--grey), 1);
           }
           &-running {
-            color: var(--c-primary);
+            color: rgba(var(--dark), 1);
+          }
+        }
+        button {
+          svg {
+            width: 24px;
+            height: 24px;
+            fill: rgba(var(--dark), 1);
           }
         }
       }

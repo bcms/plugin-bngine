@@ -14,7 +14,7 @@ import { IProject, Project } from '../../models';
 })
 export class ProjectMongoRepository
   implements MongoDBRepositoryPrototype<Project, IProject> {
-  repo: Model<IProject, {}>;
+  repo: Model<IProject>;
   logger: Logger;
   findAll: () => Promise<Project[]>;
   findAllById: (ids: string[]) => Promise<Project[]>;

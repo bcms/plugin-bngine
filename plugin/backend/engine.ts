@@ -328,7 +328,6 @@ export class BuildEngine {
       });
     }
   }
-
   private static async exec(
     cmd: string,
     output: (type: 'stdout' | 'stderr', chunk: string) => void,
@@ -343,9 +342,9 @@ export class BuildEngine {
       });
       proc.on('close', (code) => {
         if (code !== 0) {
-          reject();
+          reject(undefined);
         } else {
-          resolve();
+          resolve(undefined);
         }
       });
     });

@@ -92,7 +92,7 @@ export class ProjectRequestHandler {
         if (!projects.find((p) => p.name === e)) {
           const project = ProjectFactory.instance;
           project.name = e;
-          await ProjectRepo.add(project);
+          await ProjectRepo.add(project as any);
           projects.push(project);
         }
       }

@@ -4,11 +4,10 @@
     GeneralService,
     Modal,
     sdk,
-    popup,
     StoreService,
     Select,
-    SelectItem,
     Button,
+    NotificationService,
   } from '@becomes/cms-ui';
 
   type Data = {
@@ -23,6 +22,7 @@
   let branches: string[] = [];
   let previews: string[] = [];
   let data: Data = getData();
+  let closing = false;
 
   function getData(): Data {
     return {
@@ -34,6 +34,7 @@
   }
 
   function close() {
+    closing = true;
     StoreService.update(modalName, false);
     data = getData();
   }
@@ -80,7 +81,7 @@
         return;
       }
       previews = previews.filter((e) => e !== name);
-      popup.success('Preview successfully delete.');
+      NotificationService.success('Preview successfully delete.');
     }
   }
 
@@ -116,25 +117,30 @@
   });
 </script>
 
-<Modal title="Previews" name={modalName} on:cancel={cancel} on:done={done}>
+<Modal
+  title="Previews"
+  name={modalName}
+  on:animationDone={() => {
+    closing = false;
+  }}
+  on:cancel={cancel}
+  on:done={done}>
   <div class="bngine--previews">
     <div class="bngine--previews-build">
       <Select
         label="Branches"
         invalidText={data.branch.error}
+        options={branches.map((e) => {
+          return { label: e, value: e };
+        })}
         on:change={(event) => {
           data.branch.value = event.detail;
           if (data.branch.value !== '') {
             data.branch.error = '';
           }
-        }}>
-        <SelectItem text="Select branch" value="" />
-        {#each branches as branch}
-          <SelectItem text={branch} value={branch} />
-        {/each}
-      </Select>
+        }} />
       <Button
-        icon="fas fa-tools"
+        disabled={closing}
         on:click={() => {
           done();
         }}>
@@ -164,7 +170,6 @@
                 </td>
                 <td class="remove">
                   <Button
-                    icon="fas fa-trash"
                     on:click={() => {
                       removePreview(preview);
                     }} />

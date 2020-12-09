@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
-    onMount,
     beforeUpdate,
-    onDestroy,
     createEventDispatcher,
+    onDestroy,
+    onMount,
   } from 'svelte';
   import {
     Button,
@@ -11,7 +11,6 @@
     sdk,
     GeneralService,
   } from '@becomes/cms-ui/src';
-  import { blur } from 'svelte/transition';
   import type {
     Job,
     JobModified,
@@ -27,6 +26,7 @@
     BngineJobPipe,
     BngineJobDetailsModal,
   } from '../components';
+  import { EyeShowIcon } from '@becomes/cms-ui/src/components/icons';
 
   const dispatch = createEventDispatcher();
   export let projects: Project[];
@@ -289,12 +289,7 @@
   });
 </script>
 
-<style global lang="scss">
-  @import '../styles/main.scss';
-</style>
-
 <div class="bngine--builds">
-  <h3>Builds</h3>
   {#if projects && jobsModified}
     <div class="bngine--builds-top">
       {#if stagingProject && stagingProject.run.length > 0}
@@ -308,7 +303,6 @@
       {/if}
       {#if productionProject && productionProject.run.length > 0}
         <Button
-          class="ml--auto"
           kind="secondary"
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
@@ -319,7 +313,6 @@
       {/if}
       {#if previewProject && previewProject.run.length > 0}
         <Button
-          class="ml--20"
           kind="ghost"
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
@@ -345,11 +338,11 @@
         </div>
       {:else}
         <h4 class="bngine--builds-jobs-title">Completed Jobs</h4>
-        <table in:blur={{ delay: 400 }}>
+        <table>
           <thead>
             <tr>
               <th />
-              <th>Status</th>
+              <th class="status">Status</th>
               <th>Duration</th>
               <th>Branch</th>
               <th>Project</th>
@@ -373,11 +366,11 @@
                 <td>
                   <Button
                     kind="ghost"
-                    icon="fas fa-eye"
-                    onlyIcon={true}
                     on:click={async () => {
                       setJobDetails(job);
-                    }} />
+                    }}>
+                    <EyeShowIcon />
+                  </Button>
                 </td>
               </tr>
             {/each}
