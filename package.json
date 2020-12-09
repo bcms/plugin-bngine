@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@becomes/cms-backend": "^2.0.18",
+    "@becomes/cms-ui": "^2.0.38",
     "@becomes/purple-cheetah": "^2.0.17",
     "express": "^4.17.1",
     "html-escaper": "^3.0.0",
