@@ -130,11 +130,13 @@
       <Select
         label="Branches"
         invalidText={data.branch.error}
+        selected={data.branch.value}
+        placeholder="Select a branch"
         options={branches.map((e) => {
           return { label: e, value: e };
         })}
         on:change={(event) => {
-          data.branch.value = event.detail;
+          data.branch.value = event.detail.value;
           if (data.branch.value !== '') {
             data.branch.error = '';
           }

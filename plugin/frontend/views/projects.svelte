@@ -9,7 +9,12 @@
     TextInput,
     ToggleInput,
   } from '@becomes/cms-ui';
-  import { TrashIcon } from '@becomes/cms-ui/src/components/icons';
+  import {
+    ArrowDownIcon,
+    ArrowUpIcon,
+    ChevronDownIcon,
+    TrashIcon,
+  } from '@becomes/cms-ui/src/components/icons';
   import type { ProjectModified } from '../types';
 
   export let projects: ProjectModified[] = [];
@@ -77,6 +82,18 @@
       (e, i) => i !== commandIndex,
     );
   }
+  function moveCommand(projectIndex: number, commandIndex: number, by: number) {
+    const newIndex = commandIndex + by;
+    if (newIndex < 0 || newIndex + 1 > projects[projectIndex].run.length) {
+      return;
+    }
+    const temp = projects[projectIndex].run[newIndex];
+    projects[projectIndex].run[newIndex] = JSON.parse(
+      JSON.stringify(projects[projectIndex].run[commandIndex]),
+    );
+    projects[projectIndex].run[commandIndex] = temp;
+    projects[projectIndex].run = [...projects[projectIndex].run];
+  }
   function removeVar(projectIndex: number, varIndex: number) {
     projects[projectIndex].vars = projects[projectIndex].vars.filter(
       (e, i) => i !== varIndex,
@@ -94,7 +111,7 @@
               project.show = project.show === true ? false : true;
             }}>
             <span class="bngine--project-toggle-title">{project.name} </span>
-            <p class="fas fa-{project.show ? 'minus' : 'plus'}" />
+            <ChevronDownIcon class={project.show ? 'show' : ''} />
           </button>
         </div>
         {#if project.show}
@@ -164,10 +181,12 @@
                       v.value = event.detail;
                     }} />
                   <button
-                    class="remove fas fa-times"
+                    class="remove"
                     on:click={() => {
                       removeVar(projectIndex, varIndex);
-                    }} />
+                    }}>
+                    <TrashIcon />
+                  </button>
                 </div>
               {/each}
               <Button
@@ -201,6 +220,20 @@
                         run.ignoreIfFail = event.detail;
                       }} />
                     <button
+                      class="move"
+                      on:click={() => {
+                        moveCommand(projectIndex, commandIndex, -1);
+                      }}>
+                      <ArrowUpIcon />
+                    </button>
+                    <button
+                      class="move"
+                      on:click={() => {
+                        moveCommand(projectIndex, commandIndex, 1);
+                      }}>
+                      <ArrowDownIcon />
+                    </button>
+                    <button
                       class="remove"
                       on:click={() => {
                         removeCommand(projectIndex, commandIndex);
@@ -208,7 +241,7 @@
                       <TrashIcon />
                     </button>
                   </div>
-                  <TextInput
+                  <TextArea
                     class="mt-20"
                     label="Command"
                     placeholder="Command"

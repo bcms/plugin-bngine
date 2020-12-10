@@ -10,6 +10,7 @@
     StoreService,
     sdk,
     GeneralService,
+    ConfirmService,
   } from '@becomes/cms-ui/src';
   import type {
     Job,
@@ -139,7 +140,14 @@
       }>;
     },
   ) {
-    if (confirm('Are you sure you want to start a job?')) {
+    if (
+      await ConfirmService.confirm(
+        `Start build`,
+        `Are you sure you want to build ${projectName}${
+          data && data.branch ? ` for <strong>${data.branch}</strong>` : ''
+        }?`,
+      )
+    ) {
       const job = await GeneralService.errorWrapper(
         async () => {
           return await sdk.send({
@@ -155,7 +163,7 @@
           return result.job;
         },
       );
-      runningJob = job;
+      runningJob = parseJob(job);
     }
   }
   async function getJobLite(jobId: string): Promise<JobLite> {
@@ -278,7 +286,7 @@
             return result.job;
           },
         );
-        currentlyRunningJob.pipe = j.pipe;
+        currentlyRunningJob.pipe = j.pipe.map((pipe) => parsePipe(pipe));
         runningJob = currentlyRunningJob;
       }
     }
@@ -294,6 +302,7 @@
     <div class="bngine--builds-top">
       {#if stagingProject && stagingProject.run.length > 0}
         <Button
+          class="staging"
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             startJob(stagingProject.name);
@@ -303,6 +312,7 @@
       {/if}
       {#if productionProject && productionProject.run.length > 0}
         <Button
+          class="production"
           kind="secondary"
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
@@ -313,6 +323,7 @@
       {/if}
       {#if previewProject && previewProject.run.length > 0}
         <Button
+          class="preview"
           kind="ghost"
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {

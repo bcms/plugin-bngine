@@ -91,29 +91,27 @@
   @import './styles/main.scss';
 </style>
 
-<Layout>
-  <ManagerLayout
-    label="Bngine"
-    on:openItem={(event) => {
-      selectedView = event.detail.name;
-    }}
-    items={navItems.map((e) => {
-      if (e.name === selectedView) {
-        e.selected = true;
-      } else {
-        e.selected = false;
-      }
-      return e;
-    })}>
-    {#if selectedView === 'Projects'}
-      <ProjectsView {projects} />
-    {:else if selectedView === 'Builds'}
-      <BuildsView
-        {projects}
-        {jobs}
-        on:new={(event) => {
-          getNewJob(event.detail);
-        }} />
-    {/if}
-  </ManagerLayout>
-</Layout>
+<ManagerLayout
+  label="Bngine"
+  on:openItem={(event) => {
+    selectedView = event.detail.name;
+  }}
+  items={navItems.map((e) => {
+    if (e.name === selectedView) {
+      e.selected = true;
+    } else {
+      e.selected = false;
+    }
+    return e;
+  })}>
+  {#if selectedView === 'Projects'}
+    <ProjectsView {projects} />
+  {:else if selectedView === 'Builds'}
+    <BuildsView
+      {projects}
+      {jobs}
+      on:new={(event) => {
+        getNewJob(event.detail);
+      }} />
+  {/if}
+</ManagerLayout>

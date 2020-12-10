@@ -2,6 +2,9 @@
   &-top {
     margin-top: 20px;
     display: flex;
+    .staging {
+      margin-right: auto;
+    }
   }
   &-running-job {
     margin-top: 20px;
