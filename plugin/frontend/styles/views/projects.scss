@@ -1,14 +1,15 @@
-.bngine--projects {
-  h3 {
-    margin-bottom: 20px;
-  }
-}
 .bngine--project {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(var(--dark), 1);
+  border: 1px solid rgba(var(--grey), 1);
   padding: 16px 20px;
+  border-radius: 10px;
+  transition: border-color 0.22s;
+  &:hover,
+  &:focus-within {
+    border-color: rgba(var(--dark), 1);
+  }
   &-toggle {
     button {
       display: flex;
@@ -54,7 +55,8 @@
     h4 {
       font-size: 24px;
       font-weight: 300;
-      color: rgba(var(--grey), 0.5);
+      color: rgba(var(--grey), 1);
+      margin-bottom: 10px;
     }
     .vars,
     .commands,
@@ -69,9 +71,17 @@
           color: rgba(var(--dark), 1);
         }
       }
+      .bcmsButton {
+        &_ghost {
+          padding-top: 0;
+          padding-bottom: 0;
+          transition: color 0.22s;
+        }
+      }
     }
     .vars {
       gap: 20px;
+      border-radius: 10px;
       .var {
         ._bcmsInput {
           width: 100%;
@@ -85,8 +95,10 @@
             width: 24px;
             height: 24px;
             fill: rgba(var(--grey), 1);
+            transition: fill 0.22s;
           }
-          &:hover {
+          &:hover,
+          &:focus {
             svg {
               fill: rgba(var(--red), 1);
             }
@@ -95,17 +107,22 @@
       }
     }
     .commands {
+      border-radius: 10px;
       .command {
         margin-bottom: 30px;
         padding-bottom: 30px;
         border-bottom: 1px solid rgba(var(--grey), 0.5);
         .top {
           display: flex;
+          div {
+            display: flex;
+            align-items: flex-start;
+          }
           .title {
             width: 100%;
           }
           .ignore {
-            margin: 0 40px;
+            margin: 0 20px 0 10px;
             min-width: 100px;
           }
           .remove,
@@ -114,16 +131,23 @@
               width: 24px;
               height: 24px;
               fill: rgba(var(--grey), 1);
+              transition: fill 0.22s;
             }
           }
-          .remove:hover {
-            svg {
-              fill: rgba(var(--red), 1);
+          .remove {
+            display: flex;
+            &:hover,
+            &:focus {
+              svg {
+                fill: rgba(var(--red), 1);
+                transition: fill 0.22s;
+              }
             }
           }
           .move {
             margin-right: 14px;
-            &:hover {
+            &:hover,
+            &:focus {
               svg {
                 fill: rgba(var(--dark), 1);
               }
@@ -136,5 +160,59 @@
   &-update {
     margin-left: auto;
     margin-top: 20px;
+  }
+  @include media(640px, 'max') {
+    &-section {
+      .commands {
+        .command {
+          .top {
+            display: flex;
+            flex-direction: column;
+            & > div {
+              display: flex;
+              justify-content: space-between;
+              margin-top: 16px;
+              div {
+                display: block;
+              }
+              .remove {
+                margin-top: 10px;
+              }
+            }
+            .ignore,
+            .move {
+              margin: 0;
+            }
+            ._bcmsInput {
+              margin-bottom: 16px;
+              &:last-of-type {
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  @include media(500px, 'max') {
+    &-section {
+      .vars {
+        .var {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          ._bcmsInput {
+            margin: 0;
+            margin-bottom: 16px;
+            &:last-of-type {
+              margin-bottom: 0;
+            }
+          }
+          .remove {
+            margin: 16px 10px 0 auto;
+          }
+        }
+      }
+    }
   }
 }

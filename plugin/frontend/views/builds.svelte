@@ -349,44 +349,80 @@
         </div>
       {:else}
         <h4 class="bngine--builds-jobs-title">Completed Jobs</h4>
-        <table>
-          <thead>
-            <tr>
-              <th />
-              <th class="status">Status</th>
-              <th>Duration</th>
-              <th>Branch</th>
-              <th>Project</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th class="details" />
-            </tr>
-          </thead>
-          <tbody>
-            {#each jobsModified as job, i}
-              <tr>
-                <td class="number">{jobsModified.length - i}.</td>
-                <td class="status status-{job.status.toLowerCase()}">
-                  {job.status}
-                </td>
-                <td>{jobsModified[i].time}</td>
-                <td><i>{job.repo.branch}</i></td>
-                <td>{job.project}</td>
-                <td>{new Date(job.createdAt).toLocaleDateString()}</td>
-                <td>{new Date(job.createdAt).toLocaleTimeString()}</td>
-                <td>
-                  <Button
-                    kind="ghost"
-                    on:click={async () => {
-                      setJobDetails(job);
-                    }}>
-                    <EyeShowIcon />
-                  </Button>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
+        <ul class="bngine--builds-list">
+          <li class="bngine--builds-list-item bngine--builds-cols">
+            <div class="bngine--builds-list-number" />
+            <div class="bngine--builds-list-status">Status</div>
+            <div class="bngine--builds-list-duration">Duration</div>
+            <div class="bngine--builds-list-branch">Branch</div>
+            <div class="bngine--builds-list-project">Project</div>
+            <div class="bngine--builds-list-date">Date</div>
+            <div class="bngine--builds-list-time">Time</div>
+            <div />
+          </li>
+          {#each jobsModified as job, i}
+            <li class="bngine--builds-list-item bngine--builds-cols">
+              <div
+                class="bngine--builds-list-number
+                  bngine--builds-list-item-col"
+                title="{jobsModified.length - i}.">
+                <span>{jobsModified.length - i}.</span>
+              </div>
+              <div
+                class={`bngine--builds-list-status
+                bngine--builds-list-status_${job.status.toLowerCase()}
+                  bngine--builds-list-item-col`}
+                data-column-name="Status"
+                title={job.status}>
+                {job.status}
+              </div>
+              <div
+                class="bngine--builds-list-duration
+                  bngine--builds-list-item-col"
+                data-column-name="Duration"
+                title={jobsModified[i].time}>
+                {jobsModified[i].time}
+              </div>
+              <div
+                class="bngine--builds-list-branch
+                  bngine--builds-list-item-col"
+                data-column-name="Branch"
+                title={job.repo.branch}>
+                {job.repo.branch}
+              </div>
+              <div
+                class="bngine--builds-list-project
+                  bngine--builds-list-item-col"
+                data-column-name="Project"
+                title={job.project}>
+                {job.project}
+              </div>
+              <div
+                class="bngine--builds-list-date
+                  bngine--builds-list-item-col"
+                data-column-name="Date"
+                title={new Date(job.createdAt).toLocaleDateString()}>
+                {new Date(job.createdAt).toLocaleDateString()}
+              </div>
+              <div
+                class="bngine--builds-list-time
+                bngine--builds-list-item-col"
+                data-column-name="Time"
+                title={new Date(job.createdAt).toLocaleTimeString()}>
+                {new Date(job.createdAt).toLocaleTimeString()}
+              </div>
+              <div class="bngine--builds-list-eye bngine--builds-list-item-col">
+                <Button
+                  kind="ghost"
+                  on:click={async () => {
+                    setJobDetails(job);
+                  }}>
+                  <EyeShowIcon />
+                </Button>
+              </div>
+            </li>
+          {/each}
+        </ul>
       {/if}
     </div>
   {/if}

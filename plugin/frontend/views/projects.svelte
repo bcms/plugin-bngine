@@ -212,34 +212,38 @@
                       on:input={(event) => {
                         run.title = event.detail;
                       }} />
-                    <ToggleInput
-                      class="ignore"
-                      label="Ignore if fail"
-                      value={run.ignoreIfFail}
-                      on:input={(event) => {
-                        run.ignoreIfFail = event.detail;
-                      }} />
-                    <button
-                      class="move"
-                      on:click={() => {
-                        moveCommand(projectIndex, commandIndex, -1);
-                      }}>
-                      <ArrowUpIcon />
-                    </button>
-                    <button
-                      class="move"
-                      on:click={() => {
-                        moveCommand(projectIndex, commandIndex, 1);
-                      }}>
-                      <ArrowDownIcon />
-                    </button>
-                    <button
-                      class="remove"
-                      on:click={() => {
-                        removeCommand(projectIndex, commandIndex);
-                      }}>
-                      <TrashIcon />
-                    </button>
+                    <div>
+                      <ToggleInput
+                        class="ignore"
+                        label="Ignore if fail"
+                        value={run.ignoreIfFail}
+                        on:input={(event) => {
+                          run.ignoreIfFail = event.detail;
+                        }} />
+                      <div>
+                        <button
+                          class="move"
+                          on:click={() => {
+                            moveCommand(projectIndex, commandIndex, -1);
+                          }}>
+                          <ArrowUpIcon />
+                        </button>
+                        <button
+                          class="move"
+                          on:click={() => {
+                            moveCommand(projectIndex, commandIndex, 1);
+                          }}>
+                          <ArrowDownIcon />
+                        </button>
+                        <button
+                          class="remove"
+                          on:click={() => {
+                            removeCommand(projectIndex, commandIndex);
+                          }}>
+                          <TrashIcon />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                   <TextArea
                     class="mt-20"
