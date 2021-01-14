@@ -9,16 +9,6 @@
 
   const dispatch = createEventDispatcher();
   let className = '';
-
-  function parserMillis(millis: number): string {
-    if (millis > 60000) {
-      return `${parseInt('' + millis / 1000 / 60)}m ${
-        parseInt('' + millis / 1000) - parseInt('' + millis / 1000 / 60) * 60
-      }s`;
-    } else {
-      return `${parseInt(`${millis / 1000}`, 10)}s`;
-    }
-  }
 </script>
 
 {#if job}
@@ -28,7 +18,7 @@
         <h3 class="bngine--job-details-project">{job.project}</h3>
         <div
           class="bngine--job-details-status bngine--job-details-status-{job.status.toLowerCase()}">
-          {job.status}
+          {job.status.toLowerCase()}
         </div>
       </div>
       <h5 class="bngine--job-details-branch">{job.repo.branch}</h5>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { escape } from 'html-escaper';
   import type { JobPipeModified } from '../../types';
+  import { PlusIcon } from '@becomes/cms-ui/src/components/icons';
 
   export { className as class };
   export let jobPipe: JobPipeModified[];
@@ -24,9 +25,13 @@
       <button
         class="title"
         on:click={() => {
-          pipe.show = pipe.show === true ? false : true;
-        }}>
-        <p class="fas fa-{pipe.show ? 'minus' : 'plus'}" />
+          if (pipe.out || pipe.err) {
+            pipe.show = pipe.show === true ? false : true;
+          }
+        }}
+        disabled={!pipe.out && !pipe.err}>
+        <PlusIcon
+          class={`${pipe.show ? 'pipe--icon pipe--icon_show' : 'pipe--icon'} ${!pipe.out && !pipe.err ? 'pipe--icon_hidden' : ''}`} />
         <span class="pipe--title">{pipe.title} </span>
         <span class="pipe--execTime">{pipe.timeToExec}</span>
       </button>

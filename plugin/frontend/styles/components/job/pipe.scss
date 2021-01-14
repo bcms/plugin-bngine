@@ -4,11 +4,17 @@
     margin-bottom: 10px;
     button {
       color: rgba(var(--light), 1);
-      padding: 5px 20px;
+      padding: 6px 20px 6px 6px;
       width: 100%;
       text-align: left;
       display: flex;
       align-items: center;
+      svg {
+        width: 24px;
+        height: 24px;
+        fill: rgba(var(--light), 1);
+        margin-right: 5px;
+      }
     }
     &-success {
       background-color: rgba(var(--green), 1);
@@ -25,9 +31,9 @@
       }
     }
     &-warning {
-      background-color: #dfad30;
+      background-color: rgba(var(--yellow), 1);
       .output {
-        border: 1px solid #dfad30;
+        border: 1px solid rgba(var(--yellow), 1);
         border-top: none;
       }
     }
@@ -39,10 +45,20 @@
       }
     }
   }
+  &--icon {
+    transition: transform 0.22s;
+    &_hidden {
+      visibility: hidden;
+    }
+    &_show {
+      transform: rotate(45deg);
+    }
+  }
   &--title {
     margin-right: auto;
     font-size: 16px;
     line-height: 1.4;
+    font-weight: 500;
   }
   .fas {
     margin: 4.5px 10px 4.5px 0;
@@ -50,6 +66,7 @@
   &--execTime {
     font-size: 16px;
     line-height: 1.4;
+    font-weight: 500;
   }
   .output {
     max-height: 500px;
