@@ -27,12 +27,12 @@ export class BuildEngine {
     vars?: ProjectVar[],
   ): Promise<void> {
     if (project) {
+      project.vars = project.vars.filter((e) => e.key !== 'cwd');
       project.vars.push({
         key: 'cwd',
         value: process.cwd(),
       });
       if (vars) {
-        console.log(vars)
         for (const i in vars) {
           let found = false;
           for (const j in project.vars) {

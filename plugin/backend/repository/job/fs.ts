@@ -30,7 +30,7 @@ export class JobFSRepository implements FSDBRepositoryPrototype<JobFS> {
 
   async findAllLite(): Promise<JobLite[]> {
     const output: JobLite[] = [];
-    await this.repo.find((e) => {
+    this.repo.find((e) => {
       output.push({
         _id: e._id,
         createdAt: e.createdAt,

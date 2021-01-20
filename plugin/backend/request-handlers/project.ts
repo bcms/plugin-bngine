@@ -170,18 +170,19 @@ export class ProjectRequestHandler {
         path.join(process.cwd(), 'bngine-workspace', project.repo.name),
       )) === false
     ) {
-      const job = JobFactory.instance;
-      job.project = project.name;
-      job.repo = {
-        name: project.repo.name,
-        branch: project.repo.branch,
-      };
-      project.run = [];
-      await JobRepo.add(job as Job & JobFS);
-      await BuildEngine.start(job, project).catch((error) => {
-        console.error(error);
-        this.logger.error(`job_${job._id}`, error);
-      });
+      return [];
+      // const job = JobFactory.instance;
+      // job.project = project.name;
+      // job.repo = {
+      //   name: project.repo.name,
+      //   branch: project.repo.branch,
+      // };
+      // project.run = [];
+      // await JobRepo.add(job as Job & JobFS);
+      // await BuildEngine.start(job, project).catch((error) => {
+      //   console.error(error);
+      //   this.logger.error(`job_${job._id}`, error);
+      // });
     }
     try {
       await GeneralUtil.exec(

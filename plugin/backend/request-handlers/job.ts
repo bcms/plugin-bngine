@@ -57,7 +57,8 @@ export class JobRequestHandler {
         }),
       );
     }
-    return await JobRepo.findAllLite();
+    const output = await JobRepo.findAllLite();
+    return output;
   }
 
   public static async getAllLiteByProject(
