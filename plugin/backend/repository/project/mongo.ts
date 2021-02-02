@@ -25,6 +25,7 @@ export class ProjectMongoRepository
   update: (e: Project) => Promise<boolean>;
   deleteById: (id: string) => Promise<boolean>;
   deleteAllById: (ids: string[]) => Promise<number | boolean>;
+  count: () => Promise<number>;
 
   async findByName(name: string): Promise<Project> {
     return await this.repo.findOne({ name });

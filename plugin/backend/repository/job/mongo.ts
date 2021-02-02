@@ -26,6 +26,7 @@ export class JobMongoDBRepository
   update: (e: Job) => Promise<boolean>;
   deleteById: (id: string) => Promise<boolean>;
   deleteAllById: (ids: string[]) => Promise<number | boolean>;
+  count: () => Promise<number>;
 
   private toLite(e: Job): JobLite {
     return {
