@@ -26,6 +26,7 @@
     BngineJobInfo,
     BngineJobPipe,
     BngineJobDetailsModal,
+    BngineOtherProjectModal,
   } from '../components';
   import { EyeShowIcon } from '@becomes/cms-ui/src/components/icons';
 
@@ -306,7 +307,8 @@
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             startJob(stagingProject.name);
-          }}>
+          }}
+        >
           Staging
         </Button>
       {/if}
@@ -317,7 +319,8 @@
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             startJob(productionProject.name);
-          }}>
+          }}
+        >
           Production
         </Button>
       {/if}
@@ -328,9 +331,18 @@
           disabled={runningJob ? true : false || hasRunningJob}
           on:click={() => {
             StoreService.update('BnginePreviewBuildsModal', true);
-          }}>
+          }}
+        >
           Previews
         </Button>
+      {/if}
+      {#if projects.length > 3}
+        <Button
+          kind="ghost"
+          on:click={() => {
+            StoreService.update('BngineOtherProjectsModal', true);
+          }}>Other</Button
+        >
       {/if}
     </div>
     {#if runningJob !== undefined}
@@ -365,7 +377,8 @@
               <div
                 class="bngine--builds-list-number
                   bngine--builds-list-item-col"
-                title="{jobsModified.length - i}.">
+                title="{jobsModified.length - i}."
+              >
                 <span>{jobsModified.length - i}.</span>
               </div>
               <div
@@ -373,42 +386,48 @@
                 bngine--builds-list-status_${job.status.toLowerCase()}
                   bngine--builds-list-item-col`}
                 data-column-name="Status"
-                title={job.status}>
+                title={job.status}
+              >
                 {job.status}
               </div>
               <div
                 class="bngine--builds-list-duration
                   bngine--builds-list-item-col"
                 data-column-name="Duration"
-                title={jobsModified[i].time}>
+                title={jobsModified[i].time}
+              >
                 {jobsModified[i].time}
               </div>
               <div
                 class="bngine--builds-list-branch
                   bngine--builds-list-item-col"
                 data-column-name="Branch"
-                title={job.repo.branch}>
+                title={job.repo.branch}
+              >
                 {job.repo.branch}
               </div>
               <div
                 class="bngine--builds-list-project
                   bngine--builds-list-item-col"
                 data-column-name="Project"
-                title={job.project}>
+                title={job.project}
+              >
                 {job.project}
               </div>
               <div
                 class="bngine--builds-list-date
                   bngine--builds-list-item-col"
                 data-column-name="Date"
-                title={new Date(job.createdAt).toLocaleDateString()}>
+                title={new Date(job.createdAt).toLocaleDateString()}
+              >
                 {new Date(job.createdAt).toLocaleDateString()}
               </div>
               <div
                 class="bngine--builds-list-time
                 bngine--builds-list-item-col"
                 data-column-name="Time"
-                title={new Date(job.createdAt).toLocaleTimeString()}>
+                title={new Date(job.createdAt).toLocaleTimeString()}
+              >
                 {new Date(job.createdAt).toLocaleTimeString()}
               </div>
               <div class="bngine--builds-list-eye bngine--builds-list-item-col">
@@ -416,7 +435,8 @@
                   kind="ghost"
                   on:click={async () => {
                     setJobDetails(job);
-                  }}>
+                  }}
+                >
                   <EyeShowIcon />
                 </Button>
               </div>
@@ -442,7 +462,14 @@
         },
       ],
     });
-  }} />
+  }}
+/>
+<BngineOtherProjectModal
+  projects={projects.slice(3)}
+  on:done={(event) => {
+    startJob(event.detail);
+  }}
+/>
 <BngineJobDetailsModal
   job={jobDetails}
   on:cancel={() => {
@@ -450,4 +477,5 @@
   }}
   on:done={() => {
     jobDetails = undefined;
-  }} />
+  }}
+/>

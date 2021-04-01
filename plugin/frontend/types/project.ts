@@ -25,13 +25,6 @@ export interface Project {
   run: ProjectRunCmd[];
 }
 
-export interface ProjectModified {
-  _id: string;
-  createdAt: number;
-  updatedAt: number;
+export interface ProjectModified extends Project {
   show: boolean;
-  name: string;
-  repo: ProjectRepo;
-  vars: ProjectVar[];
-  run: ProjectRunCmd[];
 }

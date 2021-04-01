@@ -87,10 +87,6 @@
   });
 </script>
 
-<style global lang="scss">
-  @import './styles/main.scss';
-</style>
-
 <ManagerLayout
   label="Bngine"
   on:openItem={(event) => {
@@ -103,15 +99,29 @@
       e.selected = false;
     }
     return e;
-  })}>
+  })}
+>
   {#if selectedView === 'Projects'}
-    <ProjectsView {projects} />
+    <ProjectsView
+      {projects}
+      on:remove={(event) => {
+        projects = projects.filter((e) => e._id !== event.detail);
+      }}
+      on:project={(event) => {
+        projects = [...projects, { ...event.detail, show: false }];
+      }}
+    />
   {:else if selectedView === 'Builds'}
     <BuildsView
       {projects}
       {jobs}
       on:new={(event) => {
         getNewJob(event.detail);
-      }} />
+      }}
+    />
   {/if}
 </ManagerLayout>
+
+<style global lang="scss">
+  @import './styles/main.scss';
+</style>

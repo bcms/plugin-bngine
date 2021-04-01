@@ -129,7 +129,7 @@
       data.name.value = GeneralService.string.toUri(event.detail);
     }} />
   <TextInput
-    class="mt--20"
+    class="mt-20"
     label="Git repository name"
     placeholder="Git repository name"
     invalidText={data.repo.name.error}
@@ -137,7 +137,7 @@
       data.repo.name.value = event.detail;
     }} />
   <TextInput
-    class="mt--20"
+    class="mt-20"
     label="Git repository branch"
     placeholder="Git repository branch"
     invalidText={data.repo.branch.error}
@@ -145,7 +145,7 @@
       data.repo.branch.value = event.detail;
     }} />
   <TextInput
-    class="mt--20"
+    class="mt-20"
     label="Git repository URL"
     helperText="ex. git@github.com:user/repo.git"
     placeholder="Git repository URL"
@@ -154,7 +154,7 @@
       data.repo.url.value = event.detail;
     }} />
   <TextArea
-    class="mt--20"
+    class="mt-20"
     label="Private SSH Key"
     helperText="SSH key which have read access to repo."
     invalidText={data.repo.sshKey.error}

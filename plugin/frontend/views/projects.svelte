@@ -1,10 +1,12 @@
 <script lang="ts">
   import {
     Button,
+    ConfirmService,
     GeneralService,
     NotificationService,
     PasswordInput,
     sdk,
+    StoreService,
     TextArea,
     TextInput,
     ToggleInput,
@@ -15,11 +17,15 @@
     ChevronDownIcon,
     TrashIcon,
   } from '@becomes/cms-ui/src/components/icons';
-  import type { ProjectModified } from '../types';
+  import { createEventDispatcher } from 'svelte';
+  import { BngineAddProjectModal } from '../components';
+  import type { Project, ProjectModified } from '../types';
 
   export let projects: ProjectModified[] = [];
 
+  const dispatch = createEventDispatcher();
   let sshKey: string = '';
+
   async function updateProject(projectIndex: number) {
     const projectToUpdate: ProjectModified & {
       repo: {
@@ -56,6 +62,54 @@
       return e;
     });
     NotificationService.success('Project successfully updated.');
+  }
+  async function addProject(project: {
+    name: string;
+    repo: {
+      branch: string;
+      name: string;
+      url: string;
+      sshKey: string;
+    };
+  }) {
+    await GeneralService.errorWrapper(
+      async () => {
+        return await sdk.send<{ project: Project }>({
+          url: '/plugin/bngine/project',
+          method: 'POST',
+          headers: {
+            Authorization: '',
+          },
+          data: { ...project, vars: [], run: [] },
+        });
+      },
+      async (result) => {
+        dispatch('project', result.project);
+      },
+    );
+  }
+  async function deleteProject(id: string) {
+    if (
+      await ConfirmService.confirm(
+        'Delete project',
+        'Are you sure you want to delete this project?',
+      )
+    ) {
+      await GeneralService.errorWrapper(
+        async () => {
+          await sdk.send({
+            url: `/plugin/bngine/project/${id}`,
+            method: 'DELETE',
+            headers: {
+              Authorization: '',
+            },
+          });
+        },
+        async () => {
+          dispatch('remove', id);
+        },
+      );
+    }
   }
 
   function addVar(projectIndex: number) {
@@ -109,7 +163,8 @@
           <button
             on:click={() => {
               project.show = project.show === true ? false : true;
-            }}>
+            }}
+          >
             <span class="bngine--project-toggle-title">{project.name} </span>
             <ChevronDownIcon class={project.show ? 'show' : ''} />
           </button>
@@ -117,6 +172,15 @@
         {#if project.show}
           <div class="bngine--project-section">
             <h4>General</h4>
+            {#if project.name !== 'production' && project.name !== 'staging' && project.name !== 'preview'}
+              <Button
+                class="delete"
+                kind="ghost"
+                on:click={() => {
+                  deleteProject(project._id);
+                }}>Delete</Button
+              >
+            {/if}
             <div class="vars">
               <div class="var">
                 <TextInput
@@ -126,7 +190,8 @@
                   value={project.name}
                   on:input={(event) => {
                     project.name = event.detail;
-                  }} />
+                  }}
+                />
                 <TextInput
                   class="url ml-10"
                   label="URL"
@@ -134,7 +199,8 @@
                   value={project.repo.url}
                   on:input={(event) => {
                     project.repo.url = event.detail;
-                  }} />
+                  }}
+                />
               </div>
               <div class="var">
                 <TextInput
@@ -144,7 +210,8 @@
                   value={project.repo.name}
                   on:input={(event) => {
                     project.repo.name = event.detail;
-                  }} />
+                  }}
+                />
                 <TextInput
                   class="branch ml-10"
                   label="Repository branch"
@@ -152,14 +219,16 @@
                   value={project.repo.branch}
                   on:input={(event) => {
                     project.repo.branch = event.detail;
-                  }} />
+                  }}
+                />
               </div>
               <TextArea
                 label="SSH key"
                 placeholder="SSH key"
                 on:input={(event) => {
                   sshKey = event.detail;
-                }} />
+                }}
+              />
             </div>
           </div>
           <div class="bngine--project-section">
@@ -172,19 +241,22 @@
                     value={v.key}
                     on:input={(event) => {
                       v.key = event.detail;
-                    }} />
+                    }}
+                  />
                   <span style="margin: auto 10px; font-size: 24px;">=</span>
                   <PasswordInput
                     placeholder="Value"
                     value={v.value}
                     on:input={(event) => {
                       v.value = event.detail;
-                    }} />
+                    }}
+                  />
                   <button
                     class="remove"
                     on:click={() => {
                       removeVar(projectIndex, varIndex);
-                    }}>
+                    }}
+                  >
                     <TrashIcon />
                   </button>
                 </div>
@@ -193,7 +265,8 @@
                 kind="ghost"
                 on:click={() => {
                   addVar(projectIndex);
-                }}>
+                }}
+              >
                 Add variable
               </Button>
             </div>
@@ -211,7 +284,8 @@
                       value={run.title}
                       on:input={(event) => {
                         run.title = event.detail;
-                      }} />
+                      }}
+                    />
                     <div>
                       <ToggleInput
                         class="ignore"
@@ -219,27 +293,31 @@
                         value={run.ignoreIfFail}
                         on:input={(event) => {
                           run.ignoreIfFail = event.detail;
-                        }} />
+                        }}
+                      />
                       <div>
                         <button
                           class="move"
                           on:click={() => {
                             moveCommand(projectIndex, commandIndex, -1);
-                          }}>
+                          }}
+                        >
                           <ArrowUpIcon />
                         </button>
                         <button
                           class="move"
                           on:click={() => {
                             moveCommand(projectIndex, commandIndex, 1);
-                          }}>
+                          }}
+                        >
                           <ArrowDownIcon />
                         </button>
                         <button
                           class="remove"
                           on:click={() => {
                             removeCommand(projectIndex, commandIndex);
-                          }}>
+                          }}
+                        >
                           <TrashIcon />
                         </button>
                       </div>
@@ -252,14 +330,16 @@
                     value={run.command}
                     on:input={(event) => {
                       run.command = event.detail;
-                    }} />
+                    }}
+                  />
                 </div>
               {/each}
               <Button
                 kind="ghost"
                 on:click={() => {
                   addCommand(projectIndex);
-                }}>
+                }}
+              >
                 Add command
               </Button>
             </div>
@@ -268,11 +348,23 @@
             class="bngine--project-update"
             on:click={() => {
               updateProject(projectIndex);
-            }}>
+            }}
+          >
             Update project
           </Button>
         {/if}
       </div>
     {/each}
   {/if}
+  <Button
+    class="mt-20"
+    on:click={() => {
+      StoreService.update('BngineAddProjectModal', true);
+    }}>Add new</Button
+  >
 </div>
+<BngineAddProjectModal
+  on:done={(event) => {
+    addProject(event.detail);
+  }}
+/>

@@ -52,11 +52,16 @@
   }
   &-section {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
     h4 {
       font-size: 24px;
       font-weight: 300;
       color: rgba(var(--grey), 1);
       margin-bottom: 10px;
+    }
+    .delete {
+      margin-left: auto;
     }
     .vars,
     .commands,
