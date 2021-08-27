@@ -11,6 +11,11 @@
     "publish": "node tools.js --publish",
     "build": "node tools.js --build"
   },
+  "peerDependencies": {
+    "@becomes/purple-cheetah": ">=2.0.32",
+    "@becomes/cms-backend": ">=2.0.47",
+    "@becomes/cms-ui": ">=2.0.55"
+  },
   "devDependencies": {
     "@becomes/cms-bundler": "^2.0.8",
     "@becomes/cms-sdk": "^2.0.20",
@@ -23,11 +28,11 @@
     "svelte-check": "^1.6.0",
     "tslib": "^2.2.0",
     "mongoose": "^5.12.12",
-    "@becomes/cms-backend": "^2.0.47",
-    "@becomes/cms-ui": "^2.0.55",
-    "@becomes/purple-cheetah": "^2.0.32",
     "express": "^4.17.1",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "@becomes/purple-cheetah": "^2.0.32",
+    "@becomes/cms-backend": "^2.0.47",
+    "@becomes/cms-ui": "^2.0.55"
   },
   "dependencies": {
     "html-escaper": "^3.0.0",
