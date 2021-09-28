@@ -43,6 +43,8 @@ services:
     build: .
     ports:
       - '1281:1281'
+    logging:
+      driver: none
     volumes:
       - type: bind
         source: ./public

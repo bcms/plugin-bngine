@@ -13,6 +13,7 @@
     "baseUrl": ".",
     "types": ["webpack-env"],
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "importsNotUsedAsValues": "error",
     "paths": {
       "@bcms-components/*": ["node_modules/@becomes/cms-ui/components/*"],
       "@bcms-components": ["node_modules/@becomes/cms-ui/components"],
