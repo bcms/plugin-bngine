@@ -1,41 +1,47 @@
 {
-  "name": "@becomes/cms-plugin-bngine",
-  "version": "1.0.19",
+  "name": "starter",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev:ui": "bcms --dev --plugin --ui",
-    "dev:backend": "bcms --dev --plugin --backend",
-    "plugin:build": "tsc -p tsconfig.backend.json",
-    "bundle": "node tools.js --bundle",
-    "link": "node tools.js --link",
-    "unlink": "node tools.js --unlink",
-    "publish": "node tools.js --publish",
-    "build": "node tools.js --build"
+    "dev:vue": "vue-cli-service serve --host 0.0.0.0 --port 1281",
+    "build:vue": "vue-cli-service build --dest dist/ui",
+    "lint:vue": "vue-cli-service lint",
+    "build:backend": "tsc --project tsconfig.backend.json",
+    "bundle": "bcms --bundle --plugin"
   },
-  "peerDependencies": {
-    "@becomes/purple-cheetah": ">=2.0.32",
-    "@becomes/cms-backend": ">=2.0.47",
-    "@becomes/cms-ui": ">=2.0.55"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@becomes/cms-bundler": "^2.0.8",
-    "@becomes/cms-sdk": "^2.0.20",
-    "@tsconfig/svelte": "^1.0.13",
-    "@types/express": "^4.17.12",
-    "@types/node": "^14.17.1",
-    "@types/uuid": "^8.3.0",
-    "node-sass": "^4.14.1",
-    "svelte": "^3.38.2",
-    "svelte-check": "^1.6.0",
-    "tslib": "^2.2.0",
-    "mongoose": "^5.12.12",
-    "express": "^4.17.1",
-    "typescript": "^4.3.2",
-    "@becomes/purple-cheetah": "^2.0.32",
-    "@becomes/cms-backend": "^2.0.47",
-    "@becomes/cms-ui": "^2.0.55"
+    "@becomes/cms-backend": "file:packs/bcms-backend.tgz",
+    "@becomes/cms-cli": "file:packs/bcms-cli.tgz",
+    "@becomes/cms-sdk": "file:packs/bcms-sdk.tgz",
+    "@becomes/cms-ui": "file:packs/bcms-ui.tgz",
+    "@becomes/purple-cheetah": "^3.1.5",
+    "@types/node": "^15.14.9",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.2.11",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "core-js": "^3.17.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-vue": "^7.17.0",
+    "prettier": "^2.4.0",
+    "sass": "^1.40.0",
+    "sass-loader": "^8.0.2",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.4.3",
+    "vue": "^3.2.11",
+    "vue-router": "^4.0.11",
+    "vuex": "^4.0.2"
   },
-  "dependencies": {
-    "html-escaper": "^3.0.0",
-    "uuid": "^8.3.1"
+  "_moduleAliases": {
+    "@becomes/cms-backend": "@becomes/cms-backend"
   }
 }

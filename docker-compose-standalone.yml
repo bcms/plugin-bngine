@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+  plugin:
+    build: .
+    ports:
+      - '1281:1281'
+    volumes:
+      - type: bind
+        source: ./public
+        target: /app/public
+      - type: bind
+        source: ./src
+        target: /app/src
