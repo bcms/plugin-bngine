@@ -84,7 +84,7 @@ export const ProjectRunCmdMongoDBSchema = new Schema({
   ignoreIfFail: Boolean,
 });
 
-export interface ProjectProps {
+export interface ProjectProps extends FSDBEntity {
   name: string;
   repo: ProjectGitRepo;
   vars: ProjectVar[];
