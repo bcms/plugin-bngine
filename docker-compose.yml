@@ -18,13 +18,16 @@ services:
   backend:
     depends_on:
       - shim
-    image: 'becomes/cms-backend-local:1.0.2'
+    image: 'becomes/cms-backend-local:1.0.3'
     ports:
       - '1280:1280'
     volumes:
       - type: bind
         source: ./bcms.config.js
         target: /app/bcms.config.js
+      - type: bind
+        source: ./shim.json
+        target: /app/shim.json
       - type: bind
         source: ./src/backend
         target: /app/plugins/bcms-plugin---name/backend
