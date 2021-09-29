@@ -30,7 +30,7 @@ interface CreateBody {
 }
 export const ProjectController = createController({
   name: 'Project controller',
-  path: '/bngine/project',
+  path: '/project',
   setup() {
     createProjectRepo();
   },
