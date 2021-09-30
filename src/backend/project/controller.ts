@@ -222,6 +222,29 @@ export const ProjectController = createController({
           return ProjectFactory.toProtected(project);
         },
       }),
+      delete: createControllerMethod<unknown, { status: boolean }>({
+        path: '/:id',
+        type: 'delete',
+        preRequestHandler: createJwtProtectionPreRequestHandler(
+          [JWTRoleName.ADMIN, JWTRoleName.ADMIN],
+          JWTPermissionName.DELETE
+        ),
+        async handler({ request, errorHandler }) {
+          const project = await Repo.project.findById(request.params.id);
+          if (!project) {
+            throw errorHandler.occurred(
+              HTTPStatus.NOT_FOUNT,
+              `Project with ID "${request.params.id}" does not exist.`
+            );
+          }
+          const deleteProject = await Repo.project.deleteById(
+            request.params.id
+          );
+          return {
+            status: deleteProject,
+          };
+        },
+      }),
     };
   },
 });
