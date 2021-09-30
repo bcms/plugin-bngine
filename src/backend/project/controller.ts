@@ -1,6 +1,7 @@
 import {
   createController,
   createControllerMethod,
+  useFS,
 } from '@becomes/purple-cheetah';
 import { createJwtProtectionPreRequestHandler } from '@becomes/purple-cheetah-mod-jwt';
 import {
@@ -242,6 +243,20 @@ export const ProjectController = createController({
           );
           return {
             status: deleteProject,
+          };
+        },
+      }),
+      listofdirectory: createControllerMethod<unknown, { path: string[] }>({
+        path: 'directory/:path',
+        type: 'get',
+        preRequestHandler: createJwtProtectionPreRequestHandler(
+          [JWTRoleName.ADMIN, JWTRoleName.ADMIN],
+          JWTPermissionName.READ
+        ),
+        async handler({ request }) {
+          const directory = await useFS().readdir(request.params.path);
+          return {
+            path: directory,
           };
         },
       }),
