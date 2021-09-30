@@ -1,3 +1,19 @@
+import type { BCMSUserCustomPool } from '@becomes/cms-backend/types';
+import { useObjectUtility } from '@becomes/purple-cheetah';
+import { createJwtProtectionPreRequestHandler } from '@becomes/purple-cheetah-mod-jwt';
+import type {
+  JWT,
+  JWTPermissionName,
+  JWTRoleName,
+} from '@becomes/purple-cheetah-mod-jwt/types';
+import {
+  ControllerMethodPreRequestHandler,
+  HTTPStatus,
+  ObjectSchema,
+  ObjectUtilityError,
+} from '@becomes/purple-cheetah/types';
+import type { BodyCheckerOutput } from '../types';
+
 function createBodyChecker<Body>({
   schema,
 }: {
@@ -16,20 +32,6 @@ function createBodyChecker<Body>({
   };
 }
 
-import { useObjectUtility } from '@becomes/purple-cheetah';
-import { createJwtProtectionPreRequestHandler } from '@becomes/purple-cheetah-mod-jwt';
-import type {
-  JWTPermissionName,
-  JWTRoleName,
-} from '@becomes/purple-cheetah-mod-jwt/types';
-import {
-  ControllerMethodPreRequestHandler,
-  HTTPStatus,
-  ObjectSchema,
-  ObjectUtilityError,
-} from '@becomes/purple-cheetah/types';
-import type { BodyCheckerOutput, JWTProps } from '../types';
-
 export function createBodyCheckerAndJwtChecker<Body>({
   schema,
   permission,
@@ -40,10 +42,10 @@ export function createBodyCheckerAndJwtChecker<Body>({
   permission: JWTPermissionName;
 }): ControllerMethodPreRequestHandler<
   BodyCheckerOutput<Body> & {
-    accessToken: JWTProps;
+    accessToken: JWT<BCMSUserCustomPool>;
   }
 > {
-  const jwtPRH = createJwtProtectionPreRequestHandler<{ email: string }>(
+  const jwtPRH = createJwtProtectionPreRequestHandler<BCMSUserCustomPool>(
     roles,
     permission
   );

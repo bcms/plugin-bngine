@@ -8,7 +8,7 @@ import {
   JWTPermissionName,
   JWTRoleName,
 } from '@becomes/purple-cheetah-mod-jwt/types';
-import { HTTPStatus } from '@becomes/purple-cheetah/types';
+import { FS, HTTPStatus } from '@becomes/purple-cheetah/types';
 import { ProjectFactory } from '.';
 import { Repo } from '../repo';
 import {
@@ -23,6 +23,10 @@ import {
 } from '../types';
 import { createBodyCheckerAndJwtChecker } from '../util';
 import { createProjectRepo } from './repository';
+
+interface Setup {
+  fs: FS;
+}
 interface CreateBody {
   name: string;
   repo: ProjectGitRepo;
@@ -36,13 +40,20 @@ interface UpdateBody {
   vars: ProjectVar[];
   run: ProjectRunCmd[];
 }
-export const ProjectController = createController({
+
+export const ProjectController = createController<Setup>({
   name: 'Project controller',
   path: '/project',
   setup() {
     createProjectRepo();
+
+    return {
+      fs: useFS({
+        base: `${process.cwd()}/_custom/bngine`,
+      }),
+    };
   },
-  methods() {
+  methods({ fs }) {
     return {
       getAll: createControllerMethod<unknown, ProjectProtected[]>({
         path: '/all',
@@ -184,7 +195,7 @@ export const ProjectController = createController({
                 `Project with name "${data.name}" already exist`
               );
             }
-            project.name = data.name; //TODO: What is this?
+            project.name = data.name;
           }
           if (data.repo) {
             if (data.repo.name) {
@@ -212,15 +223,14 @@ export const ProjectController = createController({
             changeDetected = true;
             project.vars = data.vars;
           }
-          if (changeDetected) {
-            const updateProject = await Repo.project.update(project);
-          } else {
+          if (!changeDetected) {
             throw errorHandler.occurred(
               HTTPStatus.INTERNAL_SERVER_ERROR,
               `Nothing has changed in project`
             );
           }
-          return ProjectFactory.toProtected(project);
+          const updatedProject = await Repo.project.update(project);
+          return ProjectFactory.toProtected(updatedProject);
         },
       }),
       delete: createControllerMethod<unknown, { status: boolean }>({
@@ -246,18 +256,46 @@ export const ProjectController = createController({
           };
         },
       }),
-      listofdirectory: createControllerMethod<unknown, { path: string[] }>({
-        path: 'directory/:path',
+      listDirectory: createControllerMethod<unknown, { files: string[] }>({
+        path: 'directory/:id',
         type: 'get',
         preRequestHandler: createJwtProtectionPreRequestHandler(
           [JWTRoleName.ADMIN, JWTRoleName.ADMIN],
           JWTPermissionName.READ
         ),
-        async handler({ request }) {
-          const directory = await useFS().readdir(request.params.path);
-          return {
-            path: directory,
-          };
+        async handler({ request, errorHandler }) {
+          const project = await Repo.project.findById(request.params.id);
+          if (!project) {
+            throw errorHandler.occurred(
+              HTTPStatus.NOT_FOUNT,
+              `Project with ID "${request.params.id}" does not exist.`
+            );
+          }
+          if (!(await fs.exist(project.name))) {
+            return {
+              files: [],
+            };
+          }
+          const files = await fs.readdir(project.name);
+          return { files };
+        },
+      }),
+      getBranches: createControllerMethod<unknown, { branches: string[] }>({
+        path: '/:projectId/branches',
+        type: 'get',
+        preRequestHandler: createJwtProtectionPreRequestHandler(
+          [JWTRoleName.ADMIN, JWTRoleName.ADMIN],
+          JWTPermissionName.READ
+        ),
+        async handler() {
+          // 1. Get project
+          // 2. Proveriti da li postoji projekat u workspace-u
+          // 2.1 Ne postoji workspace - Kreiraj workspace dir (bngine-workspace)
+          // 2.2 Clone github repository to workspace (bngine-workspace/projectID) - git clone {URL} {projectID}
+          // 3. Pull repository - cd bngine-workspace/projectID && git pull
+          // 4. Get repository branches - git branch -a | grep "origin"
+          // 5. Parse process output to string array
+          // 6. Return branches
         },
       }),
     };
