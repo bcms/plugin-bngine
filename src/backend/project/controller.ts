@@ -28,6 +28,13 @@ interface CreateBody {
   vars: ProjectVar[];
   run: ProjectRunCmd[];
 }
+interface UpdateBody {
+  id: string;
+  name: string;
+  repo: ProjectGitRepo;
+  vars: ProjectVar[];
+  run: ProjectRunCmd[];
+}
 export const ProjectController = createController({
   name: 'Project controller',
   path: '/project',
@@ -113,6 +120,106 @@ export const ProjectController = createController({
             run: body.run,
           });
           return ProjectFactory.toProtected(addProject);
+        },
+      }),
+      update: createControllerMethod<
+        BodyCheckerOutput<UpdateBody>,
+        ProjectProtected
+      >({
+        type: 'put',
+        preRequestHandler: createBodyCheckerAndJwtChecker({
+          schema: {
+            id: {
+              __type: 'string',
+              __required: true,
+            },
+            name: {
+              __type: 'string',
+              __required: true,
+            },
+            repo: {
+              __type: 'object',
+              __required: true,
+              __child: ProjectGitRepoFSDBSchema,
+            },
+            vars: {
+              __type: 'array',
+              __required: true,
+              __child: {
+                __type: 'object',
+                __content: ProjectVarFSDBSchema,
+              },
+            },
+            run: {
+              __type: 'array',
+              __required: true,
+              __child: {
+                __type: 'object',
+                __content: ProjectRunCmdFSDBSchema,
+              },
+            },
+          },
+          roles: [JWTRoleName.ADMIN],
+          permission: JWTPermissionName.WRITE,
+        }),
+        async handler({ errorHandler, body }) {
+          const project = await Repo.project.findById(body.id);
+          if (!project) {
+            throw errorHandler.occurred(
+              HTTPStatus.NOT_FOUNT,
+              `Project with ID "${body.id}" does not exist`
+            );
+          }
+          const data = body;
+          let changeDetected = false;
+          if (data.name && project.name !== data.name) {
+            changeDetected = true;
+            const projectWithSameName = await Repo.project.methods.findByName(
+              data.name
+            );
+            if (projectWithSameName) {
+              throw errorHandler.occurred(
+                HTTPStatus.NOT_FOUNT,
+                `Project with name "${data.name}" already exist`
+              );
+            }
+            project.name = data.name; //TODO: What is this?
+          }
+          if (data.repo) {
+            if (data.repo.name) {
+              changeDetected = true;
+              project.repo.name = data.repo.name;
+            }
+            if (data.repo.url) {
+              changeDetected = true;
+              project.repo.url = data.repo.url;
+            }
+            if (data.repo.branch) {
+              changeDetected = true;
+              project.repo.branch = data.repo.branch;
+            }
+            if (data.repo.sshKey) {
+              changeDetected = true;
+              project.repo.sshKey = data.repo.sshKey;
+            }
+          }
+          if (data.run) {
+            changeDetected = true;
+            project.run = data.run;
+          }
+          if (data.vars) {
+            changeDetected = true;
+            project.vars = data.vars;
+          }
+          if (changeDetected) {
+            const updateProject = await Repo.project.update(project);
+          } else {
+            throw errorHandler.occurred(
+              HTTPStatus.INTERNAL_SERVER_ERROR,
+              `Nothing has changed in project`
+            );
+          }
+          return ProjectFactory.toProtected(project);
         },
       }),
     };
