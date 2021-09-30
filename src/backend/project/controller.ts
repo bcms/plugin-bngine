@@ -284,7 +284,7 @@ export const ProjectController = createController<Setup>({
           return { files };
         },
       }),
-      
+
       getBranches: createControllerMethod<unknown, { branches: string[] }>({
         path: '/:projectId/branches',
         type: 'get',
@@ -304,7 +304,6 @@ export const ProjectController = createController<Setup>({
           // 2. Proveriti da li postoji projekat u workspace-u
           // 2.1 Ne postoji workspace - Kreiraj workspace dir (bngine-workspace)
           if (!(await fs.exist(path.join(process.cwd(), 'bngine-workspace')))) {
-            console.log('HERE');
             await util.promisify(fsSystem.mkdir)(
               path.join(process.cwd(), 'bngine-workspace')
             );
@@ -337,12 +336,54 @@ export const ProjectController = createController<Setup>({
             }
           }
           // 3. Pull repository - cd bngine-workspace/projectID && git pull
+          if (
+            await fs.exist(
+              path.join(process.cwd(), 'bngine-workspace', project._id)
+            )
+          ) {
+            try {
+              await System.exec(
+                `cd ${path.join(
+                  process.cwd(),
+                  'bngine-workspace',
+                  project._id
+                )} && git pull`,
+                (type, chunk) => {
+                  process[type].write(chunk);
+                }
+              );
+            } catch (error) {
+              throw errorHandler.occurred(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                (error as Error).message
+              );
+            }
+          }
           // 4. Get repository branches - git branch -a | grep "origin"
+          let data = '';
+          try {
+            const c = await System.exec(
+              `cd ${path.join(
+                process.cwd(),
+                'bngine-workspace',
+                project._id
+              )} && git branch -a | grep origin`,
+              (type, chunk) => {
+                process[type].write(chunk);
+                data += chunk;
+              }
+            );
+          } catch (error) {
+            throw errorHandler.occurred(
+              HTTPStatus.INTERNAL_SERVER_ERROR,
+              (error as Error).message
+            );
+          }
+
           // 5. Parse process output to string array
           // 6. Return branches
-
           return {
-            branches: [],
+            branches: data.split('\n'),
           };
         },
       }),
