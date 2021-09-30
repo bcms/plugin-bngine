@@ -1,3 +1,6 @@
+import * as path from 'path';
+import * as fsSystem from 'fs';
+import * as util from 'util';
 import {
   createController,
   createControllerMethod,
@@ -21,7 +24,7 @@ import {
   ProjectVar,
   ProjectVarFSDBSchema,
 } from '../types';
-import { createBodyCheckerAndJwtChecker } from '../util';
+import { createBodyCheckerAndJwtChecker, System } from '../util';
 import { createProjectRepo } from './repository';
 
 interface Setup {
@@ -48,9 +51,7 @@ export const ProjectController = createController<Setup>({
     createProjectRepo();
 
     return {
-      fs: useFS({
-        base: `${process.cwd()}/_custom/bngine`,
-      }),
+      fs: useFS(),
     };
   },
   methods({ fs }) {
@@ -134,6 +135,7 @@ export const ProjectController = createController<Setup>({
           return ProjectFactory.toProtected(addProject);
         },
       }),
+
       update: createControllerMethod<
         BodyCheckerOutput<UpdateBody>,
         ProjectProtected
@@ -233,6 +235,7 @@ export const ProjectController = createController<Setup>({
           return ProjectFactory.toProtected(updatedProject);
         },
       }),
+
       delete: createControllerMethod<unknown, { status: boolean }>({
         path: '/:id',
         type: 'delete',
@@ -256,6 +259,7 @@ export const ProjectController = createController<Setup>({
           };
         },
       }),
+
       listDirectory: createControllerMethod<unknown, { files: string[] }>({
         path: 'directory/:id',
         type: 'get',
@@ -287,15 +291,58 @@ export const ProjectController = createController<Setup>({
           [JWTRoleName.ADMIN, JWTRoleName.ADMIN],
           JWTPermissionName.READ
         ),
-        async handler() {
+        async handler({ request, errorHandler }) {
           // 1. Get project
+          const project = await Repo.project.findById(request.params.projectId);
+          if (!project) {
+            throw errorHandler.occurred(
+              HTTPStatus.NOT_FOUNT,
+              `Project with ID "${request.params.id}" does not exist.`
+            );
+          }
           // 2. Proveriti da li postoji projekat u workspace-u
           // 2.1 Ne postoji workspace - Kreiraj workspace dir (bngine-workspace)
+          if (!(await fs.exist(path.join(process.cwd(), 'bngine-workspace')))) {
+            console.log('HERE');
+            await util.promisify(fsSystem.mkdir)(
+              path.join(process.cwd(), 'bngine-workspace')
+            );
+          }
+
           // 2.2 Clone github repository to workspace (bngine-workspace/projectID) - git clone {URL} {projectID}
+          if (
+            !(await fs.exist(
+              path.join(process.cwd(), 'bngine-workspace', project._id)
+            ))
+          ) {
+            if (!project.repo.url) {
+              throw errorHandler.occurred(
+                HTTPStatus.FORBIDDEN,
+                `Project "${project._id}" does not have repository URL set.`
+              );
+            }
+            try {
+              await System.exec(
+                `cd bngine-workspace && git clone ${project.repo.url} ${project._id}`,
+                (type, chunk) => {
+                  process[type].write(chunk);
+                }
+              );
+            } catch (error) {
+              throw errorHandler.occurred(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                (error as Error).message
+              );
+            }
+          }
           // 3. Pull repository - cd bngine-workspace/projectID && git pull
           // 4. Get repository branches - git branch -a | grep "origin"
           // 5. Parse process output to string array
           // 6. Return branches
+
+          return {
+            branches: [],
+          };
         },
       }),
     };
