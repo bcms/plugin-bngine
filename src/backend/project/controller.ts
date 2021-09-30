@@ -284,6 +284,7 @@ export const ProjectController = createController<Setup>({
           return { files };
         },
       }),
+      
       getBranches: createControllerMethod<unknown, { branches: string[] }>({
         path: '/:projectId/branches',
         type: 'get',
