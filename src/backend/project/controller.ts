@@ -56,19 +56,23 @@ export const ProjectController = createController<Setup>({
   },
   methods({ fs }) {
     return {
-      getAll: createControllerMethod<unknown, ProjectProtected[]>({
-        path: '/all',
-        type: 'get',
-        preRequestHandler: createJwtProtectionPreRequestHandler(
-          [JWTRoleName.ADMIN, JWTRoleName.USER],
-          JWTPermissionName.READ
-        ),
-        async handler() {
-          const projects = await Repo.project.findAll();
-          return projects.map((e) => ProjectFactory.toProtected(e));
-        },
-      }),
-      getOne: createControllerMethod<unknown, ProjectProtected>({
+      getAll: createControllerMethod<unknown, { projects: ProjectProtected[] }>(
+        {
+          path: '/all',
+          type: 'get',
+          preRequestHandler: createJwtProtectionPreRequestHandler(
+            [JWTRoleName.ADMIN, JWTRoleName.USER],
+            JWTPermissionName.READ
+          ),
+          async handler() {
+            const projects = await Repo.project.findAll();
+            return {
+              projects: projects.map((e) => ProjectFactory.toProtected(e)),
+            };
+          },
+        }
+      ),
+      getOne: createControllerMethod<unknown, { project: ProjectProtected }>({
         path: '/:id',
         type: 'get',
         preRequestHandler: createJwtProtectionPreRequestHandler(
@@ -83,12 +87,12 @@ export const ProjectController = createController<Setup>({
               `Project with ID "${request.params.id}" does not exist.`
             );
           }
-          return ProjectFactory.toProtected(project);
+          return { project: ProjectFactory.toProtected(project) };
         },
       }),
       create: createControllerMethod<
         BodyCheckerOutput<CreateBody>,
-        ProjectProtected
+        { project: ProjectProtected }
       >({
         type: 'post',
         preRequestHandler: createBodyCheckerAndJwtChecker<CreateBody>({
@@ -132,13 +136,13 @@ export const ProjectController = createController<Setup>({
             vars: body.vars,
             run: body.run,
           });
-          return ProjectFactory.toProtected(addProject);
+          return { project: ProjectFactory.toProtected(addProject) };
         },
       }),
 
       update: createControllerMethod<
         BodyCheckerOutput<UpdateBody>,
-        ProjectProtected
+        { project: ProjectProtected }
       >({
         type: 'put',
         preRequestHandler: createBodyCheckerAndJwtChecker({
@@ -232,7 +236,7 @@ export const ProjectController = createController<Setup>({
             );
           }
           const updatedProject = await Repo.project.update(project);
-          return ProjectFactory.toProtected(updatedProject);
+          return { project: ProjectFactory.toProtected(updatedProject) };
         },
       }),
 
