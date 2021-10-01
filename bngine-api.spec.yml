@@ -66,7 +66,136 @@ paths:
                 properties:
                   project:
                     $ref: '#/components/schemas/Project'
-      
+    put:
+      tags:
+        - Project
+      summary: Update project
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          aplication/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                repo:
+                  $ref: '#/components/schemas/ProjectGitRepo'
+                vars:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectVar'
+                run:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectRunCmd'
+      responses:
+        200:
+          description: OK
+          content:
+            aplication/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+  /project/{id}:
+    get:
+      tags:
+        - Project
+      summary: Get one project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            aplication/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+    delete:
+      tags:
+        - Project
+      summary: Delete project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            aplication/json:
+              schema:
+                type: boolean
+
+  /directory/{id}:
+    get:
+      tags:
+        - Project
+      summary: Get directory of project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /{projectid}/branches:
+    get:
+      tags:
+        - Project
+      summary: Get all branches of project
+      parameters:
+        - in: path
+          name: projectid
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
 components:
   schemas:
     ProjectGitRepo:
