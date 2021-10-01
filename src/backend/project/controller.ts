@@ -334,32 +334,28 @@ export const ProjectController = createController<Setup>({
               );
             }
           }
-          if (
-            await fs.exist(
-              path.join(process.cwd(), 'bngine-workspace', project._id)
-            )
-          ) {
-            try {
-              await System.exec(
-                `cd ${path.join(
-                  process.cwd(),
-                  'bngine-workspace',
-                  project._id
-                )} && git pull`,
-                (type, chunk) => {
-                  process[type].write(chunk);
-                }
-              );
-            } catch (error) {
-              throw errorHandler.occurred(
-                HTTPStatus.INTERNAL_SERVER_ERROR,
-                (error as Error).message
-              );
-            }
+
+          try {
+            await System.exec(
+              `cd ${path.join(
+                process.cwd(),
+                'bngine-workspace',
+                project._id
+              )} && git pull`,
+              (type, chunk) => {
+                process[type].write(chunk);
+              }
+            );
+          } catch (error) {
+            throw errorHandler.occurred(
+              HTTPStatus.INTERNAL_SERVER_ERROR,
+              (error as Error).message
+            );
           }
+
           let data = '';
           try {
-            const c = await System.exec(
+            await System.exec(
               `cd ${path.join(
                 process.cwd(),
                 'bngine-workspace',
