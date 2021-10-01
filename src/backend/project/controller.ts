@@ -293,7 +293,6 @@ export const ProjectController = createController<Setup>({
           JWTPermissionName.READ
         ),
         async handler({ request, errorHandler }) {
-          // 1. Get project
           const project = await Repo.project.findById(request.params.projectId);
           if (!project) {
             throw errorHandler.occurred(
@@ -301,15 +300,11 @@ export const ProjectController = createController<Setup>({
               `Project with ID "${request.params.id}" does not exist.`
             );
           }
-          // 2. Proveriti da li postoji projekat u workspace-u
-          // 2.1 Ne postoji workspace - Kreiraj workspace dir (bngine-workspace)
           if (!(await fs.exist(path.join(process.cwd(), 'bngine-workspace')))) {
             await util.promisify(fsSystem.mkdir)(
               path.join(process.cwd(), 'bngine-workspace')
             );
           }
-
-          // 2.2 Clone github repository to workspace (bngine-workspace/projectID) - git clone {URL} {projectID}
           if (
             !(await fs.exist(
               path.join(process.cwd(), 'bngine-workspace', project._id)
@@ -335,7 +330,6 @@ export const ProjectController = createController<Setup>({
               );
             }
           }
-          // 3. Pull repository - cd bngine-workspace/projectID && git pull
           if (
             await fs.exist(
               path.join(process.cwd(), 'bngine-workspace', project._id)
@@ -359,7 +353,6 @@ export const ProjectController = createController<Setup>({
               );
             }
           }
-          // 4. Get repository branches - git branch -a | grep "origin"
           let data = '';
           try {
             const c = await System.exec(
@@ -384,8 +377,6 @@ export const ProjectController = createController<Setup>({
             .replace(/  /g, '')
             .split('\n')
             .filter((e) => e !== '' && !e.includes('HEAD'));
-          // 5. Parse process output to string array
-          // 6. Return branches
           return {
             branches: branches,
           };
