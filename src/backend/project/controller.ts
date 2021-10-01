@@ -383,7 +383,7 @@ export const ProjectController = createController<Setup>({
             .replace(/remotes\/origin\//g, '')
             .replace(/  /g, '')
             .split('\n')
-            .filter((e) => e !== '');
+            .filter((e) => e !== '' && !e.includes('HEAD'));
           // 5. Parse process output to string array
           // 6. Return branches
           return {
