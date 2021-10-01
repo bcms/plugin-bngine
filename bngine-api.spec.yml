@@ -11,10 +11,10 @@ servers:
   - url: 'http://localhost:@PORT/api/plugin/@PLUGIN_NAME'
     description: 'Localhost'
 paths:
-  '/project/all':
+  /project/all:
     get:
       tags:
-        - Auth
+        - Project
       summary: Get all projects
       security:
         - AccessToken: []
@@ -30,6 +30,43 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Project'
+  /project:
+    post:
+      tags:
+        - Project
+      summary: Create a new project
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                repo:
+                  $ref: '#/components/schemas/ProjectGitRepo'
+                vars:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectVar'
+                run:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectRunCmd'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+      
 components:
   schemas:
     ProjectGitRepo:
@@ -41,7 +78,7 @@ components:
           type: string
         sshKey:
           type: string
-        branches:
+        branch:
           type: string
     ProjectVar:
       type: object
