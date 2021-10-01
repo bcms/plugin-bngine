@@ -379,11 +379,15 @@ export const ProjectController = createController<Setup>({
               (error as Error).message
             );
           }
-
+          const branches = data
+            .replace(/remotes\/origin\//g, '')
+            .replace(/  /g, '')
+            .split('\n')
+            .filter((e) => e !== '');
           // 5. Parse process output to string array
           // 6. Return branches
           return {
-            branches: data.split('\n'),
+            branches: branches,
           };
         },
       }),
