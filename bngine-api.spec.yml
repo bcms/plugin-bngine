@@ -1,0 +1,86 @@
+openapi: '3.0.0'
+info:
+  version: '2.0.0'
+  title: 'BCMS Plugin Build Engine - REST API'
+  description: 'This is Swagger documentation for the BCMS Plugin Build Engine REST API. It is recommended to use provided tools (like @becomes/cms-client) for communication with CMS but if you need to implement some custom solution this documentation will help you.'
+  contact:
+    name: 'Becomes'
+    url: 'https://thebcms.com/contact'
+    email: 'dev@thebcms.com'
+servers:
+  - url: 'http://localhost:@PORT/api/plugin/@PLUGIN_NAME'
+    description: 'Localhost'
+paths:
+  '/project/all':
+    get:
+      tags:
+        - Auth
+      summary: Get all projects
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+components:
+  schemas:
+    ProjectGitRepo:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        sshKey:
+          type: string
+        branches:
+          type: string
+    ProjectVar:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    ProjectRunCmd:
+      type: object
+      properties:
+        title:
+          type: string
+        command:
+          type: string
+        ignoreIfFail:
+          type: boolean
+    Project:
+      type: object
+      properties:
+        _id:
+          type: string
+        createAt:
+          type: number
+        updatedAt:
+          type: number
+        name:
+          type: string
+        repo:
+          $ref: '#/components/schemas/ProjectGitRepo'
+        vars:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectVar'
+        run:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectRunCmd'
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
