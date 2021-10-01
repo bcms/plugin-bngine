@@ -75,7 +75,7 @@ paths:
       requestBody:
         required: true
         content:
-          aplication/json:
+          application/json:
             schema:
               type: object
               properties:
@@ -97,7 +97,7 @@ paths:
         200:
           description: OK
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: object
                 properties:
@@ -121,7 +121,7 @@ paths:
         '200':
           description: OK
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: object
                 properties:
@@ -144,7 +144,7 @@ paths:
         '200':
           description: OK
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: boolean
 
@@ -166,7 +166,7 @@ paths:
         '200':
           description: OK
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -190,7 +190,7 @@ paths:
         '200':
           description: OK
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
