@@ -24,7 +24,7 @@ import {
   ProjectVar,
   ProjectVarFSDBSchema,
 } from '../types';
-import { createBodyCheckerAndJwtChecker, System } from '../util';
+import { createBodyCheckerAndJwtChecker, ProjectHelper, System } from '../util';
 import { createProjectRepo } from './repository';
 
 interface Setup {
@@ -47,8 +47,14 @@ interface UpdateBody {
 export const ProjectController = createController<Setup>({
   name: 'Project controller',
   path: '/project',
-  setup() {
+  async setup() {
     createProjectRepo();
+
+    // TODO: Loop over all project and check if FS is setup.
+    for (let i = 0; i < projects.length; i++) {
+      const project = projects[i];
+      ProjectHelper.setupProjectFS(project);
+    }
 
     return {
       fs: useFS(),
@@ -136,6 +142,18 @@ export const ProjectController = createController<Setup>({
             vars: body.vars,
             run: body.run,
           });
+          // TODO: 1. Check if /bngine-workspace/{project_id} exists - If not, create dir
+          // TODO: 2. Check if SSH key is present in a Project.
+          // TODO: 2.1 If it is present, save it to file /bngine-workspace/{project_id}/.ssh/key
+          //            After that, change file mode to 600 (chmod 600 /bngine-workspace/{project_id}/.ssh/key)
+          // TODO: 2.2 If not, skip
+          // TODO: 3. Check if /bngine-workspace/{project_id}/git exists
+          // TODO: 3.1 If it does exist, skip
+          // TODO: 3.2 If it does not exist:
+          // TODO: 3.2.1 SSH Key is available - Check if URL is SSH compatible.
+          //              If it is clone repo with SSH key
+          //              (git clone URL --config ssh.coreCommand="ssh -i /app/bngine-workspace/{project_id}/.ssh/key")
+          // TODO: 3.2.2 SSH Key is not available - Clone normally (git clone {URL})
           return { project: ProjectFactory.toProtected(addProject) };
         },
       }),
@@ -304,41 +322,54 @@ export const ProjectController = createController<Setup>({
               `Project with ID "${request.params.id}" does not exist.`
             );
           }
-          if (!(await fs.exist(path.join(process.cwd(), 'bngine-workspace')))) {
-            await util.promisify(fsSystem.mkdir)(
-              path.join(process.cwd(), 'bngine-workspace')
-            );
-          }
-          if (
-            !(await fs.exist(
-              path.join(process.cwd(), 'bngine-workspace', project._id)
-            ))
-          ) {
-            if (!project.repo.url) {
-              throw errorHandler.occurred(
-                HTTPStatus.FORBIDDEN,
-                `Project "${project._id}" does not have repository URL set.`
-              );
-            }
-            try {
-              await System.exec(
-                `cd bngine-workspace && git clone ${project.repo.url} ${project._id}`,
-                (type, chunk) => {
-                  process[type].write(chunk);
-                }
-              );
-            } catch (error) {
-              throw errorHandler.occurred(
-                HTTPStatus.INTERNAL_SERVER_ERROR,
-                (error as Error).message
-              );
-            }
-          }
+          // if (!(await fs.exist(path.join(process.cwd(), 'bngine-workspace')))) {
+          //   await util.promisify(fsSystem.mkdir)(
+          //     path.join(process.cwd(), 'bngine-workspace')
+          //   );
+          // }
+          // // TODO: 1. Check if /bngine-workspace/{project_id} exists - If not, create dir
+          // // TODO: 2. Check if SSH key is present in a Project.
+          // // TODO: 2.1 If it is present, save it to file /bngine-workspace/{project_id}/.ssh/key
+          // //            After that, change file mode to 600 (chmod 600 /bngine-workspace/{project_id}/.ssh/key)
+          // // TODO: 2.2 If not, skip
+          // // TODO: 3. Check if /bngine-workspace/{project_id}/git exists
+          // // TODO: 3.1 If it does exist, skip
+          // // TODO: 3.2 If it does not exist:
+          // // TODO: 3.2.1 SSH Key is available - Check if URL is SSH compatible.
+          // //              If it is clone repo with SSH key
+          // //              (git clone URL --config ssh.coreCommand="ssh -i /app/bngine-workspace/{project_id}/.ssh/key")
+          // // TODO: 3.2.2 SSH Key is not available - Clone normally (git clone {URL})
+          // if (
+          //   !(await fs.exist(
+          //     path.join(process.cwd(), 'bngine-workspace', project._id)
+          //   ))
+          // ) {
+          //   if (!project.repo.url) {
+          //     throw errorHandler.occurred(
+          //       HTTPStatus.FORBIDDEN,
+          //       `Project "${project._id}" does not have repository URL set.`
+          //     );
+          //   }
+          //   try {
+          //     await System.exec(
+          //       `cd bngine-workspace/${project._id} && git clone ${project.repo.url} ${project._id}`,
+          //       (type, chunk) => {
+          //         process[type].write(chunk);
+          //       }
+          //     );
+          //   } catch (error) {
+          //     throw errorHandler.occurred(
+          //       HTTPStatus.INTERNAL_SERVER_ERROR,
+          //       (error as Error).message
+          //     );
+          //   }
+          // }
 
           try {
             await System.exec(
               `cd ${path.join(
                 process.cwd(),
+                // TODO: Check path
                 'bngine-workspace',
                 project._id
               )} && git pull`,
@@ -374,7 +405,7 @@ export const ProjectController = createController<Setup>({
           }
           const branches = data
             .replace(/remotes\/origin\//g, '')
-            .replace(/  /g, '')
+            .replace(/ {2}/g, '')
             .split('\n')
             .filter((e) => e !== '' && !e.includes('HEAD'));
           return {
