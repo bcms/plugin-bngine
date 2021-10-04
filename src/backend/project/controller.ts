@@ -1,6 +1,4 @@
 import * as path from 'path';
-import * as fsSystem from 'fs';
-import * as util from 'util';
 import {
   createController,
   createControllerMethod,
@@ -49,11 +47,10 @@ export const ProjectController = createController<Setup>({
   path: '/project',
   async setup() {
     createProjectRepo();
-    // TODO: Loop over all project and check if FS is setup.
     const projects = await Repo.project.findAll();
     for (let i = 0; i < projects.length; i++) {
       const project = projects[i];
-      ProjectHelper.setupProjectFS(project);
+      await ProjectHelper.setupProjectFS(project);
     }
 
     return {
@@ -142,19 +139,7 @@ export const ProjectController = createController<Setup>({
             vars: body.vars,
             run: body.run,
           });
-          ProjectHelper.setupProjectFS(addProject);
-          // TODO: 1. Check if /bngine-workspace/{project_id} exists - If not, create dir
-          // TODO: 2. Check if SSH key is present in a Project.
-          // TODO: 2.1 If it is present, save it to file /bngine-workspace/{project_id}/.ssh/key
-          //            After that, change file mode to 600 (chmod 600 /bngine-workspace/{project_id}/.ssh/key)
-          // TODO: 2.2 If not, skip
-          // TODO: 3. Check if /bngine-workspace/{project_id}/git exists
-          // TODO: 3.1 If it does exist, skip
-          // TODO: 3.2 If it does not exist:
-          // TODO: 3.2.1 SSH Key is available - Check if URL is SSH compatible.
-          //              If it is clone repo with SSH key
-          //              (git clone URL --config ssh.coreCommand="ssh -i /app/bngine-workspace/{project_id}/.ssh/key")
-          // TODO: 3.2.2 SSH Key is not available - Clone normally (git clone {URL})
+          await ProjectHelper.setupProjectFS(addProject);
           return { project: ProjectFactory.toProtected(addProject) };
         },
       }),
@@ -209,6 +194,8 @@ export const ProjectController = createController<Setup>({
           }
           const data = body;
           let changeDetected = false;
+          let sshKeyChanged = false;
+          let repoUrlChanged = false;
           if (data.name && project.name !== data.name) {
             changeDetected = true;
             const projectWithSameName = await Repo.project.methods.findByName(
@@ -223,20 +210,22 @@ export const ProjectController = createController<Setup>({
             project.name = data.name;
           }
           if (data.repo) {
-            if (data.repo.name) {
+            if (data.repo.name && data.repo.name !== project.repo.name) {
               changeDetected = true;
               project.repo.name = data.repo.name;
             }
-            if (data.repo.url) {
+            if (data.repo.url && data.repo.url !== project.repo.url) {
               changeDetected = true;
+              repoUrlChanged = true;
               project.repo.url = data.repo.url;
             }
-            if (data.repo.branch) {
+            if (data.repo.branch && data.repo.branch !== project.repo.branch) {
               changeDetected = true;
               project.repo.branch = data.repo.branch;
             }
-            if (data.repo.sshKey) {
+            if (data.repo.sshKey && data.repo.sshKey !== project.repo.sshKey) {
               changeDetected = true;
+              sshKeyChanged = true;
               project.repo.sshKey = data.repo.sshKey;
             }
           }
@@ -254,6 +243,26 @@ export const ProjectController = createController<Setup>({
               `Nothing has changed in project`
             );
           }
+
+          if (sshKeyChanged) {
+            await fs.save(
+              path.join(
+                process.cwd(),
+                'bngine-workspace',
+                project._id,
+                '.ssh',
+                'key'
+              ),
+              project.repo.sshKey
+            );
+          }
+          if (repoUrlChanged) {
+            await fs.deleteDir(
+              path.join(process.cwd(), 'bngine-workspace', project._id, 'git')
+            );
+            await ProjectHelper.cloneRepo(project);
+          }
+
           const updatedProject = await Repo.project.update(project);
           return { project: ProjectFactory.toProtected(updatedProject) };
         },
@@ -323,55 +332,11 @@ export const ProjectController = createController<Setup>({
               `Project with ID "${request.params.id}" does not exist.`
             );
           }
-          // if (!(await fs.exist(path.join(process.cwd(), 'bngine-workspace')))) {
-          //   await util.promisify(fsSystem.mkdir)(
-          //     path.join(process.cwd(), 'bngine-workspace')
-          //   );
-          // }
-          // ProjectHelper.setupProjectFS(project);
-          // // TODO: 1. Check if /bngine-workspace/{project_id} exists - If not, create dir
-          // // TODO: 2. Check if SSH key is present in a Project.
-          // // TODO: 2.1 If it is present, save it to file /bngine-workspace/{project_id}/.ssh/key
-          // //            After that, change file mode to 600 (chmod 600 /bngine-workspace/{project_id}/.ssh/key)
-          // // TODO: 2.2 If not, skip
-          // // TODO: 3. Check if /bngine-workspace/{project_id}/git exists
-          // // TODO: 3.1 If it does exist, skip
-          // // TODO: 3.2 If it does not exist:
-          // // TODO: 3.2.1 SSH Key is available - Check if URL is SSH compatible.
-          // //              If it is clone repo with SSH key
-          // //              (git clone URL --config ssh.coreCommand="ssh -i /app/bngine-workspace/{project_id}/.ssh/key")
-          // // TODO: 3.2.2 SSH Key is not available - Clone normally (git clone {URL})
-          // if (
-          //   !(await fs.exist(
-          //     path.join(process.cwd(), 'bngine-workspace', project._id)
-          //   ))
-          // ) {
-          //   if (!project.repo.url) {
-          //     throw errorHandler.occurred(
-          //       HTTPStatus.FORBIDDEN,
-          //       `Project "${project._id}" does not have repository URL set.`
-          //     );
-          //   }
-          //   try {
-          //     await System.exec(
-          //       `cd bngine-workspace/${project._id} && git clone ${project.repo.url} ${project._id}`,
-          //       (type, chunk) => {
-          //         process[type].write(chunk);
-          //       }
-          //     );
-          //   } catch (error) {
-          //     throw errorHandler.occurred(
-          //       HTTPStatus.INTERNAL_SERVER_ERROR,
-          //       (error as Error).message
-          //     );
-          //   }
-          // }
-                // TODO: Check path
           try {
             await System.exec(
-              `cd 
-
-              bngine-workspace/${project._id}/git && git pull`,
+              [`cd bngine-workspace/${project._id}/git`, '&&', `git pull`].join(
+                ' '
+              ),
               (type, chunk) => {
                 process[type].write(chunk);
               }
@@ -386,7 +351,11 @@ export const ProjectController = createController<Setup>({
           let data = '';
           try {
             await System.exec(
-              `cd bngine-workspace/${project._id}/git && git branch -a | grep origin`,
+              [
+                `cd bngine-workspace/${project._id}/git`,
+                '&&',
+                `git branch -a | grep origin`,
+              ].join(' '),
               (type, chunk) => {
                 process[type].write(chunk);
                 data += chunk;
@@ -404,13 +373,10 @@ export const ProjectController = createController<Setup>({
             .split('\n')
             .filter((e) => e !== '' && !e.includes('HEAD'));
           return {
-            branches: branches,
+            branches,
           };
         },
       }),
     };
   },
 });
-function setupProjectFS() {
-  throw new Error('Function not implemented.');
-}
