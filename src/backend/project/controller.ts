@@ -49,8 +49,8 @@ export const ProjectController = createController<Setup>({
   path: '/project',
   async setup() {
     createProjectRepo();
-
     // TODO: Loop over all project and check if FS is setup.
+    const projects = await Repo.project.findAll();
     for (let i = 0; i < projects.length; i++) {
       const project = projects[i];
       ProjectHelper.setupProjectFS(project);
@@ -142,6 +142,7 @@ export const ProjectController = createController<Setup>({
             vars: body.vars,
             run: body.run,
           });
+          ProjectHelper.setupProjectFS(addProject);
           // TODO: 1. Check if /bngine-workspace/{project_id} exists - If not, create dir
           // TODO: 2. Check if SSH key is present in a Project.
           // TODO: 2.1 If it is present, save it to file /bngine-workspace/{project_id}/.ssh/key
@@ -327,6 +328,7 @@ export const ProjectController = createController<Setup>({
           //     path.join(process.cwd(), 'bngine-workspace')
           //   );
           // }
+          // ProjectHelper.setupProjectFS(project);
           // // TODO: 1. Check if /bngine-workspace/{project_id} exists - If not, create dir
           // // TODO: 2. Check if SSH key is present in a Project.
           // // TODO: 2.1 If it is present, save it to file /bngine-workspace/{project_id}/.ssh/key
@@ -364,15 +366,12 @@ export const ProjectController = createController<Setup>({
           //     );
           //   }
           // }
-
+                // TODO: Check path
           try {
             await System.exec(
-              `cd ${path.join(
-                process.cwd(),
-                // TODO: Check path
-                'bngine-workspace',
-                project._id
-              )} && git pull`,
+              `cd 
+
+              bngine-workspace/${project._id}/git && git pull`,
               (type, chunk) => {
                 process[type].write(chunk);
               }
@@ -387,11 +386,7 @@ export const ProjectController = createController<Setup>({
           let data = '';
           try {
             await System.exec(
-              `cd ${path.join(
-                process.cwd(),
-                'bngine-workspace',
-                project._id
-              )} && git branch -a | grep origin`,
+              `cd bngine-workspace/${project._id}/git && git branch -a | grep origin`,
               (type, chunk) => {
                 process[type].write(chunk);
                 data += chunk;
@@ -416,3 +411,6 @@ export const ProjectController = createController<Setup>({
     };
   },
 });
+function setupProjectFS() {
+  throw new Error('Function not implemented.');
+}
