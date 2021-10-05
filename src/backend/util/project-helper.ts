@@ -9,9 +9,11 @@ export class ProjectHelper {
   static async setupProjectFS(project: Project): Promise<void> {
     const fs = useFS();
     if (
-      !fs.exist(path.join(process.cwd(), `bngine-workspace/${project._id}`))
+      !(await fs.exist(
+        path.join(process.cwd(), `bngine-workspace/${project._id}`)
+      ))
     ) {
-      util.promisify(fsSystem.mkdir)(
+      await util.promisify(fsSystem.mkdir)(
         path.join(process.cwd(), `bngine-workspace/${project._id}`)
       );
     }
@@ -29,9 +31,11 @@ export class ProjectHelper {
       await System.exec(`chmod 600 bngine-workspace/${project._id}/.ssh/key`);
     }
     if (
-      !fs.exist(path.join(process.cwd(), `bngine-workspace/${project._id}/git`))
+      !(await fs.exist(
+        path.join(process.cwd(), `bngine-workspace/${project._id}/git`)
+      ))
     ) {
-      this.cloneRepo(project);
+      await this.cloneRepo(project);
     }
   }
   static async cloneRepo(project: Project): Promise<void> {
