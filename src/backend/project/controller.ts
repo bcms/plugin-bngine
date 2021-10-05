@@ -3,6 +3,7 @@ import {
   createController,
   createControllerMethod,
   useFS,
+  useLogger,
 } from '@becomes/purple-cheetah';
 import { createJwtProtectionPreRequestHandler } from '@becomes/purple-cheetah-mod-jwt';
 import {
@@ -45,12 +46,25 @@ interface UpdateBody {
 export const ProjectController = createController<Setup>({
   name: 'Project controller',
   path: '/project',
-  async setup() {
+  async setup({ controllerName }) {
+    const logger = useLogger({ name: controllerName });
     createProjectRepo();
     const projects = await Repo.project.findAll();
     for (let i = 0; i < projects.length; i++) {
       const project = projects[i];
-      await ProjectHelper.setupProjectFS(project);
+      try {
+        await ProjectHelper.setupProjectFS(project);
+      } catch (error) {
+        const err = error as Error;
+        // Do nothing
+        logger.warn('setup', {
+          project: `${project._id}`,
+          error: {
+            message: err.message,
+            stack: err.stack ? err.stack.split('\n') : [],
+          },
+        });
+      }
     }
 
     return {
@@ -129,17 +143,34 @@ export const ProjectController = createController<Setup>({
           roles: [JWTRoleName.ADMIN, JWTRoleName.USER],
           permission: JWTPermissionName.WRITE,
         }),
-        async handler({ body }) {
-          const addProject = await Repo.project.add({
-            _id: '',
-            createdAt: 0,
-            updatedAt: 0,
+        async handler({ body, errorHandler, logger }) {
+          const project = ProjectFactory.instance({
             name: body.name,
             repo: body.repo,
             vars: body.vars,
             run: body.run,
           });
-          await ProjectHelper.setupProjectFS(addProject);
+          if (
+            !project.repo.url.startsWith('http') &&
+            !project.repo.url.startsWith('git@')
+          ) {
+            throw errorHandler.occurred(
+              HTTPStatus.BAD_REQUEST,
+              `Invalid repository URL. Example: https://github.com/USER/REPO or git@github.com:USER/REPO`
+            );
+          }
+          const addProject = await Repo.project.add(project);
+          try {
+            await ProjectHelper.setupProjectFS(addProject);
+          } catch (error) {
+            const err = error as Error;
+            logger.warn('create', err);
+            await Repo.project.deleteById(`${addProject._id}`);
+            throw errorHandler.occurred(
+              HTTPStatus.INTERNAL_SERVER_ERROR,
+              err.message
+            );
+          }
           return { project: ProjectFactory.toProtected(addProject) };
         },
       }),

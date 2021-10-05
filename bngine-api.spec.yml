@@ -150,7 +150,7 @@ paths:
               schema:
                 type: boolean
 
-  /directory/{id}:
+  /project/directory/{id}:
     get:
       tags:
         - Project
@@ -174,14 +174,14 @@ paths:
                 items:
                   type: string
 
-  /{projectid}/branches:
+  /project/{projectId}/branches:
     get:
       tags:
         - Project
       summary: Get all branches of project
       parameters:
         - in: path
-          name: projectid
+          name: projectId
           schema:
             type: string
           required: true

@@ -8,6 +8,9 @@ import { System } from '.';
 export class ProjectHelper {
   static async setupProjectFS(project: Project): Promise<void> {
     const fs = useFS();
+    if (!(await fs.exist(path.join(process.cwd(), `bngine-workspace`)))) {
+      await fs.mkdir('bngine-workspace');
+    }
     if (
       !(await fs.exist(
         path.join(process.cwd(), `bngine-workspace/${project._id}`)
@@ -17,12 +20,12 @@ export class ProjectHelper {
         path.join(process.cwd(), `bngine-workspace/${project._id}`)
       );
     }
-    if (!project.repo.sshKey) {
+    if (project.repo.sshKey) {
       await fs.save(
         path.join(
           process.cwd(),
           'bngine-workspace',
-          project._id,
+          `${project._id}`,
           '.ssh',
           'key'
         ),
@@ -47,7 +50,7 @@ export class ProjectHelper {
           [
             `cd bngine-workspace/${project._id}`,
             '&&',
-            `git clone ${project.repo.url}`,
+            `git clone ${project.repo.url} git`,
             `--config core.sshCommand="ssh -i /app/bngine-workspace/${project._id}/.ssh/key" `,
           ].join(' ')
         );
@@ -57,7 +60,7 @@ export class ProjectHelper {
         [
           `cd bngine-workspace/${project._id}`,
           '&&',
-          `git clone ${project.repo.url}`,
+          `git clone ${project.repo.url} git`,
         ].join(' ')
       );
     }

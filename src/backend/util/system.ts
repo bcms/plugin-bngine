@@ -23,7 +23,7 @@ export class System {
       }
       proc.on('close', (code) => {
         if (code !== 0) {
-          reject(err);
+          reject(Error(err));
         } else {
           resolve();
         }
