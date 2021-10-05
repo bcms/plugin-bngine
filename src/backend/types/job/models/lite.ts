@@ -3,7 +3,7 @@ import type { JobStatus } from '.';
 
 export interface JobLite extends FSDBEntity {
   status: JobStatus;
-  createAt: number;
+  createdAt: number;
   finishedAt: number;
   repo: {
     branch: string;

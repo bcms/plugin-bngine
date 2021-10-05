@@ -5,6 +5,7 @@ export class JobFactory {
   static instance(data: {
     finishedAt?: number;
     inQueueFor?: number;
+    userId?: string;
     repo?: {
       name: string;
       branch: string;
@@ -18,6 +19,7 @@ export class JobFactory {
       _id: new Types.ObjectId() as never,
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      userId: `${data.userId}`,
       finishedAt: data.finishedAt || -1,
       inQueueFor: data.inQueueFor || -1,
       pipe: data.pipe || [],
@@ -34,6 +36,17 @@ export class JobFactory {
   }
 
   static toLite(job: Job): JobLite {
-    // TODO: Map
+    return {
+      _id: `${job._id}`,
+      status: job.status,
+      updatedAt: job.updatedAt,
+      createdAt: job.createdAt,
+      finishedAt: job.finishedAt,
+      repo: {
+        branch: job.repo.branch,
+      },
+      project: job.project,
+      userId: `${job.userId}`,
+    };
   }
 }
