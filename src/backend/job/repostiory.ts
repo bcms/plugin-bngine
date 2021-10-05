@@ -1,13 +1,10 @@
 import { BCMSConfig } from '@becomes/cms-backend/src/config';
 import { createFSDBRepository } from '@becomes/purple-cheetah-mod-fsdb';
 import { createMongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb';
-import { JobFactory } from '.';
 import { Repo } from '../repo';
 import {
-  Job,
   JobFSDB,
   JobFSDBSchema,
-  JobLite,
   JobMongoDB,
   JobMongoDBSchema,
   JobRepoMethods,
@@ -24,59 +21,20 @@ export function createJobRepo(): void {
         methods({ repo }) {
           return {
             async findAllByLimitAndOffset(limit, offset) {
-              const data: { limit: number; offset: number } = {
-                limit: parseInt((limit as unknown) as string),
-                offset: parseInt((offset as unknown) as string),
-              };
-              if (isNaN(data.limit) || data.limit < 0 || data.limit > 20) {
-                data.limit = 20;
-              }
-              if (isNaN(data.offset) || data.offset < 0) {
-                data.offset = 0;
-              }
-              const jobs = await repo.findAll();
-              return jobs;
-              //  jobs = jobs.slice(
-              //   data.offset * data.limit,
-              //   data.offset * data.limit + data.limit,
-              // ),
-              // offset: data.offset,
-              // limit: data.limit,
-              // pages: parseInt(`${jobs.length / data.limit}`),
+              return (await repo.findAll()).slice(
+                limit * offset,
+                limit + limit * offset
+              );
             },
             async findAllByProjectIdAndLimitAndOffset(
+              projectId,
               limit,
-              offset,
-              projectId
+              offset
             ) {
-              const data: {
-                limit: number;
-                offset: number;
-                projectId: string;
-              } = {
-                limit: parseInt((limit as unknown) as string),
-                offset: parseInt((offset as unknown) as string),
-                projectId: `${projectId}`,
-              };
-              if (isNaN(data.limit) || data.limit < 0 || data.limit > 20) {
-                data.limit = 20;
-              }
-              if (isNaN(data.offset) || data.offset < 0) {
-                data.offset = 0;
-              }
-              const jobs = await repo.findAllBy(
-                (e) => e.project === data.projectId
+              return (await repo.findAllBy((e) => e._id === projectId)).slice(
+                limit * offset,
+                limit + limit * offset
               );
-              //   return {
-              //     jobs: jobs.slice(
-              //      data.offset * data.limit,
-              //      data.offset * data.limit + data.limit,
-              //    ),
-              //    offset: data.offset,
-              //    limit: data.limit,
-              //    pages: parseInt(`${jobs.length / data.limit}`),
-              //  };
-              return jobs;
             },
           };
         },
@@ -90,65 +48,49 @@ export function createJobRepo(): void {
         collection,
         schema: JobMongoDBSchema,
         methods({ mongoDBInterface, cacheHandler }) {
+          const limitOffsetLatch: {
+            [key: string]: boolean;
+          } = {};
           return {
             async findAllByLimitAndOffset(limit, offset) {
-              const data: { limit: number; offset: number } = {
-                limit: parseInt((limit as unknown) as string),
-                offset: parseInt((offset as unknown) as string),
-              };
-              if (isNaN(data.limit) || data.limit < 0 || data.limit > 20) {
-                data.limit = 20;
+              const latchKey = `${limit}${offset}`;
+              if (limitOffsetLatch[latchKey]) {
+                return cacheHandler
+                  .findAll()
+                  .slice(offset * limit, offset * limit + limit);
               }
-              if (isNaN(data.offset) || data.offset < 0) {
-                data.offset = 0;
+              const items = await mongoDBInterface
+                .find()
+                .limit(limit)
+                .skip(offset * limit);
+              for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                cacheHandler.set(`${item._id}`, item);
               }
-
-              const jobs = await mongoDBInterface.find();
-
-              return jobs;
-              //   return {
-              //     jobs: jobs.slice(
-              //      data.offset * data.limit,
-              //      data.offset * data.limit + data.limit,
-              //    ),
-              //    offset: data.offset,
-              //    limit: data.limit,
-              //    pages: parseInt(`${jobs.length / data.limit}`),
-              //  };
+              limitOffsetLatch[latchKey] = true;
+              return items;
             },
             async findAllByProjectIdAndLimitAndOffset(
+              projectId,
               limit,
-              offset,
-              projectId
+              offset
             ) {
-              const data: {
-                limit: number;
-                offset: number;
-                projectId: string;
-              } = {
-                limit: parseInt((limit as unknown) as string),
-                offset: parseInt((offset as unknown) as string),
-                projectId: `${projectId}`,
-              };
-              if (isNaN(data.limit) || data.limit < 0 || data.limit > 20) {
-                data.limit = 20;
+              const latchKey = `${projectId}${limit}${offset}`;
+              if (limitOffsetLatch[latchKey]) {
+                return cacheHandler
+                  .find((e) => `${e._id}` === projectId)
+                  .slice(offset * limit, offset * limit + limit);
               }
-              if (isNaN(data.offset) || data.offset < 0) {
-                data.offset = 0;
+              const items = await mongoDBInterface
+                .find({ _id: projectId })
+                .limit(limit)
+                .skip(offset * limit);
+              for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                cacheHandler.set(`${item._id}`, item);
               }
-              const jobs = await mongoDBInterface.findOne(
-                (e: Job) => e.project === data.projectId
-              );
-              //   return {
-              //     jobs: jobs.slice(
-              //      data.offset * data.limit,
-              //      data.offset * data.limit + data.limit,
-              //    ),
-              //    offset: data.offset,
-              //    limit: data.limit,
-              //    pages: parseInt(`${jobs.length / data.limit}`),
-              //  };
-              return jobs;
+              limitOffsetLatch[latchKey] = true;
+              return items;
             },
           };
         },
