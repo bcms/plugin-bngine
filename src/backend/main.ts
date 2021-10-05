@@ -3,8 +3,9 @@ import { BCMSConfig } from '@becomes/cms-backend/config';
 import { ProjectController } from './project';
 import { SwaggerController, SwaggerMiddleware } from './swagger';
 import type { Controller, Middleware } from '@becomes/purple-cheetah/types';
+import { JobController } from './job/controller';
 
-const controllers: Controller[] = [ProjectController];
+const controllers: Controller[] = [ProjectController, JobController];
 const middleware: Middleware[] = [];
 
 if (BCMSConfig.local) {
