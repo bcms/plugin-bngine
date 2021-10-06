@@ -54,7 +54,9 @@ export const JobController = createController({
             jobs: jobs.map((e) => JobFactory.toLite(e)),
             limit,
             offset,
-            nextUri: `/job/all?limit=${limit}&offset=${offset + 1}`,
+            nextUri: `/job/all?limit=${limit}&offset=${offset + 1}${
+              projectId ? `&projectId=${projectId}` : ''
+            }`,
           };
         },
       }),
