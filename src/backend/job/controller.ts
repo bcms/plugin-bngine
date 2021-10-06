@@ -8,7 +8,7 @@ import {
   JWTRoleName,
 } from '@becomes/purple-cheetah-mod-jwt/types';
 import { HTTPStatus } from '@becomes/purple-cheetah/types';
-import { JobFactory } from '.';
+import { createJobRepo, JobFactory } from '.';
 import { createBngine } from '../bngine';
 import { Repo } from '../repo';
 import {
@@ -36,6 +36,7 @@ export const JobController = createController<Setup>({
   name: 'Job controller',
   path: '/job',
   async setup() {
+    createJobRepo()
     return {
       bngine: await createBngine(),
     };

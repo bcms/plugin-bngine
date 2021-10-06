@@ -19,7 +19,7 @@ export const JobPipeFSDBSchema: ObjectSchema = {
     __type: 'string',
     __required: true,
   },
-  createAt: {
+  createdAt: {
     __type: 'number',
     __required: true,
   },

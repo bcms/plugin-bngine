@@ -1,4 +1,4 @@
-import { BCMSConfig } from '@becomes/cms-backend/src/config';
+import { BCMSConfig } from '@becomes/cms-backend/config';
 import { createFSDBRepository } from '@becomes/purple-cheetah-mod-fsdb';
 import { createMongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb';
 import { Repo } from '../repo';
@@ -31,7 +31,7 @@ export function createJobRepo(): void {
               limit,
               offset
             ) {
-              return (await repo.findAllBy((e) => e._id === projectId)).slice(
+              return (await repo.findAllBy((e) => e.project === projectId)).slice(
                 limit * offset,
                 limit + limit * offset
               );
@@ -78,11 +78,12 @@ export function createJobRepo(): void {
               const latchKey = `${projectId}${limit}${offset}`;
               if (limitOffsetLatch[latchKey]) {
                 return cacheHandler
-                  .find((e) => `${e._id}` === projectId)
+                  .find((e) => `${e.project}` === projectId)
                   .slice(offset * limit, offset * limit + limit);
               }
+              // TODO: Change _id to project in method find
               const items = await mongoDBInterface
-                .find({ _id: projectId })
+                .find({ project: projectId })
                 .limit(limit)
                 .skip(offset * limit);
               for (let i = 0; i < items.length; i++) {

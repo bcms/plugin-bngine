@@ -1,3 +1,4 @@
+import { BCMSConfig } from '@becomes/cms-backend/config';
 import { Types } from 'mongoose';
 import { Job, JobLite, JobPipe, JobStatus } from '../types';
 
@@ -31,7 +32,10 @@ export class JobFactory {
       running: false,
       status: JobStatus.QUEUE,
     };
-
+    
+    if (BCMSConfig.database.fs) {
+      output._id = `${output._id}`;
+    }
     return output;
   }
 
