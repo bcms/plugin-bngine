@@ -65,4 +65,13 @@ export class ProjectHelper {
       );
     }
   }
+
+  static async pullRepo(project: Project): Promise<void> {
+    await System.exec(
+      [`cd bngine-workspace/${project._id}/git`, '&&', `git pull`].join(' '),
+      (type, chunk) => {
+        process[type].write(chunk);
+      }
+    );
+  }
 }

@@ -8,7 +8,7 @@
     "lint:vue": "vue-cli-service lint",
     "build:backend": "tsc --project tsconfig.backend.json",
     "bundle": "bcms --bundle --plugin",
-    "t": "ts-node --project tsconfig.backend.json src/backend/test-queue.ts"
+    "test": "ts-node --project tsconfig.backend.json src/backend/test.ts"
   },
   "dependencies": {
     "@types/swagger-ui-express": "^4.1.3",

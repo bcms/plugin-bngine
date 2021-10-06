@@ -364,14 +364,7 @@ export const ProjectController = createController<Setup>({
             );
           }
           try {
-            await System.exec(
-              [`cd bngine-workspace/${project._id}/git`, '&&', `git pull`].join(
-                ' '
-              ),
-              (type, chunk) => {
-                process[type].write(chunk);
-              }
-            );
+            await ProjectHelper.pullRepo(project);
           } catch (error) {
             throw errorHandler.occurred(
               HTTPStatus.INTERNAL_SERVER_ERROR,

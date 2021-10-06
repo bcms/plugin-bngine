@@ -9,19 +9,38 @@ import {
 } from '@becomes/purple-cheetah-mod-jwt/types';
 import { HTTPStatus } from '@becomes/purple-cheetah/types';
 import { JobFactory } from '.';
+import { createBngine } from '../bngine';
 import { Repo } from '../repo';
-import type { BodyCheckerOutput, Job, JobCross, JobLite } from '../types';
+import {
+  Bngine,
+  BodyCheckerOutput,
+  Job,
+  JobCross,
+  JobLite,
+  ProjectVar,
+  ProjectVarFSDBSchema,
+} from '../types';
 import { createBodyCheckerAndJwtChecker } from '../util';
+
+interface Setup {
+  bngine: Bngine;
+}
 
 interface StartAJobData {
   projectId: string;
   branch?: string;
+  vars?: ProjectVar[];
 }
 
-export const JobController = createController({
+export const JobController = createController<Setup>({
   name: 'Job controller',
   path: '/job',
-  methods() {
+  async setup() {
+    return {
+      bngine: await createBngine(),
+    };
+  },
+  methods({ bngine }) {
     return {
       getAllLite: createControllerMethod<
         unknown,
@@ -102,6 +121,11 @@ export const JobController = createController({
               __type: 'string',
               __required: false,
             },
+            vars: {
+              __type: 'array',
+              __required: false,
+              __child: ProjectVarFSDBSchema,
+            },
           },
           roles: [JWTRoleName.ADMIN, JWTRoleName.USER],
           permission: JWTPermissionName.EXECUTE,
@@ -125,15 +149,7 @@ export const JobController = createController({
             },
           });
           const addedJob = await Repo.job.add(job as JobCross);
-          // TODO: Add job to queue
-          const queue = createQueue({ name: 'Pera' });
-          const queueItem = queue({
-            name: 'Lol',
-            handler: () => {
-              console.log('Test');
-            },
-          });
-          await queueItem.wait
+          bngine.start(job, project, body.vars);
           return {
             job: addedJob,
           };

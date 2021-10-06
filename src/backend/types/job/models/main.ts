@@ -16,6 +16,7 @@ export enum JobStatus {
   FAIL = 'FAIL',
   RUNNING = 'RUNNING',
   QUEUE = 'QUEUE',
+  CANCELED = 'CANCELED',
 }
 
 export interface JobProps {

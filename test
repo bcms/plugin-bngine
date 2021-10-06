@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "START"
+sleep 2
+echo "START 2"
+sleep 2
+echo "START 3"
+sleep 2
+echo "START 4"
+sleep 2
+echo "START 5"
+sleep 2
+echo "START 6"

@@ -9,8 +9,8 @@ export interface JobPipe {
   title: string;
   cmd: string;
   ignoreIfFail: boolean;
-  out: string;
-  err: string;
+  stdout: string;
+  stderr: string;
   status: JobStatus;
 }
 
@@ -39,11 +39,11 @@ export const JobPipeFSDBSchema: ObjectSchema = {
     __type: 'boolean',
     __required: true,
   },
-  out: {
+  stdout: {
     __type: 'string',
     __required: true,
   },
-  err: {
+  stderr: {
     __type: 'string',
     __required: true,
   },
@@ -60,7 +60,7 @@ export const JobPipeMongoDBSchema = new Schema({
   title: String,
   cmd: String,
   ignoreIfFail: Boolean,
-  out: String,
-  err: String,
+  stdout: String,
+  stderr: String,
   status: String,
 });
