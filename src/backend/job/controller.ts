@@ -22,7 +22,7 @@ import {
   ProjectVar,
   ProjectVarFSDBSchema,
 } from '../types';
-import { createBodyCheckerAndJwtChecker } from '../util';
+import { createBodyCheckerAndJwtChecker, IDUtil } from '../util';
 import type { BCMSUserCustomPool } from '@becomes/cms-backend/types';
 
 interface Setup {
@@ -39,9 +39,45 @@ export const JobController = createController<Setup>({
   name: 'Job controller',
   path: '/job',
   async setup() {
+    const bngine = await createBngine();
     createJobRepo();
+    const runningJobs = await Repo.job.methods.findAllByStatus(
+      JobStatus.RUNNING
+    );
+    const queueJobs = await Repo.job.methods.findAllByStatus(JobStatus.QUEUE);
+
+    runningJobs.sort((a, b) => b.createdAt - a.createdAt);
+    queueJobs.sort((a, b) => b.createdAt - a.createdAt);
+    const jobs = [...runningJobs, ...queueJobs];
+
+    for (let i = 0; i < jobs.length; i++) {
+      const job = jobs[i];
+      const project = await Repo.project.findById(job.project);
+      if (!project) {
+        job.status = JobStatus.FAIL;
+        job.pipe = [
+          {
+            cmd: 'unknown',
+            createdAt: Date.now(),
+            id: IDUtil.create(),
+            ignoreIfFail: false,
+            status: JobStatus.SUCCESS,
+            stderr: `Project with ID "${job.project}" does not exist and job cannot be started because of that.`,
+            stdout: '',
+            timeToExec: 0,
+            title: 'Failed to get project',
+          },
+        ];
+        await Repo.job.update(job as JobCross);
+      } else {
+        job.pipe = [];
+        job.status = JobStatus.QUEUE;
+        const updatedJob = await Repo.job.update(job as JobCross);
+        bngine.start(updatedJob, project);
+      }
+    }
     return {
-      bngine: await createBngine(),
+      bngine,
     };
   },
   methods({ bngine }) {
@@ -109,9 +145,10 @@ export const JobController = createController<Setup>({
         },
       }),
 
-      startAJob: createControllerMethod<BodyCheckerOutput<StartAJobData> & {
-        accessToken: JWT<BCMSUserCustomPool>;
-      },
+      startAJob: createControllerMethod<
+        BodyCheckerOutput<StartAJobData> & {
+          accessToken: JWT<BCMSUserCustomPool>;
+        },
         { job: Job }
       >({
         path: '/start',
@@ -148,6 +185,9 @@ export const JobController = createController<Setup>({
           }
           const job = JobFactory.instance({
             project: body.projectId,
+            status:
+              project.run.length > 0 ? JobStatus.QUEUE : JobStatus.SUCCESS,
+            userId: accessToken.payload.userId,
             repo: {
               branch:
                 typeof body.branch === 'string'
@@ -156,15 +196,10 @@ export const JobController = createController<Setup>({
               name: project.repo.name,
             },
           });
-        job.userId = accessToken.payload.userId
-          let addedJob;
+          const addedJob = await Repo.job.add(job as JobCross);
+
           if (project.run.length > 0) {
-            addedJob = await Repo.job.add(job as JobCross);
             bngine.start(job, project, body.vars);
-          } else {
-            
-            job.status = JobStatus.SUCCESS;
-            addedJob = await Repo.job.add(job as JobCross);
           }
           return {
             job: addedJob,

@@ -9,8 +9,8 @@ export interface JobPipe {
   title: string;
   cmd: string;
   ignoreIfFail: boolean;
-  stdout: string;
-  stderr: string;
+  stdout: string; // --> pointer to file (ex. bcms_storage/bngine/2021-09-07/{PIPE_ID}_out)
+  stderr: string; // --> pointer to file (ex. bcms_storage/bngine/2021-09-07/{PIPE_ID}_err)
   status: JobStatus;
 }
 

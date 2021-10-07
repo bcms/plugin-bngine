@@ -22,6 +22,7 @@ import {
   ProjectRunCmdFSDBSchema,
   ProjectVar,
   ProjectVarFSDBSchema,
+  ProjectCross,
 } from '../types';
 import { createBodyCheckerAndJwtChecker, ProjectHelper, System } from '../util';
 import { createProjectRepo } from './repository';
@@ -159,7 +160,7 @@ export const ProjectController = createController<Setup>({
               `Invalid repository URL. Example: https://github.com/USER/REPO or git@github.com:USER/REPO`
             );
           }
-          const addProject = await Repo.project.add(project);
+          const addProject = await Repo.project.add(project as ProjectCross);
           try {
             await ProjectHelper.setupProjectFS(addProject);
           } catch (error) {
@@ -280,7 +281,7 @@ export const ProjectController = createController<Setup>({
               path.join(
                 process.cwd(),
                 'bngine-workspace',
-                project._id,
+                `${project._id}`,
                 '.ssh',
                 'key'
               ),
@@ -289,12 +290,19 @@ export const ProjectController = createController<Setup>({
           }
           if (repoUrlChanged) {
             await fs.deleteDir(
-              path.join(process.cwd(), 'bngine-workspace', project._id, 'git')
+              path.join(
+                process.cwd(),
+                'bngine-workspace',
+                `${project._id}`,
+                'git'
+              )
             );
             await ProjectHelper.cloneRepo(project);
           }
 
-          const updatedProject = await Repo.project.update(project);
+          const updatedProject = await Repo.project.update(
+            project as ProjectCross
+          );
           return { project: ProjectFactory.toProtected(updatedProject) };
         },
       }),

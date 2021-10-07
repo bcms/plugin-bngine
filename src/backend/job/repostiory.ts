@@ -31,10 +31,12 @@ export function createJobRepo(): void {
               limit,
               offset
             ) {
-              return (await repo.findAllBy((e) => e.project === projectId)).slice(
-                limit * offset,
-                limit + limit * offset
-              );
+              return (
+                await repo.findAllBy((e) => e.project === projectId)
+              ).slice(limit * offset, limit + limit * offset);
+            },
+            async findAllByStatus(status) {
+              return await repo.findAllBy((e) => e.status === status);
             },
           };
         },
@@ -49,6 +51,9 @@ export function createJobRepo(): void {
         schema: JobMongoDBSchema,
         methods({ mongoDBInterface, cacheHandler }) {
           const limitOffsetLatch: {
+            [key: string]: boolean;
+          } = {};
+          const statusLatch: {
             [key: string]: boolean;
           } = {};
           return {
@@ -91,6 +96,17 @@ export function createJobRepo(): void {
                 cacheHandler.set(`${item._id}`, item);
               }
               limitOffsetLatch[latchKey] = true;
+              return items;
+            },
+            async findAllByStatus(status) {
+              if (statusLatch[status]) {
+                return cacheHandler.find((e) => e.status === status);
+              }
+              const items = await mongoDBInterface.find({ status });
+              for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                cacheHandler.set(`${item._id}`, item);
+              }
               return items;
             },
           };
