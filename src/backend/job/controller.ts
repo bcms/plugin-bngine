@@ -4,6 +4,7 @@ import {
 } from '@becomes/purple-cheetah';
 import { createJwtProtectionPreRequestHandler } from '@becomes/purple-cheetah-mod-jwt';
 import {
+  JWT,
   JWTPermissionName,
   JWTRoleName,
 } from '@becomes/purple-cheetah-mod-jwt/types';
@@ -22,6 +23,7 @@ import {
   ProjectVarFSDBSchema,
 } from '../types';
 import { createBodyCheckerAndJwtChecker } from '../util';
+import type { BCMSUserCustomPool } from '@becomes/cms-backend/types';
 
 interface Setup {
   bngine: Bngine;
@@ -107,8 +109,9 @@ export const JobController = createController<Setup>({
         },
       }),
 
-      startAJob: createControllerMethod<
-        BodyCheckerOutput<StartAJobData>,
+      startAJob: createControllerMethod<BodyCheckerOutput<StartAJobData> & {
+        accessToken: JWT<BCMSUserCustomPool>;
+      },
         { job: Job }
       >({
         path: '/start',
@@ -135,7 +138,7 @@ export const JobController = createController<Setup>({
           roles: [JWTRoleName.ADMIN, JWTRoleName.USER],
           permission: JWTPermissionName.EXECUTE,
         }),
-        async handler({ body, errorHandler }) {
+        async handler({ body, errorHandler, accessToken }) {
           const project = await Repo.project.findById(body.projectId);
           if (!project) {
             throw errorHandler.occurred(
@@ -153,11 +156,15 @@ export const JobController = createController<Setup>({
               name: project.repo.name,
             },
           });
-          const addedJob = await Repo.job.add(job as JobCross);
+        job.userId = accessToken.payload.userId
+          let addedJob;
           if (project.run.length > 0) {
+            addedJob = await Repo.job.add(job as JobCross);
             bngine.start(job, project, body.vars);
           } else {
+            
             job.status = JobStatus.SUCCESS;
+            addedJob = await Repo.job.add(job as JobCross);
           }
           return {
             job: addedJob,
