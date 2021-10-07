@@ -17,6 +17,7 @@ import {
   Job,
   JobCross,
   JobLite,
+  JobStatus,
   ProjectVar,
   ProjectVarFSDBSchema,
 } from '../types';
@@ -36,7 +37,7 @@ export const JobController = createController<Setup>({
   name: 'Job controller',
   path: '/job',
   async setup() {
-    createJobRepo()
+    createJobRepo();
     return {
       bngine: await createBngine(),
     };
@@ -125,7 +126,10 @@ export const JobController = createController<Setup>({
             vars: {
               __type: 'array',
               __required: false,
-              __child: ProjectVarFSDBSchema,
+              __child: {
+                __type: 'object',
+                __content: ProjectVarFSDBSchema,
+              },
             },
           },
           roles: [JWTRoleName.ADMIN, JWTRoleName.USER],
@@ -150,7 +154,11 @@ export const JobController = createController<Setup>({
             },
           });
           const addedJob = await Repo.job.add(job as JobCross);
-          bngine.start(job, project, body.vars);
+          if (project.run.length > 0) {
+            bngine.start(job, project, body.vars);
+          } else {
+            job.status = JobStatus.SUCCESS;
+          }
           return {
             job: addedJob,
           };
