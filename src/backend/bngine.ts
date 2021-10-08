@@ -3,28 +3,31 @@ import * as path from 'path';
 import { Repo } from './repo';
 import { Bngine, Job, JobCross, JobPipe, JobStatus, Project } from './types';
 import { createQueue, IDUtil, System } from './util';
+import * as fsSystem from 'fs';
+import * as util from 'util';
 
 export async function createBngine(): Promise<Bngine> {
-  const date = new Date().toLocaleDateString('en-CA');
   const queue = createQueue({ name: 'Bngine' });
+  const fs = useFS();
   async function logPipe(
     pipe_id: string,
     type: 'stdout' | 'stderr',
     chunk: string
   ): Promise<void> {
-    const fs = useFS();
-
-    if (!(await fs.exist(path.join(process.cwd(), `storage/bngine/${date}`)))) {
-      await fs.mkdir(path.join(process.cwd(), `storage/bngine/${date}`));
-    }
     if (type === 'stdout') {
-      await fs.save(
-        path.join(process.cwd(), `storage/bngine/${date}/${pipe_id}_out`),
+      await util.promisify(fsSystem.appendFile)(
+        path.join(
+          process.cwd(),
+          `storage/bngine/${arguments[0]}/${pipe_id}_out`
+        ),
         chunk
       );
     } else {
-      await fs.save(
-        path.join(process.cwd(), `storage/bngine/${date}/${pipe_id}_err`),
+      await util.promisify(fsSystem.appendFile)(
+        path.join(
+          process.cwd(),
+          `storage/bngine/${arguments[0]}/${pipe_id}_err`
+        ),
         chunk
       );
     }
@@ -69,9 +72,8 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-      (pipe.stderr = `storage/bngine/${date}/${pipe.id}_err`),
-        (pipe.stdout = `storage/bngine/${date}/${pipe.id}_out`),
-        await runPipe(job, project, pipe);
+
+      await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -96,9 +98,8 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-      (pipe.stderr = `storage/bngine/${date}/${pipe.id}_err`),
-        (pipe.stdout = `storage/bngine/${date}/${pipe.id}_out`),
-        await runPipe(job, project, pipe);
+
+      await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -113,6 +114,12 @@ export async function createBngine(): Promise<Bngine> {
         key: 'cwd',
         value: process.cwd(),
       });
+      const date = new Date();
+      const dateString = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
+      arguments[0] = dateString;
+      if (!fs.exist(path.join(process.cwd(), `storage/bngine/${dateString}`))) {
+        fs.mkdir(path.join(process.cwd(), `storage/bngine/${dateString}`));
+      }
 
       // Add custom variable to project
       if (vars) {
@@ -172,9 +179,10 @@ export async function createBngine(): Promise<Bngine> {
                   status: JobStatus.RUNNING,
                   timeToExec: -1,
                 };
-                (pipe.stderr = `storage/bngine/${date}/${pipe.id}_err`),
-                  (pipe.stdout = `storage/bngine/${date}/${pipe.id}_out`),
+                (pipe.stderr = `storage/bngine/${dateString}/${pipe.id}_err`),
+                  (pipe.stdout = `storage/bngine/${dateString}/${pipe.id}_out`),
                   await runPipe(internalJob, project, pipe);
+
                 if (
                   pipe.status === JobStatus.FAIL &&
                   pipe.ignoreIfFail === false
