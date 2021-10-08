@@ -1,10 +1,34 @@
+import { useFS } from '@becomes/purple-cheetah';
 import * as path from 'path';
 import { Repo } from './repo';
 import { Bngine, Job, JobCross, JobPipe, JobStatus, Project } from './types';
 import { createQueue, IDUtil, System } from './util';
 
 export async function createBngine(): Promise<Bngine> {
+  const date = new Date().toLocaleDateString('en-CA');
   const queue = createQueue({ name: 'Bngine' });
+  async function logPipe(
+    pipe_id: string,
+    type: 'stdout' | 'stderr',
+    chunk: string
+  ): Promise<void> {
+    const fs = useFS();
+
+    if (!(await fs.exist(path.join(process.cwd(), `storage/bngine/${date}`)))) {
+      await fs.mkdir(path.join(process.cwd(), `storage/bngine/${date}`));
+    }
+    if (type === 'stdout') {
+      await fs.save(
+        path.join(process.cwd(), `storage/bngine/${date}/${pipe_id}_out`),
+        chunk
+      );
+    } else {
+      await fs.save(
+        path.join(process.cwd(), `storage/bngine/${date}/${pipe_id}_err`),
+        chunk
+      );
+    }
+  }
 
   async function runPipe(
     job: Job,
@@ -14,7 +38,7 @@ export async function createBngine(): Promise<Bngine> {
     // TODO: Inform clients that new pipe was created
     try {
       await System.exec(pipe.cmd, (type, chunk) => {
-        pipe[type] += chunk;
+        logPipe(pipe.id, type, chunk);
         // TODO: Trigger pipe socket event update
       });
       pipe.status = JobStatus.SUCCESS;
@@ -38,14 +62,16 @@ export async function createBngine(): Promise<Bngine> {
           'git'
         )} && \
         git checkout ${project.repo.branch}`,
-        createdAt: Date.now(),
         stderr: '',
         stdout: '',
+        createdAt: Date.now(),
         ignoreIfFail: true,
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-      await runPipe(job, project, pipe);
+      (pipe.stderr = `storage/bngine/${date}/${pipe.id}_err`),
+        (pipe.stdout = `storage/bngine/${date}/${pipe.id}_out`),
+        await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -70,7 +96,9 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-      await runPipe(job, project, pipe);
+      (pipe.stderr = `storage/bngine/${date}/${pipe.id}_err`),
+        (pipe.stdout = `storage/bngine/${date}/${pipe.id}_out`),
+        await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -144,7 +172,9 @@ export async function createBngine(): Promise<Bngine> {
                   status: JobStatus.RUNNING,
                   timeToExec: -1,
                 };
-                await runPipe(internalJob, project, pipe);
+                (pipe.stderr = `storage/bngine/${date}/${pipe.id}_err`),
+                  (pipe.stdout = `storage/bngine/${date}/${pipe.id}_out`),
+                  await runPipe(internalJob, project, pipe);
                 if (
                   pipe.status === JobStatus.FAIL &&
                   pipe.ignoreIfFail === false
