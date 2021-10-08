@@ -3,56 +3,38 @@ import * as path from 'path';
 import { Repo } from './repo';
 import { Bngine, Job, JobCross, JobPipe, JobStatus, Project } from './types';
 import { createQueue, IDUtil, System } from './util';
-import * as fsSystem from 'fs';
-import * as util from 'util';
 
 export async function createBngine(): Promise<Bngine> {
   const queue = createQueue({ name: 'Bngine' });
   const fs = useFS();
-  async function logPipe(
-    pipe_id: string,
-    type: 'stdout' | 'stderr',
-    chunk: string
-  ): Promise<void> {
-    if (type === 'stdout') {
-      await util.promisify(fsSystem.appendFile)(
-        path.join(
-          process.cwd(),
-          `storage/bngine/${arguments[0]}/${pipe_id}_out`
-        ),
-        chunk
-      );
-    } else {
-      await util.promisify(fsSystem.appendFile)(
-        path.join(
-          process.cwd(),
-          `storage/bngine/${arguments[0]}/${pipe_id}_err`
-        ),
-        chunk
-      );
-    }
-  }
 
   async function runPipe(
     job: Job,
     _project: Project,
-    pipe: JobPipe
+    pipe: JobPipe,
+    logsBasePath: string
   ): Promise<void> {
     // TODO: Inform clients that new pipe was created
+    const exo = {
+      stdout: '',
+      stderr: '',
+    };
     try {
       await System.exec(pipe.cmd, (type, chunk) => {
-        logPipe(pipe.id, type, chunk);
+        exo[type] = chunk;
         // TODO: Trigger pipe socket event update
       });
       pipe.status = JobStatus.SUCCESS;
     } catch (error) {
       pipe.status = JobStatus.FAIL;
     }
+    await fs.save(`${logsBasePath}/${pipe.id}_out`, exo.stdout);
+    await fs.save(`${logsBasePath}/${pipe.id}_err`, exo.stderr);
     pipe.timeToExec = Date.now() - pipe.createdAt;
     const pipeIndex = job.pipe.push(pipe) - 1;
     // TODO: Trigger socket for new completed pipe in job
   }
-  async function initRepo(job: Job, project: Project) {
+  async function initRepo(job: Job, project: Project, logsBasePath: string) {
     // Checkout to branch
     {
       const pipe: JobPipe = {
@@ -72,8 +54,9 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-
-      await runPipe(job, project, pipe);
+      pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
+      pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
+      await runPipe(job, project, pipe, logsBasePath);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -98,8 +81,9 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-
-      await runPipe(job, project, pipe);
+      pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
+      pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
+      await runPipe(job, project, pipe, logsBasePath);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -114,12 +98,6 @@ export async function createBngine(): Promise<Bngine> {
         key: 'cwd',
         value: process.cwd(),
       });
-      const date = new Date();
-      const dateString = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
-      arguments[0] = dateString;
-      if (!fs.exist(path.join(process.cwd(), `storage/bngine/${dateString}`))) {
-        fs.mkdir(path.join(process.cwd(), `storage/bngine/${dateString}`));
-      }
 
       // Add custom variable to project
       if (vars) {
@@ -141,12 +119,18 @@ export async function createBngine(): Promise<Bngine> {
       queue({
         name: `${project.name}_${job._id}`,
         async handler() {
+          const date = new Date();
+          const dateString = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
+          const logsBasePath = `storage/bngine/${dateString}`;
+          if (!(await fs.exist(path.join(process.cwd(), logsBasePath)))) {
+            await fs.mkdir(path.join(process.cwd(), logsBasePath));
+          }
           job.inQueueFor = Date.now() - job.createdAt;
           job.status = JobStatus.RUNNING;
           let internalJob = await Repo.job.update(job as JobCross);
           // TODO: Trigger socket event
           try {
-            if (await initRepo(job, project)) {
+            if (await initRepo(job, project, logsBasePath)) {
               const workspace = path.join(
                 process.cwd(),
                 'bngine-workspace',
@@ -179,9 +163,9 @@ export async function createBngine(): Promise<Bngine> {
                   status: JobStatus.RUNNING,
                   timeToExec: -1,
                 };
-                (pipe.stderr = `storage/bngine/${dateString}/${pipe.id}_err`),
-                  (pipe.stdout = `storage/bngine/${dateString}/${pipe.id}_out`),
-                  await runPipe(internalJob, project, pipe);
+                pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
+                pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
+                await runPipe(internalJob, project, pipe, logsBasePath);
 
                 if (
                   pipe.status === JobStatus.FAIL &&
