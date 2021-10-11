@@ -38,10 +38,10 @@ interface CreateBody {
 }
 interface UpdateBody {
   id: string;
-  name: string;
-  repo: ProjectGitRepo;
-  vars: ProjectVar[];
-  run: ProjectRunCmd[];
+  name?: string;
+  repo?: ProjectGitRepo;
+  vars?: ProjectVar[];
+  run?: ProjectRunCmd[];
 }
 
 export const ProjectController = createController<Setup>({
@@ -189,16 +189,16 @@ export const ProjectController = createController<Setup>({
             },
             name: {
               __type: 'string',
-              __required: true,
+              __required: false,
             },
             repo: {
               __type: 'object',
-              __required: true,
+              __required: false,
               __child: ProjectGitRepoFSDBSchema,
             },
             vars: {
               __type: 'array',
-              __required: true,
+              __required: false,
               __child: {
                 __type: 'object',
                 __content: ProjectVarFSDBSchema,
@@ -206,7 +206,7 @@ export const ProjectController = createController<Setup>({
             },
             run: {
               __type: 'array',
-              __required: true,
+              __required: false,
               __child: {
                 __type: 'object',
                 __content: ProjectRunCmdFSDBSchema,
