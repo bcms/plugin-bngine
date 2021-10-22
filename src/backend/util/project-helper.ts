@@ -25,7 +25,7 @@ export class ProjectHelper {
         path.join(
           process.cwd(),
           'bngine-workspace',
-          `${project._id}`,
+          project._id,
           '.ssh',
           'key'
         ),

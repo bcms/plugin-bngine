@@ -1,4 +1,3 @@
-import { BCMSConfig } from '@becomes/cms-backend/config';
 import { Types } from 'mongoose';
 import { Job, JobLite, JobPipe, JobStatus } from '../types';
 
@@ -16,8 +15,8 @@ export class JobFactory {
     project?: string;
     pipe?: JobPipe[];
   }): Job {
-    const output: Job = {
-      _id: new Types.ObjectId() as never,
+    return {
+      _id: `${new Types.ObjectId()}`,
       createdAt: Date.now(),
       updatedAt: Date.now(),
       userId: `${data.userId}`,
@@ -32,16 +31,11 @@ export class JobFactory {
       running: false,
       status: JobStatus.QUEUE,
     };
-    
-    if (BCMSConfig.database.fs) {
-      output._id = `${output._id}`;
-    }
-    return output;
   }
 
   static toLite(job: Job): JobLite {
     return {
-      _id: `${job._id}`,
+      _id: job._id,
       status: job.status,
       updatedAt: job.updatedAt,
       createdAt: job.createdAt,

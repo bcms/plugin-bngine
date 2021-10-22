@@ -22,7 +22,6 @@ import {
   ProjectRunCmdFSDBSchema,
   ProjectVar,
   ProjectVarFSDBSchema,
-  ProjectCross,
 } from '../types';
 import { createBodyCheckerAndJwtChecker, ProjectHelper, System } from '../util';
 import { createProjectRepo } from './repository';
@@ -59,7 +58,7 @@ export const ProjectController = createController<Setup>({
         const err = error as Error;
         // Do nothing
         logger.warn('setup', {
-          project: `${project._id}`,
+          project: project._id,
           error: {
             message: err.message,
             stack: err.stack ? err.stack.split('\n') : [],
@@ -160,13 +159,13 @@ export const ProjectController = createController<Setup>({
               `Invalid repository URL. Example: https://github.com/USER/REPO or git@github.com:USER/REPO`
             );
           }
-          const addProject = await Repo.project.add(project as ProjectCross);
+          const addProject = await Repo.project.add(project);
           try {
             await ProjectHelper.setupProjectFS(addProject);
           } catch (error) {
             const err = error as Error;
             logger.warn('create', err);
-            await Repo.project.deleteById(`${addProject._id}`);
+            await Repo.project.deleteById(addProject._id);
             throw errorHandler.occurred(
               HTTPStatus.INTERNAL_SERVER_ERROR,
               err.message
@@ -281,7 +280,7 @@ export const ProjectController = createController<Setup>({
               path.join(
                 process.cwd(),
                 'bngine-workspace',
-                `${project._id}`,
+                project._id,
                 '.ssh',
                 'key'
               ),
@@ -290,19 +289,12 @@ export const ProjectController = createController<Setup>({
           }
           if (repoUrlChanged) {
             await fs.deleteDir(
-              path.join(
-                process.cwd(),
-                'bngine-workspace',
-                `${project._id}`,
-                'git'
-              )
+              path.join(process.cwd(), 'bngine-workspace', project._id, 'git')
             );
             await ProjectHelper.cloneRepo(project);
           }
 
-          const updatedProject = await Repo.project.update(
-            project as ProjectCross
-          );
+          const updatedProject = await Repo.project.update(project);
           return { project: ProjectFactory.toProtected(updatedProject) };
         },
       }),

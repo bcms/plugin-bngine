@@ -1,4 +1,3 @@
-import { BCMSConfig } from '@becomes/cms-backend/config';
 import { Types } from 'mongoose';
 import type {
   Project,
@@ -15,8 +14,8 @@ export class ProjectFactory {
     vars?: ProjectVar[];
     run?: ProjectRunCmd[];
   }): Project {
-    const output: Project = {
-      _id: new Types.ObjectId() as never,
+    return {
+      _id: `${new Types.ObjectId()}`,
       createdAt: Date.now(),
       updatedAt: Date.now(),
       name: data.name || '',
@@ -51,16 +50,10 @@ export class ProjectFactory {
           })
         : [],
     };
-
-    if (BCMSConfig.database.fs) {
-      output._id = `${output._id}`;
-    }
-
-    return output;
   }
   static toProtected(project: Project): ProjectProtected {
     return {
-      _id: `${project._id}`,
+      _id: project._id,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
       name: project.name,

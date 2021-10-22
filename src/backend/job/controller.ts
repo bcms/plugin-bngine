@@ -16,7 +16,6 @@ import {
   Bngine,
   BodyCheckerOutput,
   Job,
-  JobCross,
   JobLite,
   JobStatus,
   ProjectVar,
@@ -68,11 +67,11 @@ export const JobController = createController<Setup>({
             title: 'Failed to get project',
           },
         ];
-        await Repo.job.update(job as JobCross);
+        await Repo.job.update(job);
       } else {
         job.pipe = [];
         job.status = JobStatus.QUEUE;
-        const updatedJob = await Repo.job.update(job as JobCross);
+        const updatedJob = await Repo.job.update(job);
         bngine.start(updatedJob, project);
       }
     }
@@ -196,7 +195,7 @@ export const JobController = createController<Setup>({
               name: project.repo.name,
             },
           });
-          const addedJob = await Repo.job.add(job as JobCross);
+          const addedJob = await Repo.job.add(job);
 
           if (project.run.length > 0) {
             bngine.start(job, project, body.vars);

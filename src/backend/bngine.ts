@@ -1,7 +1,7 @@
 import { useFS } from '@becomes/purple-cheetah';
 import * as path from 'path';
 import { Repo } from './repo';
-import { Bngine, Job, JobCross, JobPipe, JobStatus, Project } from './types';
+import { Bngine, Job, JobPipe, JobStatus, Project } from './types';
 import { createQueue, IDUtil, System } from './util';
 
 export async function createBngine(): Promise<Bngine> {
@@ -43,7 +43,7 @@ export async function createBngine(): Promise<Bngine> {
         cmd: `cd ${path.join(
           process.cwd(),
           'bngine-workspace',
-          `${project._id}`,
+          project._id,
           'git'
         )} && \
         git checkout ${project.repo.branch}`,
@@ -70,7 +70,7 @@ export async function createBngine(): Promise<Bngine> {
         cmd: `cd ${path.join(
           process.cwd(),
           'bngine-workspace',
-          `${project._id}`,
+          project._id,
           'git'
         )} && \
         git pull`,
@@ -127,14 +127,14 @@ export async function createBngine(): Promise<Bngine> {
           }
           job.inQueueFor = Date.now() - job.createdAt;
           job.status = JobStatus.RUNNING;
-          let internalJob = await Repo.job.update(job as JobCross);
+          let internalJob = await Repo.job.update(job);
           // TODO: Trigger socket event
           try {
             if (await initRepo(job, project, logsBasePath)) {
               const workspace = path.join(
                 process.cwd(),
                 'bngine-workspace',
-                `${project._id}`,
+                project._id,
                 'git'
               );
               for (let i = 0; i < project.run.length; i++) {
@@ -179,7 +179,7 @@ export async function createBngine(): Promise<Bngine> {
           } catch (error) {
             internalJob.status = JobStatus.FAIL;
             internalJob.finishedAt = Date.now();
-            internalJob = await Repo.job.update(job as JobCross);
+            internalJob = await Repo.job.update(job);
             // TODO: Trigger socket event
           }
           internalJob.finishedAt = Date.now();
@@ -187,7 +187,7 @@ export async function createBngine(): Promise<Bngine> {
           if (internalJob.status !== JobStatus.FAIL) {
             internalJob.status = JobStatus.SUCCESS;
           }
-          internalJob = await Repo.job.update(internalJob as JobCross);
+          internalJob = await Repo.job.update(internalJob);
           // TODO: Trigger socket event for job completed
         },
       });

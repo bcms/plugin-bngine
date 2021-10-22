@@ -2,19 +2,13 @@ import { BCMSConfig } from '@becomes/cms-backend/config';
 import { createFSDBRepository } from '@becomes/purple-cheetah-mod-fsdb';
 import { createMongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb';
 import { Repo } from '../repo';
-import {
-  JobFSDB,
-  JobFSDBSchema,
-  JobMongoDB,
-  JobMongoDBSchema,
-  JobRepoMethods,
-} from '../types';
+import { Job, JobFSDBSchema, JobMongoDBSchema, JobRepoMethods } from '../types';
 
 export function createJobRepo(): void {
   const name = 'Job repository';
   const collection = `${BCMSConfig.database.prefix}__bngine_projects`;
   Repo.job = BCMSConfig.database.fs
-    ? createFSDBRepository<JobFSDB, JobRepoMethods<JobFSDB>>({
+    ? createFSDBRepository<Job, JobRepoMethods>({
         name,
         collection,
         schema: JobFSDBSchema,
@@ -41,11 +35,7 @@ export function createJobRepo(): void {
           };
         },
       })
-    : createMongoDBCachedRepository<
-        JobMongoDB,
-        JobRepoMethods<JobMongoDB>,
-        unknown
-      >({
+    : createMongoDBCachedRepository<Job, JobRepoMethods, unknown>({
         name,
         collection,
         schema: JobMongoDBSchema,
@@ -70,7 +60,7 @@ export function createJobRepo(): void {
                 .skip(offset * limit);
               for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                cacheHandler.set(`${item._id}`, item);
+                cacheHandler.set(item._id, item);
               }
               limitOffsetLatch[latchKey] = true;
               return items;
@@ -93,7 +83,7 @@ export function createJobRepo(): void {
                 .skip(offset * limit);
               for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                cacheHandler.set(`${item._id}`, item);
+                cacheHandler.set(item._id, item);
               }
               limitOffsetLatch[latchKey] = true;
               return items;
@@ -105,7 +95,7 @@ export function createJobRepo(): void {
               const items = await mongoDBInterface.find({ status });
               for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                cacheHandler.set(`${item._id}`, item);
+                cacheHandler.set(item._id, item);
               }
               return items;
             },

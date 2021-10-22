@@ -2,10 +2,7 @@ import {
   FSDBEntity,
   FSDBEntitySchema,
 } from '@becomes/purple-cheetah-mod-fsdb/types';
-import {
-  MongoDBEntity,
-  MongoDBEntitySchema,
-} from '@becomes/purple-cheetah-mod-mongodb/types';
+import { MongoDBEntitySchemaString } from '@becomes/purple-cheetah-mod-mongodb/types';
 import type { ObjectSchema } from '@becomes/purple-cheetah/types';
 import { Schema } from 'mongoose';
 import { JobPipe, JobPipeFSDBSchema, JobPipeMongoDBSchema } from './pipe';
@@ -19,7 +16,7 @@ export enum JobStatus {
   CANCELED = 'CANCELED',
 }
 
-export interface JobProps {
+export interface Job extends FSDBEntity {
   userId: string;
   finishedAt: number;
   inQueueFor: number;
@@ -33,7 +30,6 @@ export interface JobProps {
   pipe: JobPipe[];
 }
 
-export type JobFSDB = FSDBEntity & JobProps;
 export const JobFSDBSchema: ObjectSchema = {
   ...FSDBEntitySchema,
   userId: {
@@ -84,9 +80,8 @@ export const JobFSDBSchema: ObjectSchema = {
   },
 };
 
-export type JobMongoDB = MongoDBEntity & JobProps;
 export const JobMongoDBSchema = new Schema({
-  ...MongoDBEntitySchema,
+  ...MongoDBEntitySchemaString,
   userId: String,
   finishedAt: Number,
   inQueueFor: Number,
@@ -101,6 +96,3 @@ export const JobMongoDBSchema = new Schema({
   project: String,
   pipe: [JobPipeMongoDBSchema],
 });
-
-export type Job = JobFSDB | JobMongoDB;
-export type JobCross = JobFSDB & JobMongoDB;

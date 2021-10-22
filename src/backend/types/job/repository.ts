@@ -1,17 +1,17 @@
 import type { FSDBRepository } from '@becomes/purple-cheetah-mod-fsdb/types';
 import type { MongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb/types';
-import type { JobFSDB, JobMongoDB, JobStatus } from './models';
+import type { JobStatus, Job } from './models';
 
-export interface JobRepoMethods<T> {
-  findAllByLimitAndOffset(limit: number, offset: number): Promise<T[]>;
+export interface JobRepoMethods {
+  findAllByLimitAndOffset(limit: number, offset: number): Promise<Job[]>;
   findAllByProjectIdAndLimitAndOffset(
     projectId: string,
     limit: number,
     offset: number
-  ): Promise<T[]>;
-  findAllByStatus(status: JobStatus): Promise<T[]>;
+  ): Promise<Job[]>;
+  findAllByStatus(status: JobStatus): Promise<Job[]>;
 }
 
 export type JobRepo =
-  | FSDBRepository<JobFSDB, JobRepoMethods<JobFSDB>>
-  | MongoDBCachedRepository<JobMongoDB, JobRepoMethods<JobMongoDB>>;
+  | FSDBRepository<Job, JobRepoMethods>
+  | MongoDBCachedRepository<Job, JobRepoMethods>;
