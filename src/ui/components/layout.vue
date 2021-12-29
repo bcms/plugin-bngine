@@ -1,36 +1,45 @@
 <script lang="tsx">
-import { BCMSLink } from '@becomes/cms-ui/components';
+import { BCMSManagerNav } from '@becomes/cms-ui/components';
 import { defineComponent, PropType } from '@vue/runtime-core';
+import { useRoute, useRouter } from 'vue-router';
 import { LayoutSideNavItem } from '../types';
 
 const component = defineComponent({
   props: {
     sideNavItems: Array as PropType<LayoutSideNavItem[]>,
   },
-  setup(props, ctx) {
-    const route = window.bcms.vue.router.currentRoute;
+  setup(_props, ctx) {
+    const router = useRouter();
+    const route = useRoute();
 
     return () => (
-      <div class={`layout${props.sideNavItems ? ' layout--2col' : ''}`}>
-        {props.sideNavItems ? (
-          <div class="layout--sideNav">
-            {props.sideNavItems.map((item) => {
-              return (
-                <BCMSLink
-                  href={`${route.value.path}${item.hash}`}
-                  onClick={item.onClick}
-                >
-                  {item.name}
-                </BCMSLink>
-              );
-            })}
-          </div>
-        ) : (
-          ''
-        )}
-        <div class="layout--content">
-          {ctx.slots.default ? ctx.slots.default() : ''}
-        </div>
+      <div id={route.hash}>
+        <BCMSManagerNav
+          label="Build engine"
+          actionText=""
+          items={[
+            {
+              name: 'Builds',
+              link: '/dashboard/plugin/bcms-plugin---name',
+              selected: route.hash === '',
+              onClick() {
+                router.push('');
+              },
+            },
+            {
+              name: 'Projects',
+              link: '/dashboard/plugin/bcms-plugin---name#projects',
+              selected: route.hash === '#projects',
+              onClick() {
+                router.push('#projects');
+              },
+            },
+          ]}
+          onAction={() => {
+            // Do nothing
+          }}
+        />
+        <div>{ctx.slots.default ? ctx.slots.default() : ''}</div>
       </div>
     );
   },

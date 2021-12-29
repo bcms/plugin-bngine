@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { defineComponent } from 'vue';
-import { RouterView } from 'vue-router';
+import RouterView from './router/view.vue';
 import { Layout } from './components';
 
 const component = defineComponent({
