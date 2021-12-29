@@ -1,5 +1,6 @@
 import type { FSDBEntity } from '@becomes/purple-cheetah-mod-fsdb/types';
-import { ProjectRunCmd, ProjectVar } from '.';
+import type { ProjectVar } from './var';
+import type { ProjectRunCmd } from './run-cmd';
 
 export interface ProjectRepoProtected {
   name: string;

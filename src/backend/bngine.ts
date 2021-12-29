@@ -9,7 +9,7 @@ export async function createBngine(): Promise<Bngine> {
   const fs = useFS();
 
   async function runPipe(
-    job: Job,
+    _job: Job,
     _project: Project,
     pipe: JobPipe,
     logsBasePath: string
@@ -31,7 +31,7 @@ export async function createBngine(): Promise<Bngine> {
     await fs.save(`${logsBasePath}/${pipe.id}_out`, exo.stdout);
     await fs.save(`${logsBasePath}/${pipe.id}_err`, exo.stderr);
     pipe.timeToExec = Date.now() - pipe.createdAt;
-    const pipeIndex = job.pipe.push(pipe) - 1;
+    // const pipeIndex = job.pipe.push(pipe) - 1;
     // TODO: Trigger socket for new completed pipe in job
   }
   async function initRepo(job: Job, project: Project, logsBasePath: string) {

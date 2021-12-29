@@ -1,4 +1,4 @@
-import type { JobRepo } from '.';
+import type { JobRepo } from './job';
 import type { ProjectRepo } from './project';
 
 export interface Repo {

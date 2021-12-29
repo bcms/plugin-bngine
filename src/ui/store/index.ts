@@ -5,7 +5,7 @@ import {
   GetterTree,
   MutationTree,
 } from 'vuex';
-import {
+import type {
   Store,
   StoreActions,
   StoreGetters,

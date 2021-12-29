@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { defineComponent } from 'vue';
-import RouterView from './router/view.vue';
+import { RouterView } from 'vue-router';
 import { Layout } from './components';
 
 const component = defineComponent({
@@ -9,12 +9,12 @@ const component = defineComponent({
       <Layout
         sideNavItems={[
           {
-            name: 'Home',
+            name: 'Builds',
             hash: '',
           },
           {
-            name: 'Page 2',
-            hash: '#page-2',
+            name: 'Projects',
+            hash: '#projects',
           },
         ]}
       >

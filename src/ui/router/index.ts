@@ -9,11 +9,11 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: `${baseUri}#page-2`,
+    path: `${baseUri}#projects`,
     name: 'Page 2',
     component: () =>
       import(
-        /* webpackChunkName: "bcms-plugin---name-home" */ '../views/page-2.vue'
+        /* webpackChunkName: "bcms-plugin---name-projects" */ '../views/projects.vue'
       ),
   },
 ];

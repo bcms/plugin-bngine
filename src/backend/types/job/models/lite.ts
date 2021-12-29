@@ -1,5 +1,5 @@
 import type { FSDBEntity } from '@becomes/purple-cheetah-mod-fsdb/types';
-import type { JobStatus } from '.';
+import type { JobStatus } from './main';
 
 export interface JobLite extends FSDBEntity {
   status: JobStatus;

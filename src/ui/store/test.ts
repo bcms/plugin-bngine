@@ -1,4 +1,4 @@
-import { GetterTree, MutationTree } from 'vuex';
+import type { GetterTree, MutationTree } from 'vuex';
 import {
   StoreGetterTypes,
   StoreMutationTypes,

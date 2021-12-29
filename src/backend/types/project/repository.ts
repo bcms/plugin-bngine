@@ -1,6 +1,6 @@
 import type { FSDBRepository } from '@becomes/purple-cheetah-mod-fsdb/types';
 import type { MongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb/types';
-import { Project } from '.';
+import type { Project } from './models';
 
 export interface ProjectRepoMethods {
   findByName(name: string): Promise<Project | null>;

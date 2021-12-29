@@ -1,4 +1,4 @@
-import { ObjectSchema } from '@becomes/purple-cheetah/types';
+import type { ObjectSchema } from '@becomes/purple-cheetah/types';
 import { Schema } from 'mongoose';
 
 export interface ProjectVar {
