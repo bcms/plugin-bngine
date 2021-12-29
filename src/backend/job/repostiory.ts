@@ -6,7 +6,7 @@ import { Job, JobFSDBSchema, JobMongoDBSchema, JobRepoMethods } from '../types';
 
 export function createJobRepo(): void {
   const name = 'Job repository';
-  const collection = `${BCMSConfig.database.prefix}__bngine_projects`;
+  const collection = `${BCMSConfig.database.prefix}_bngine_jobs`;
   Repo.job = BCMSConfig.database.fs
     ? createFSDBRepository<Job, JobRepoMethods>({
         name,

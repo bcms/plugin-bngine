@@ -1,12 +1,15 @@
+import { Project, Job, JobLite } from '../../../backend/types';
 import { CommitOptions, DispatchOptions, Store as VuexStore } from 'vuex';
-import { StoreTestGetters, StoreTestMutations } from './test';
+import { StoreProjectGetters, StoreProjectMutations } from './project';
+import { StoreJobGetters, StoreJobMutations } from './job';
 
 export interface StoreState {
-  test: number;
+  project: Project[];
+  job: Array<Job | JobLite>;
 }
 
-export type StoreMutations = StoreTestMutations;
-export type StoreGetters = StoreTestGetters;
+export type StoreMutations = StoreProjectMutations & StoreJobMutations;
+export type StoreGetters = StoreProjectGetters & StoreJobGetters;
 export type StoreActions = { [name: string]: any };
 
 export type Store = Omit<
