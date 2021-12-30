@@ -2,9 +2,9 @@ import { createApp } from 'vue';
 import type { BCMSGlobalScopeMain } from '@becomes/cms-ui/types';
 import { cy, clickOutside, tooltip } from '@becomes/cms-ui/directives';
 import { store } from './ui/store';
-import router from './ui/router';
 import App from './ui/app.vue';
 import './ui/assets/styles/main.scss';
+import router from './ui/router';
 
 declare global {
   interface Window {

@@ -6,7 +6,7 @@ const component = defineComponent({
   setup() {
     const api = useApi();
 
-    async function test() {
+    async function startJob() {
       await window.bcms.util.throwable(
         async () => {
           return await api.job.start({
@@ -21,21 +21,14 @@ const component = defineComponent({
     }
 
     onMounted(async () => {
-      await window.bcms.util.throwable(
-        async () => {
-          return await api.job.get('61cc87d592954ad146a2c9b0');
-        },
-        async (result) => {
-          console.log(result);
-        }
-      );
+      await window.bcms.util.throwable(async () => {
+        return await api.job.get('61cc87d592954ad146a2c9b0');
+      });
     });
 
     return () => (
       <div>
-        <button onClick={test} style="margin-left: 250px">
-          CLICK
-        </button>
+        <button onClick={startJob}>CLICK</button>
       </div>
     );
   },

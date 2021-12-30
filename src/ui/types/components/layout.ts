@@ -1,5 +1,5 @@
 export interface LayoutSideNavItem {
   name: string;
-  hash: string;
+  path: string;
   onClick?: (event?: Event) => void;
 }
