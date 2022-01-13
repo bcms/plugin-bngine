@@ -2,6 +2,7 @@
 import { BCMSButton, BCMSTextInput } from '@becomes/cms-ui/components';
 import { defineComponent, PropType, ref } from '@vue/runtime-core';
 import { Project } from 'src/backend/types';
+import { BCMSCommandItem, BCMSVariableItem } from '.';
 import BCMSProjectSectionWrapper from './section-wrapper.vue';
 
 const component = defineComponent({
@@ -16,13 +17,13 @@ const component = defineComponent({
 
     return () => (
       <div
-        class={`flex flex-col border rounded-2.5 transition-colors duration-300 hover:border-dark focus-within:border-dark ${
-          expanded.value ? 'border-dark' : 'border-grey'
+        class={`flex flex-col border rounded-2.5 transition-colors duration-300 hover:border-green focus-within:border-green ${
+          expanded.value ? 'border-green' : 'border-grey'
         }`}
       >
         <div class="flex flex-col">
           <button
-            class="flex items-center justify-between w-full px-5 py-4 transition-colors duration-300"
+            class="flex items-center justify-between w-full px-5 py-4 transition-colors duration-300 focus:outline-none"
             onClick={() => {
               expanded.value = !expanded.value;
             }}
@@ -80,8 +81,37 @@ const component = defineComponent({
                   />
                 </div>
               </BCMSProjectSectionWrapper>
-              <BCMSProjectSectionWrapper title="Variables"></BCMSProjectSectionWrapper>
-              <BCMSProjectSectionWrapper title="Commands"></BCMSProjectSectionWrapper>
+              <BCMSProjectSectionWrapper title="Variables">
+                {props.project.vars.map((variable, index) => (
+                  <BCMSVariableItem
+                    variable={variable}
+                    first={index === 0}
+                    last={index === props.project.vars.length - 1}
+                  />
+                ))}
+                <BCMSButton
+                  kind="ghost"
+                  class="max-w-max mx-auto hover:shadow-none focus:shadow-none"
+                >
+                  Add {props.project.vars.length === 0 ? 'first' : 'new'}{' '}
+                  variable
+                </BCMSButton>
+              </BCMSProjectSectionWrapper>
+              <BCMSProjectSectionWrapper title="Commands">
+                {props.project.run.map((command, index) => (
+                  <BCMSCommandItem
+                    command={command}
+                    first={index === 0}
+                    last={index === props.project.run.length - 1}
+                  />
+                ))}
+                <BCMSButton
+                  kind="ghost"
+                  class="max-w-max mx-auto hover:shadow-none focus:shadow-none"
+                >
+                  Add {props.project.run.length === 0 ? 'first' : 'new'} command
+                </BCMSButton>
+              </BCMSProjectSectionWrapper>
               <div class="flex justify-end">
                 <BCMSButton class="mt-8 ">Update project</BCMSButton>
               </div>

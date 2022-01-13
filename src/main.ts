@@ -3,7 +3,7 @@ import type { BCMSGlobalScopeMain } from '@becomes/cms-ui/types';
 import { cy, clickOutside, tooltip } from '@becomes/cms-ui/directives';
 import { store } from './ui/store';
 import App from './ui/app.vue';
-import './ui/assets/styles/main.scss';
+import './ui/assets/styles/_main.scss';
 import router from './ui/router';
 
 declare global {

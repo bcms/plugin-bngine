@@ -29,7 +29,7 @@ const component = defineComponent({
             <BCMSProjectItem project={project} />
           ))}
         </div>
-        <BCMSButton>Add new</BCMSButton>
+        <BCMSButton>Add new project</BCMSButton>
       </>
     );
   },
