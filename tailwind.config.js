@@ -1,6 +1,7 @@
 module.exports = {
   purge: ['./public/**/*.html', './src/ui/**/*.{vue,js,ts,jsx,tsx}'],
   mode: 'jit',
+  important: true,
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     groupLevel: 10,
@@ -114,5 +115,4 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-nested-groups')],
 };

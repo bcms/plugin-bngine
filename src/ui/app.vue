@@ -1,7 +1,7 @@
 <script lang="tsx">
 import { defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
-import { Layout } from './components';
+import { BCMSAddProjectModal, Layout } from './components';
 import BCMSPluginRouter from './router/view.vue';
 import Home from './views/home.vue';
 import Projects from './views/projects.vue';
@@ -23,9 +23,12 @@ const component = defineComponent({
     ];
 
     return () => (
-      <Layout sideNavItems={routes}>
-        <BCMSPluginRouter route={route} routes={routes} />
-      </Layout>
+      <>
+        <Layout sideNavItems={routes}>
+          <BCMSPluginRouter route={route} routes={routes} />
+        </Layout>
+        <BCMSAddProjectModal />
+      </>
     );
   },
 });

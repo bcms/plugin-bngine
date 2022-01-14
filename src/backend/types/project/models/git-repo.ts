@@ -18,7 +18,7 @@ export const ProjectGitRepoFSDBSchema: ObjectSchema = {
   },
   sshKey: {
     __type: 'string',
-    __required: true,
+    __required: false,
   },
   branch: {
     __type: 'string',
