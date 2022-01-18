@@ -1,13 +1,24 @@
 <script lang="tsx">
-import { defineComponent } from 'vue';
+import { defineComponent, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
+import {
+  JobSocketEventName,
+  JobSocketEventNew,
+  JobSocketEventPipeComplete,
+  JobSocketEventPipeCreate,
+  useApi,
+} from './api';
 import { BCMSAddProjectModal, BCMSJobDetailsModal, Layout } from './components';
 import BCMSPluginRouter from './router/view.vue';
+import { useStore } from './store';
+import { StoreMutationTypes } from './types';
 import Home from './views/home.vue';
 import Projects from './views/projects.vue';
 
 const component = defineComponent({
   setup() {
+    const api = useApi();
+    const store = useStore();
     const route = useRoute();
     const routes = [
       {
@@ -21,6 +32,57 @@ const component = defineComponent({
         component: Projects,
       },
     ];
+
+    const jobEventUnsub = window.bcms.sdk.socket.subscribe(
+      JobSocketEventName.JOB,
+      async (event) => {
+        const data = event as JobSocketEventNew;
+        await window.bcms.util.throwable(async () => {
+          await api.job.get({ id: data.j, skipCache: true });
+        });
+      }
+    );
+    const newPipeEventUnsub = window.bcms.sdk.socket.subscribe(
+      JobSocketEventName.JOB_PIPE_CREATE,
+      async (event) => {
+        const data = event as JobSocketEventPipeCreate;
+        await window.bcms.util.throwable(
+          async () => {
+            return await api.job.get({ id: data.j });
+          },
+          async (result) => {
+            result.pipe.push(data.p);
+            store.commit(StoreMutationTypes.job_set, result);
+          }
+        );
+      }
+    );
+    const completePipeEventUnsub = window.bcms.sdk.socket.subscribe(
+      JobSocketEventName.JOB_PIPE_COMPLETE,
+      async (event) => {
+        const data = event as JobSocketEventPipeComplete;
+        await window.bcms.util.throwable(
+          async () => {
+            return await api.job.get({ id: data.j });
+          },
+          async (result) => {
+            const pipeIndex = result.pipe.findIndex((e) => e.id === data.p.id);
+            if (pipeIndex !== -1) {
+              const pipe = result.pipe[pipeIndex];
+              pipe.timeToExec = data.p.timeToExec;
+              pipe.status = data.p.status;
+              store.commit(StoreMutationTypes.job_set, result);
+            }
+          }
+        );
+      }
+    );
+
+    onUnmounted(() => {
+      jobEventUnsub();
+      newPipeEventUnsub();
+      completePipeEventUnsub();
+    });
 
     return () => (
       <>

@@ -5,13 +5,16 @@ import {
   computed,
   defineComponent,
   onMounted,
+  onUnmounted,
   PropType,
   ref,
 } from '@vue/runtime-core';
-import { useApi } from '../../api';
+import {
+  JobSocketEventName,
+  JobSocketEventPipeUpdate,
+  useApi,
+} from '../../api';
 import { JobPipe, JobStatus } from '../../../backend/types';
-import { useStore } from '../../store';
-import { StoreMutationTypes } from '../../types';
 
 const component = defineComponent({
   props: {
@@ -26,7 +29,6 @@ const component = defineComponent({
   },
   setup(props) {
     const api = useApi();
-    const store = useStore();
     const showOutput = ref(false);
     const output = computed(
       () =>
@@ -51,6 +53,20 @@ const component = defineComponent({
       stderr: '',
     });
     let isFirstLogFetch = true;
+
+    const pipeUpdateEventUnsub = window.bcms.sdk.socket.subscribe(
+      JobSocketEventName.JOB_PIPE_UPDATE,
+      async (event) => {
+        const data = event as JobSocketEventPipeUpdate;
+        if (data.pid === props.pipe.id) {
+          if (data.stdout) {
+            log.value.stdout += data.stdout;
+          } else if (data.stderr) {
+            log.value.stderr += data.stderr;
+          }
+        }
+      }
+    );
 
     function parseText(txt: string, type: 'err' | 'out') {
       return `
@@ -128,6 +144,10 @@ const component = defineComponent({
         showOutput.value = !showOutput.value;
       }
     }
+
+    onUnmounted(() => {
+      pipeUpdateEventUnsub();
+    });
 
     return () => (
       <div class="pipe">

@@ -5,6 +5,7 @@ import { store } from './ui/store';
 import App from './ui/app.vue';
 import router from './ui/router';
 import { CustomModals, registerModals } from './ui/modals';
+import { BCMSBngineCustomSocketEvents } from './ui/api';
 
 declare global {
   interface Window {
@@ -12,7 +13,7 @@ declare global {
     editorNodeEnter(data: { element: HTMLElement }): void;
     editorNodeLeave(data: { element: HTMLElement }): void;
 
-    bcms: BCMSGlobalScopeMain<CustomModals>;
+    bcms: BCMSGlobalScopeMain<CustomModals, BCMSBngineCustomSocketEvents>;
     pluginName: string;
   }
 }

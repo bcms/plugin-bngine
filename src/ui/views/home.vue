@@ -14,6 +14,7 @@ const component = defineComponent({
     const jobs = computed(() => {
       return store.getters.job_items;
     });
+    const projects = computed(() => store.getters.project_items);
 
     const runningJob = computed(() => {
       return store.getters.job_findOne(
@@ -23,14 +24,19 @@ const component = defineComponent({
 
     async function buildProduction() {
       await api.job.start({
-        projectId: '61cc7f97e4dc3ea2c937c2aa',
+        projectId: projects.value[0]._id,
       });
     }
 
     onMounted(async () => {
       if (jobs.value.length === 0) {
         await window.bcms.util.throwable(async () => {
-          return await api.job.getAll();
+          await api.job.getAll();
+        });
+      }
+      if (projects.value.length === 0) {
+        await window.bcms.util.throwable(async () => {
+          await api.project.getAll();
         });
       }
     });
@@ -38,12 +44,20 @@ const component = defineComponent({
     return () => (
       <div>
         <header class="flex items-center justify-between mb-15">
-          <BCMSButton onClick={buildProduction}>
-            TODO: PRVI PROJECT - CONFIMR MODAL{' '}
-          </BCMSButton>
-          <BCMSButton kind="secondary">Other</BCMSButton>
+          {projects.value[0] ? (
+            <BCMSButton onClick={buildProduction}>
+              {projects.value[0].name}
+            </BCMSButton>
+          ) : (
+            ''
+          )}
+          {projects.value.length > 1 ? (
+            <BCMSButton kind="secondary">Other</BCMSButton>
+          ) : (
+            ''
+          )}
         </header>
-        {runningJob.value && <BCMSRunningJob job={runningJob.value} />}
+        {runningJob.value ? <BCMSRunningJob job={runningJob.value} /> : 'HERE'}
         <div>
           {jobs.value.length === 0 ? (
             <BCMSEmptyView message="There are no active or logged jobs." />

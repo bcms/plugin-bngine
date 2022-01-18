@@ -140,23 +140,27 @@ const component = defineComponent({
               >
                 {new Date(job.createdAt).toLocaleTimeString()}
               </div>
-              <div class="col-start-2 col-end-3 row-start-1 2xl:col-start-auto 2xl:col-end-auto 2xl:row-start-auto 2xl:justify-center">
-                <BCMSButton
-                  kind="ghost"
-                  size="s"
-                  class="group hover:shadow-none focus:shadow-none"
-                  onClick={() => {
-                    window.bcms.modal.custom.jobDetails.show({
-                      jobId: job._id,
-                    });
-                  }}
-                >
-                  <BCMSIcon
-                    src="/eye/show"
-                    class="w-6 h-6 text-grey fill-current transition-colors duration-300 group-hover:text-dark group-focus-visible:text-dark"
-                  />
-                </BCMSButton>
-              </div>
+              {job.status !== JobStatus.RUNNING ? (
+                <div class="col-start-2 col-end-3 row-start-1 2xl:col-start-auto 2xl:col-end-auto 2xl:row-start-auto 2xl:justify-center">
+                  <BCMSButton
+                    kind="ghost"
+                    size="s"
+                    class="group hover:shadow-none focus:shadow-none"
+                    onClick={() => {
+                      window.bcms.modal.custom.jobDetails.show({
+                        jobId: job._id,
+                      });
+                    }}
+                  >
+                    <BCMSIcon
+                      src="/eye/show"
+                      class="w-6 h-6 text-grey fill-current transition-colors duration-300 group-hover:text-dark group-focus-visible:text-dark"
+                    />
+                  </BCMSButton>
+                </div>
+              ) : (
+                ''
+              )}
             </li>
           );
         })}
