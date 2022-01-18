@@ -8,7 +8,11 @@ export interface JobHandler {
     vars?: ProjectVar[];
   }): Promise<Job>;
   getAll(): Promise<JobLite[]>;
-  get(id: string): Promise<Job>;
+  get(data: { id: string; skipCache?: boolean }): Promise<Job>;
+  getPipeLogs(data: {
+    jobId: string;
+    pipeId: string;
+  }): Promise<{ stdout: string; stderr: string }>;
 }
 
 export function createJobHandler({ store }: { store: Store }): JobHandler {
@@ -53,11 +57,13 @@ export function createJobHandler({ store }: { store: Store }): JobHandler {
 
       return result.job;
     },
-    async get(id) {
-      const cacheHit = store.getters.job_findOne((e) => e._id === id);
+    async get({ id, skipCache }) {
+      if (!skipCache) {
+        const cacheHit = store.getters.job_findOne((e) => e._id === id);
 
-      if (cacheHit && (cacheHit as Job).pipe) {
-        return cacheHit as Job;
+        if (cacheHit && (cacheHit as Job).pipe) {
+          return cacheHit as Job;
+        }
       }
 
       const result: {
@@ -73,6 +79,20 @@ export function createJobHandler({ store }: { store: Store }): JobHandler {
       store.commit(StoreMutationTypes.job_set, result.job);
 
       return result.job;
+    },
+    async getPipeLogs(data) {
+      const result: {
+        stdout: string;
+        stderr: string;
+      } = await window.bcms.sdk.send({
+        url: `${baseUrl}/${data.jobId}/log/${data.pipeId}`,
+        method: 'GET',
+        headers: {
+          Authorization: '',
+        },
+      });
+
+      return result;
     },
   };
 }

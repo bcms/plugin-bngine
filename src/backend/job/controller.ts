@@ -1,6 +1,7 @@
 import {
   createController,
   createControllerMethod,
+  useFS,
 } from '@becomes/purple-cheetah';
 import { createJwtProtectionPreRequestHandler } from '@becomes/purple-cheetah-mod-jwt';
 import {
@@ -8,7 +9,7 @@ import {
   JWTPermissionName,
   JWTRoleName,
 } from '@becomes/purple-cheetah-mod-jwt/types';
-import { HTTPStatus } from '@becomes/purple-cheetah/types';
+import { FS, HTTPStatus } from '@becomes/purple-cheetah/types';
 import { createJobRepo, JobFactory } from '.';
 import { createBngine } from '../bngine';
 import { Repo } from '../repo';
@@ -26,6 +27,7 @@ import type { BCMSUserCustomPool } from '@becomes/cms-backend/types';
 
 interface Setup {
   bngine: Bngine;
+  fs: FS;
 }
 
 interface StartAJobData {
@@ -77,9 +79,12 @@ export const JobController = createController<Setup>({
     }
     return {
       bngine,
+      fs: useFS({
+        base: process.cwd(),
+      }),
     };
   },
-  methods({ bngine }) {
+  methods({ bngine, fs }) {
     return {
       getAllLite: createControllerMethod<
         unknown,
@@ -144,6 +149,43 @@ export const JobController = createController<Setup>({
         },
       }),
 
+      getPipeLogs: createControllerMethod<
+        unknown,
+        { stderr: string; stdout: string }
+      >({
+        path: '/:id/log/:pipeId',
+        type: 'get',
+        preRequestHandler: createJwtProtectionPreRequestHandler(
+          [JWTRoleName.ADMIN, JWTRoleName.USER],
+          JWTPermissionName.READ
+        ),
+        async handler({ request, errorHandler }) {
+          const job = await Repo.job.findById(request.params.id);
+          if (!job) {
+            throw errorHandler.occurred(
+              HTTPStatus.NOT_FOUNT,
+              `Job with ID "${request.params.id}" does not exist.`
+            );
+          }
+          const pipe = job.pipe.find((e) => e.id === request.params.pipeId);
+          if (!pipe) {
+            throw errorHandler.occurred(
+              HTTPStatus.NOT_FOUNT,
+              `Pipe with ID "${request.params.pipeId}" does not exist.`
+            );
+          }
+          let stdout = '';
+          let stderr = '';
+          if (await fs.exist(pipe.stdout, true)) {
+            stdout = await fs.readString(pipe.stdout);
+          }
+          if (await fs.exist(pipe.stderr, true)) {
+            stderr = await fs.readString(pipe.stderr);
+          }
+          return { stderr, stdout };
+        },
+      }),
+
       startAJob: createControllerMethod<
         BodyCheckerOutput<StartAJobData> & {
           accessToken: JWT<BCMSUserCustomPool>;
@@ -196,7 +238,6 @@ export const JobController = createController<Setup>({
             },
           });
           const addedJob = await Repo.job.add(job);
-
           if (project.run.length > 0) {
             bngine.start(job, project, body.vars);
           }
