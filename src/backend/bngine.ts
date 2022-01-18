@@ -1,4 +1,5 @@
-import { useFS } from '@becomes/purple-cheetah';
+import { useFS, useLogger } from '@becomes/purple-cheetah';
+import { useSocket } from '@becomes/purple-cheetah-mod-socket';
 import * as path from 'path';
 import { Repo } from './repo';
 import { Bngine, Job, JobPipe, JobStatus, Project } from './types';
@@ -7,14 +8,23 @@ import { createQueue, IDUtil, System } from './util';
 export async function createBngine(): Promise<Bngine> {
   const queue = createQueue({ name: 'Bngine' });
   const fs = useFS();
+  const logger = useLogger({ name: 'Bngine' });
+  const socketManager = useSocket();
 
   async function runPipe(
     job: Job,
     _project: Project,
-    pipe: JobPipe,
-    logsBasePath: string
+    pipe: JobPipe
   ): Promise<void> {
     // TODO: Inform clients that new pipe was created
+    socketManager.emitToScope({
+      scope: 'global',
+      eventName: 'JOB_PIPE_CREATE',
+      eventData: {
+        j: job._id,
+        p: pipe,
+      },
+    });
     const exo = {
       stdout: '',
       stderr: '',
@@ -23,16 +33,34 @@ export async function createBngine(): Promise<Bngine> {
       await System.exec(pipe.cmd, (type, chunk) => {
         exo[type] = chunk;
         // TODO: Trigger pipe socket event update
+        // TODO: Improve implementation
+        socketManager.emitToScope({
+          scope: 'global',
+          eventName: 'JOB_PIPE_UPDATE',
+          eventData: {
+            j: job._id,
+            stdout: type === 'stdout' ? chunk : '',
+            stderr: type === 'stderr' ? chunk : '',
+            pid: pipe.id,
+          },
+        });
       });
       pipe.status = JobStatus.SUCCESS;
     } catch (error) {
       pipe.status = JobStatus.FAIL;
     }
-    await fs.save(`${logsBasePath}/${pipe.id}_out`, exo.stdout);
-    await fs.save(`${logsBasePath}/${pipe.id}_err`, exo.stderr);
+    await fs.save(path.join(process.cwd(), pipe.stdout), exo.stdout);
+    await fs.save(path.join(process.cwd(), pipe.stderr), exo.stderr);
     pipe.timeToExec = Date.now() - pipe.createdAt;
     job.pipe.push(pipe);
-    // TODO: Trigger socket for new completed pipe in job
+    socketManager.emitToScope({
+      scope: 'global',
+      eventName: 'JOB_PIPE_COMPLETE',
+      eventData: {
+        j: job._id,
+        p: pipe,
+      },
+    });
   }
   async function initRepo(job: Job, project: Project, logsBasePath: string) {
     // Checkout to branch
@@ -56,7 +84,7 @@ export async function createBngine(): Promise<Bngine> {
       };
       pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
       pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
-      await runPipe(job, project, pipe, logsBasePath);
+      await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -83,7 +111,7 @@ export async function createBngine(): Promise<Bngine> {
       };
       pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
       pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
-      await runPipe(job, project, pipe, logsBasePath);
+      await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
         return false;
@@ -128,7 +156,14 @@ export async function createBngine(): Promise<Bngine> {
           job.inQueueFor = Date.now() - job.createdAt;
           job.status = JobStatus.RUNNING;
           let internalJob = await Repo.job.update(job);
-          // TODO: Trigger socket event
+          // TODO: IMPROVE THIS!
+          socketManager.emitToScope({
+            scope: 'global',
+            eventName: 'JOB',
+            eventData: {
+              j: job._id,
+            },
+          });
           try {
             if (await initRepo(job, project, logsBasePath)) {
               const workspace = path.join(
@@ -165,7 +200,7 @@ export async function createBngine(): Promise<Bngine> {
                 };
                 pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
                 pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
-                await runPipe(internalJob, project, pipe, logsBasePath);
+                await runPipe(internalJob, project, pipe);
 
                 if (
                   pipe.status === JobStatus.FAIL &&
@@ -179,8 +214,6 @@ export async function createBngine(): Promise<Bngine> {
           } catch (error) {
             internalJob.status = JobStatus.FAIL;
             internalJob.finishedAt = Date.now();
-            internalJob = await Repo.job.update(job);
-            // TODO: Trigger socket event
           }
           internalJob.finishedAt = Date.now();
           internalJob.running = false;
@@ -188,8 +221,16 @@ export async function createBngine(): Promise<Bngine> {
             internalJob.status = JobStatus.SUCCESS;
           }
           internalJob = await Repo.job.update(internalJob);
-          // TODO: Trigger socket event for job completed
+          socketManager.emitToScope({
+            scope: 'global',
+            eventName: 'JOB',
+            eventData: {
+              j: job._id,
+            },
+          });
         },
+      }).wait.catch((err) => {
+        logger.error(project._id, { project, job, vars, err });
       });
     },
   };

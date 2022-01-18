@@ -205,7 +205,7 @@ const component = defineComponent({
           {expanded.value && (
             <div class="px-5 pb-5">
               {showJSON.value ? (
-                <BCMSCodeEditor readOnly={true} code={projectDataJSON.value} />
+                <BCMSCodeEditor code={projectDataJSON.value} />
               ) : (
                 <>
                   <BCMSProjectSectionWrapper title="General">
