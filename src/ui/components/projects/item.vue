@@ -145,6 +145,25 @@ const component = defineComponent({
       );
     }
 
+    async function removeProject() {
+      if (
+        await window.bcms.confirm(
+          'Remove project',
+          'Are you sure you want to remove this project?'
+        )
+      ) {
+        window.bcms.util.throwable(
+          async () => {
+            return await api.project.delete(props.project._id);
+          },
+          async () => {
+            expanded.value = false;
+            window.bcms.notification.success('Project successfully removed.');
+          }
+        );
+      }
+    }
+
     onMounted(async () => {
       const propProject = props.project;
 
@@ -311,9 +330,12 @@ const component = defineComponent({
                   </BCMSProjectSectionWrapper>
                 </>
               )}
-              <div class="flex justify-end">
+              <div class="flex justify-end space-x-2">
+                <BCMSButton kind="danger" class="mt-8 " onClick={removeProject}>
+                  Remove
+                </BCMSButton>
                 <BCMSButton class="mt-8 " onClick={updateProject}>
-                  Update project
+                  Update
                 </BCMSButton>
               </div>
             </div>

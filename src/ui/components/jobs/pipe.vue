@@ -4,7 +4,6 @@ import { BCMSIcon } from '@becomes/cms-ui/components';
 import {
   computed,
   defineComponent,
-  onMounted,
   onUnmounted,
   PropType,
   ref,
@@ -26,10 +25,14 @@ const component = defineComponent({
       type: String,
       required: true,
     },
+    inRunningJob: Boolean,
   },
   setup(props) {
     const api = useApi();
+
+    let isFirstLogFetch = true;
     const showOutput = ref(false);
+
     const output = computed(
       () =>
         `${
@@ -48,11 +51,11 @@ const component = defineComponent({
             : ''
         }`
     );
+
     const log = ref({
       stdout: '',
       stderr: '',
     });
-    let isFirstLogFetch = true;
 
     const pipeUpdateEventUnsub = window.bcms.sdk.socket.subscribe(
       JobSocketEventName.JOB_PIPE_UPDATE,
@@ -77,48 +80,18 @@ const component = defineComponent({
     `;
     }
 
-    onMounted(() => {
-      // if (window.bcms.sdk.socket.self) {
-      //   window.bcms.sdk.socket.self.on(
-      //     'JOB_PIPE_UPDATE',
-      //     async (data: {
-      //       j: string;
-      //       pid: string;
-      //       stdout?: string;
-      //       stderr?: string;
-      //     }) => {
-      //       if (data.pid === props.pipe.id) {
-      //         if (data.stdout) {
-      //           log.value.stdout += data.stdout;
-      //         } else {
-      //           log.value.stderr += data.stderr;
-      //         }
-      //       }
-      //     }
-      //   );
-      //   window.bcms.sdk.socket.self.on(
-      //     'JOB_PIPE_COMPLETE',
-      //     async (data: { j: string; p: JobPipe }) => {
-      //       if (data.p.id === props.pipe.id) {
-      //         await window.bcms.util.throwable(
-      //           async () => {
-      //             return await api.job.get({
-      //               id: data.j,
-      //               skipCache: true,
-      //             });
-      //           },
-      //           async (result) => {
-      //             store.commit(StoreMutationTypes.job_set, result);
-      //           }
-      //         );
-      //       }
-      //     }
-      //   );
-      // }
-    });
+    function parseMillis(millis: number) {
+      if (millis > 60000) {
+        return `${parseInt('' + millis / 1000 / 60)}m ${
+          parseInt('' + millis / 1000) - parseInt('' + millis / 1000 / 60) * 60
+        }s`;
+      } else {
+        return `${parseInt(`${millis / 1000}`, 10)}s`;
+      }
+    }
 
     async function getLogs() {
-      if (isFirstLogFetch) {
+      if (isFirstLogFetch && !props.inRunningJob) {
         isFirstLogFetch = false;
         await window.bcms.util.throwable(
           async () => {
@@ -138,6 +111,7 @@ const component = defineComponent({
               stdout: '',
               stderr: 'Failed to get logs: ' + err.message,
             };
+            showOutput.value = true;
           }
         );
       } else {
@@ -150,45 +124,53 @@ const component = defineComponent({
     });
 
     return () => (
-      <div class="pipe">
-        <div
-          class={`mb-2.5 ${
-            props.pipe.status === JobStatus.SUCCESS ? 'bg-green' : 'bg-yellow'
+      <div
+        class={`mb-2.5 ${
+          showOutput.value ? 'shadow-cardLg rounded-2xl overflow-hidden' : ''
+        }`}
+      >
+        <button
+          class={`text-dark flex items-center text-left w-full p-4 font-medium ${
+            showOutput.value
+              ? 'bg-light rounded-t-2xl'
+              : 'bg-white rounded-2xl shadow-cardLg'
           }`}
+          onClick={getLogs}
         >
-          <button
-            class="text-light flex items-center text-left w-full p-1.5 pr-5"
-            onClick={getLogs}
+          <div
+            class={`transition-transform duration-300 mr-2.5 ${
+              showOutput.value ? 'rotate-45' : ''
+            }`}
           >
             <BCMSIcon
               src="/plus"
-              class={`w-6 h-6 text-light fill-current mr-1.5 transition-transform duration-300 ${
-                showOutput.value ? 'rotate-45' : ''
-              }`}
+              class={`w-6 h-6 fill-current leading-normal`}
             />
-            <span class="mr-auto leading-normal font-medium">
-              {props.pipe.title}
-            </span>
-            <span class="leading-normal font-medium ml-2.5">
-              {props.pipe.timeToExec}
-            </span>
-          </button>
-          {showOutput.value && (
-            <div
-              class={`max-h-[500px] overflow-auto text-[10px] leading-normal tracking-widest p-5 border bg-light font-mono border-b-0 ${
-                props.pipe.status === JobStatus.SUCCESS
-                  ? 'border-green'
-                  : props.pipe.status === JobStatus.FAIL &&
-                    props.pipe.ignoreIfFail
-                  ? 'bg-yellow'
-                  : props.pipe.status === JobStatus.FAIL
-                  ? 'border-red'
-                  : 'border-pink'
-              }`}
-              v-html={output.value}
-            />
-          )}
-        </div>
+          </div>
+          <span
+            class={`mr-auto ${
+              props.pipe.status === JobStatus.SUCCESS
+                ? 'text-green'
+                : props.pipe.status === JobStatus.FAIL &&
+                  props.pipe.ignoreIfFail
+                ? 'text-yellow'
+                : props.pipe.status === JobStatus.FAIL
+                ? 'text-red'
+                : props.pipe.status === JobStatus.QUEUE
+                ? 'text-pink'
+                : 'text-dark'
+            }`}
+          >
+            {props.pipe.title}
+          </span>
+          <span class="ml-2.5">{parseMillis(props.pipe.timeToExec)}</span>
+        </button>
+        {showOutput.value && (
+          <div
+            class="max-h-[500px] overflow-auto text-[10px] leading-normal tracking-widest p-5 bg-white font-mono"
+            v-html={output.value}
+          />
+        )}
       </div>
     );
   },

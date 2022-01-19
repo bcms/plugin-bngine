@@ -4,6 +4,8 @@ import {
   BCMSAddProjectModalOutputData,
   BCMSJobDetailsModalInputData,
   BCMSJobDetailsModalOutputData,
+  BCMSOtherProjectsModalInputData,
+  BCMSOtherProjectsModalOutputData,
 } from './types';
 
 export interface CustomModals {
@@ -15,9 +17,14 @@ export interface CustomModals {
     BCMSJobDetailsModalOutputData,
     BCMSJobDetailsModalInputData
   >;
+  otherProjects: BCMSModalServiceItem<
+    BCMSOtherProjectsModalOutputData,
+    BCMSOtherProjectsModalInputData
+  >;
 }
 
 export function registerModals(): void {
   window.bcms.modal.register({ name: 'addProject' });
   window.bcms.modal.register({ name: 'jobDetails' });
+  window.bcms.modal.register({ name: 'otherProjects' });
 }

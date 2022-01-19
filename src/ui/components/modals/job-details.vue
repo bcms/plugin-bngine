@@ -93,30 +93,33 @@ const component = defineComponent({
 
     return () => {
       return (
-        <BCMSModalWrapper
-          title={modalData.value.title}
-          show={show.value}
-          onDone={done}
-          onCancel={cancel}
-        >
-          {
-            // TODO: Add Spinner
-          }
-          {modalData.value.job ? (
-            <>
-              <BCMSJobsInfo job={modalData.value.job} />
-              <div>
-                {modalData.value.job.pipe.map((pipe) => {
-                  const job = modalData.value.job as Job;
+        <>
+          <BCMSModalWrapper
+            title={modalData.value.title}
+            show={show.value}
+            class="bcmsModal_jobDetailsModal"
+            onDone={done}
+            onCancel={cancel}
+          >
+            {
+              // TODO: Add spinner
+            }
+            {modalData.value.job ? (
+              <>
+                <BCMSJobsInfo job={modalData.value.job} />
+                <div class="pb-5">
+                  {modalData.value.job.pipe.map((pipe) => {
+                    const job = modalData.value.job as Job;
 
-                  return <BCMSJobsPipe pipe={pipe} jobId={job._id} />;
-                })}
-              </div>
-            </>
-          ) : (
-            ''
-          )}
-        </BCMSModalWrapper>
+                    return <BCMSJobsPipe pipe={pipe} jobId={job._id} />;
+                  })}
+                </div>
+              </>
+            ) : (
+              ''
+            )}
+          </BCMSModalWrapper>
+        </>
       );
     };
   },

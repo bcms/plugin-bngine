@@ -9,6 +9,7 @@ const component = defineComponent({
       type: Object as PropType<JobLite>,
       required: true,
     },
+    duration: Number,
   },
   setup(props) {
     const store = useStore();
@@ -48,16 +49,18 @@ const component = defineComponent({
       <div class="flex mb-5">
         <div class="w-full">
           <div class="flex items-center justify-between mb-5">
-            <h3 class="text-xl leading-tight capitalize font-medium truncate mr-3 lg:text-2xl xl:text-[28px]">
+            <h3 class="text-xl leading-tight capitalize truncate mr-3 lg:text-2xl xl:text-[28px]">
               {projectById(props.job.project).value?.name}
             </h3>
             <div
-              class={`font-semibold h-full py-2 px-4 capitalize leading-normal text-light text-sm rounded-sm ${
+              class={`font-semibold h-full py-2 leading-normal text-sm rounded-sm ${
                 props.job.status === JobStatus.SUCCESS
-                  ? 'bg-green'
+                  ? 'text-green'
                   : props.job.status === JobStatus.FAIL
-                  ? 'bg-red'
-                  : 'bg-pink'
+                  ? 'text-red'
+                  : props.job.status === JobStatus.QUEUE
+                  ? 'text-pink'
+                  : 'text-dark'
               }`}
             >
               {props.job.status}
@@ -66,11 +69,18 @@ const component = defineComponent({
           <h5 class="mb-5 leading-tight font-semibold">
             {props.job.repo.branch}
           </h5>
-          <div class="text-sm leading-normal tracking-wide mb-2.5">
-            {new Date(props.job.createdAt).toLocaleString()}
-          </div>
-          <div>
-            Duration: <span class="font-semibold">{getDuration().value}</span>
+          <div class="flex items-center justify-between">
+            <div>
+              Duration:{' '}
+              <span class="font-semibold">
+                {props.duration
+                  ? parseMillis(props.duration)
+                  : getDuration().value}
+              </span>
+            </div>
+            <div class="text-sm leading-normal tracking-wide">
+              {new Date(props.job.createdAt).toLocaleString()}
+            </div>
           </div>
         </div>
       </div>

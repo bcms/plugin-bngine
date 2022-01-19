@@ -116,6 +116,11 @@ export function createProjectHandler({
           Authorization: '',
         },
       });
+      const removedProject = store.getters.project_findOne((e) => e._id === id);
+
+      if (removedProject) {
+        store.commit(StoreMutationTypes.project_remove, removedProject);
+      }
     },
   };
 }

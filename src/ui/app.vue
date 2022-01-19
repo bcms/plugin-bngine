@@ -8,7 +8,12 @@ import {
   JobSocketEventPipeCreate,
   useApi,
 } from './api';
-import { BCMSAddProjectModal, BCMSJobDetailsModal, Layout } from './components';
+import {
+  BCMSAddProjectModal,
+  BCMSJobDetailsModal,
+  BCMSOtherProjectsModal,
+  Layout,
+} from './components';
 import BCMSPluginRouter from './router/view.vue';
 import { useStore } from './store';
 import { StoreMutationTypes } from './types';
@@ -51,8 +56,10 @@ const component = defineComponent({
             return await api.job.get({ id: data.j });
           },
           async (result) => {
-            result.pipe.push(data.p);
-            store.commit(StoreMutationTypes.job_set, result);
+            if (result) {
+              result.pipe.push(data.p);
+              store.commit(StoreMutationTypes.job_set, result);
+            }
           }
         );
       }
@@ -66,12 +73,16 @@ const component = defineComponent({
             return await api.job.get({ id: data.j });
           },
           async (result) => {
-            const pipeIndex = result.pipe.findIndex((e) => e.id === data.p.id);
-            if (pipeIndex !== -1) {
-              const pipe = result.pipe[pipeIndex];
-              pipe.timeToExec = data.p.timeToExec;
-              pipe.status = data.p.status;
-              store.commit(StoreMutationTypes.job_set, result);
+            if (result) {
+              const pipeIndex = result.pipe.findIndex(
+                (e) => e.id === data.p.id
+              );
+              if (pipeIndex !== -1) {
+                const pipe = result.pipe[pipeIndex];
+                pipe.timeToExec = data.p.timeToExec;
+                pipe.status = data.p.status;
+                store.commit(StoreMutationTypes.job_set, result);
+              }
             }
           }
         );
@@ -91,9 +102,14 @@ const component = defineComponent({
         </Layout>
         <BCMSAddProjectModal />
         <BCMSJobDetailsModal />
+        <BCMSOtherProjectsModal />
       </>
     );
   },
 });
 export default component;
 </script>
+
+<style lang="scss">
+@import './assets/styles/_main.scss';
+</style>

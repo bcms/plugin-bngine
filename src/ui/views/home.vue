@@ -1,6 +1,12 @@
 <script lang="tsx">
 import { BCMSButton, BCMSEmptyView } from '@becomes/cms-ui/components';
-import { computed, defineComponent, onMounted } from '@vue/runtime-core';
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  ref,
+} from '@vue/runtime-core';
 import { JobStatus } from '../../backend/types';
 import { useApi } from '../api';
 import { BCMSJobsList, BCMSRunningJob } from '../components';
@@ -10,30 +16,70 @@ const component = defineComponent({
   setup() {
     const api = useApi();
     const store = useStore();
+    const CHUNK_SIZE = 20;
+    const jobCount = ref(0);
+    let atChunk = 0;
 
     const jobs = computed(() => {
       return store.getters.job_items;
     });
     const projects = computed(() => store.getters.project_items);
-
+    const firstProject = computed(() => projects.value[0]);
     const runningJob = computed(() => {
-      return store.getters.job_findOne(
+      const test = store.getters.job_findOne(
         (e) => e.status === JobStatus.RUNNING || e.status === JobStatus.QUEUE
       );
+      return test;
     });
 
-    async function buildProduction() {
-      await api.job.start({
-        projectId: projects.value[0]._id,
-      });
+    async function buildFirstProject() {
+      if (
+        await window.bcms.confirm(
+          `Start build`,
+          `Are you sure you want to build ${firstProject.value.name}?`
+        )
+      ) {
+        await window.bcms.util.throwable(async () => {
+          await api.job.start({
+            projectId: projects.value[0]._id,
+          });
+        });
+      }
+    }
+
+    async function nextChunk() {
+      atChunk--;
+      if (atChunk >= 0) {
+        await window.bcms.util.throwable(async () => {
+          await api.job.getAll({
+            page: atChunk,
+            itemsPerPage: CHUNK_SIZE,
+          });
+        });
+      }
+    }
+
+    function onScroll(event: Event) {
+      const target = event.target as HTMLBodyElement;
+
+      const scrollTop = target.scrollTop;
+      const scrollHeight = target.scrollHeight;
+      const clientHeight = target.clientHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight) {
+        nextChunk();
+      }
     }
 
     onMounted(async () => {
-      if (jobs.value.length === 0) {
-        await window.bcms.util.throwable(async () => {
-          await api.job.getAll();
-        });
-      }
+      document.body.addEventListener('scroll', onScroll);
+      await window.bcms.util.throwable(async () => {
+        jobCount.value = await api.job.count();
+      });
+      atChunk = parseInt(`${jobCount.value / CHUNK_SIZE}`) + 1;
+
+      nextChunk();
+      nextChunk();
       if (projects.value.length === 0) {
         await window.bcms.util.throwable(async () => {
           await api.project.getAll();
@@ -41,30 +87,39 @@ const component = defineComponent({
       }
     });
 
+    onUnmounted(() => {
+      document.body.removeEventListener('scroll', onScroll);
+    });
+
     return () => (
       <div>
-        <header class="flex items-center justify-between mb-15">
-          {projects.value[0] ? (
-            <BCMSButton onClick={buildProduction}>
-              {projects.value[0].name}
+        <header class="flex items-center justify-between mb-[70px]">
+          {firstProject.value ? (
+            <BCMSButton onClick={buildFirstProject}>
+              {firstProject.value.name}
             </BCMSButton>
           ) : (
             ''
           )}
           {projects.value.length > 1 ? (
-            <BCMSButton kind="secondary">Other</BCMSButton>
+            <BCMSButton
+              kind="secondary"
+              onClick={() => window.bcms.modal.custom.otherProjects.show({})}
+            >
+              Other
+            </BCMSButton>
           ) : (
             ''
           )}
         </header>
-        {runningJob.value ? <BCMSRunningJob job={runningJob.value} /> : 'HERE'}
+        {runningJob.value ? <BCMSRunningJob job={runningJob.value} /> : ''}
         <div>
           {jobs.value.length === 0 ? (
             <BCMSEmptyView message="There are no active or logged jobs." />
           ) : (
             <>
               <h1 class="text-3xl leading-tight mb-7.5">Completed Jobs</h1>
-              <BCMSJobsList jobs={jobs.value} />
+              <BCMSJobsList jobs={jobs.value} jobCount={jobCount.value} />
             </>
           )}
         </div>

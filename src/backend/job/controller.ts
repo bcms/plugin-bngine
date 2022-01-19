@@ -130,6 +130,20 @@ export const JobController = createController<Setup>({
         },
       }),
 
+      count: createControllerMethod<unknown, { count: number }>({
+        path: '/count',
+        type: 'get',
+        preRequestHandler: createJwtProtectionPreRequestHandler(
+          [JWTRoleName.ADMIN, JWTRoleName.USER],
+          JWTPermissionName.READ
+        ),
+        async handler() {
+          return {
+            count: await Repo.job.count(),
+          };
+        },
+      }),
+
       getOne: createControllerMethod<unknown, { job: Job }>({
         path: '/:id',
         type: 'get',
@@ -240,7 +254,15 @@ export const JobController = createController<Setup>({
           const addedJob = await Repo.job.add(job);
           if (project.run.length > 0) {
             bngine.start(job, project, body.vars);
+          } else {
+            addedJob.status = JobStatus.SUCCESS;
+            addedJob.running = false;
+            addedJob.finishedAt = Date.now();
+            addedJob.inQueueFor = 0;
+
+            await Repo.job.update(addedJob);
           }
+
           return {
             job: addedJob,
           };

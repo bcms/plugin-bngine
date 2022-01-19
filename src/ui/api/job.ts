@@ -7,28 +7,55 @@ export interface JobHandler {
     branch?: string;
     vars?: ProjectVar[];
   }): Promise<Job>;
-  getAll(): Promise<JobLite[]>;
+  getAll(data?: {
+    projectId?: string;
+    itemsPerPage?: number;
+    page?: number;
+  }): Promise<JobLite[]>;
   get(data: { id: string; skipCache?: boolean }): Promise<Job>;
   getPipeLogs(data: {
     jobId: string;
     pipeId: string;
   }): Promise<{ stdout: string; stderr: string }>;
+  count(): Promise<number>;
 }
 
 export function createJobHandler({ store }: { store: Store }): JobHandler {
-  let getAllLetch = false;
+  const getAllLetch: {
+    [query: string]: boolean;
+  } = {};
   const baseUrl = '/plugin/bcms-plugin---name/job';
 
   return {
-    async getAll() {
-      if (getAllLetch) {
+    async getAll(data) {
+      let query = '';
+
+      if (data) {
+        const q: string[] = [];
+
+        if (data.projectId) {
+          q.push(`projectId=${data.projectId}`);
+        }
+        if (data.itemsPerPage) {
+          q.push(`limit=${data.itemsPerPage}`);
+        }
+        if (data.page) {
+          q.push(`offset=${data.page}`);
+        }
+
+        if (q.length > 0) {
+          query = '?' + q.join('&');
+        }
+      }
+
+      if (getAllLetch[query]) {
         return store.getters.job_items;
       }
 
       const result: {
         jobs: JobLite[];
       } = await window.bcms.sdk.send({
-        url: `${baseUrl}/all`,
+        url: `${baseUrl}/all${query}`,
         method: 'GET',
         headers: {
           Authorization: '',
@@ -37,7 +64,7 @@ export function createJobHandler({ store }: { store: Store }): JobHandler {
 
       store.commit(StoreMutationTypes.job_set, result.jobs);
 
-      getAllLetch = true;
+      getAllLetch[query] = true;
 
       return result.jobs;
     },
@@ -93,6 +120,19 @@ export function createJobHandler({ store }: { store: Store }): JobHandler {
       });
 
       return result;
+    },
+    async count() {
+      const result: {
+        count: number;
+      } = await window.bcms.sdk.send({
+        url: `${baseUrl}/count`,
+        method: 'GET',
+        headers: {
+          Authorization: '',
+        },
+      });
+
+      return result.count;
     },
   };
 }

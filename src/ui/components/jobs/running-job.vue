@@ -2,13 +2,16 @@
 import {
   computed,
   defineComponent,
+  onBeforeUpdate,
   onMounted,
+  onUnmounted,
   PropType,
+  ref,
 } from '@vue/runtime-core';
 import { useApi } from '../../api';
 import { useStore } from '../../store';
 import { Job, JobLite } from '../../../backend/types';
-import { BCMSJobsPipe } from '.';
+import { BCMSJobsInfo, BCMSJobsPipe } from '.';
 
 const component = defineComponent({
   props: {
@@ -20,11 +23,32 @@ const component = defineComponent({
   setup(props) {
     const api = useApi();
     const store = useStore();
+    let idBuffer = '';
+
     const job = computed<Job | undefined>(() => {
       return store.getters.job_findOne((e) => e._id === props.job._id) as Job;
     });
+    const duration = ref(job.value ? Date.now() - job.value.createdAt : 0);
+
+    const timeInterval = setInterval(() => {
+      if (job.value && job.value.pipe) {
+        try {
+          duration.value =
+            Date.now() - job.value.createdAt - job.value.inQueueFor;
+
+          if (job.value.pipe.length > 0) {
+            job.value.pipe[job.value.pipe.length - 1].timeToExec =
+              Date.now() - job.value.pipe[job.value.pipe.length - 1].createdAt;
+          }
+        } catch (error) {
+          // ignore
+        }
+      }
+    }, 1000);
 
     onMounted(async () => {
+      idBuffer = props.job._id;
+
       if (!(props.job as Job).pipe) {
         await window.bcms.util.throwable(async () => {
           await api.job.get({
@@ -34,14 +58,42 @@ const component = defineComponent({
       }
     });
 
+    onBeforeUpdate(() => {
+      if (idBuffer !== props.job._id) {
+        idBuffer = props.job._id;
+        duration.value = 0;
+      }
+    });
+
+    onUnmounted(() => {
+      clearInterval(timeInterval);
+    });
+
     return () => (
-      <div class="pipe">
-        {job.value && (
-          <div>
-            {job.value.pipe.map((pipe) => {
-              return <BCMSJobsPipe pipe={pipe} jobId={props.job._id} />;
-            })}
-          </div>
+      <div>
+        {job.value && job.value.pipe && (
+          <>
+            <div class="mb-7.5">
+              <h4 class="text-xl leading-tight mb-7.5 lg:text-2xl 2xl:text-4xl">
+                Running Job
+              </h4>
+              <div class="mt-5">
+                <div class="mb-5">
+                  <BCMSJobsInfo job={job.value} duration={duration.value} />
+                </div>
+                {job.value.pipe.map((pipe, index) => {
+                  return (
+                    <BCMSJobsPipe
+                      key={index}
+                      pipe={pipe}
+                      jobId={props.job._id}
+                      inRunningJob
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
