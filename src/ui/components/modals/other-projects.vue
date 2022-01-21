@@ -27,7 +27,8 @@ const component = defineComponent({
       hide() {
         show.value = false;
       },
-      show() {
+      show(inputData) {
+        modalData.value = getData(inputData);
         show.value = true;
       },
     };
@@ -94,7 +95,7 @@ const component = defineComponent({
             });
           },
           async () => {
-            window.bcms.modal.custom.otherProjects.hide();
+            done();
           }
         );
       }
@@ -105,7 +106,7 @@ const component = defineComponent({
         <BCMSModalWrapper
           title={modalData.value.title}
           show={show.value}
-          onDone={done}
+          onDone={cancel}
           onCancel={cancel}
         >
           {projects.value.map((project) => {

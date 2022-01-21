@@ -10,4 +10,5 @@ export interface JobLite extends FSDBEntity {
   };
   project: string;
   userId: string;
+  inQueueFor: number;
 }

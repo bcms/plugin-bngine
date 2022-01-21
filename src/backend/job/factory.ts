@@ -45,6 +45,7 @@ export class JobFactory {
       },
       project: job.project,
       userId: `${job.userId}`,
+      inQueueFor: job.inQueueFor || -1,
     };
   }
 }

@@ -1,13 +1,20 @@
 <script lang="tsx">
+import { BCMSUser } from '@becomes/cms-sdk/types';
 import { BCMSButton, BCMSIcon } from '@becomes/cms-ui/components';
-import { computed, defineComponent, PropType, ref } from '@vue/runtime-core';
-import { JobLite, JobStatus } from '../../../backend/types';
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  PropType,
+  ref,
+} from '@vue/runtime-core';
+import { Job, JobLite, JobStatus } from '../../../backend/types';
 import { useStore } from '../../store';
 
 const component = defineComponent({
   props: {
     job: {
-      type: Object as PropType<JobLite>,
+      type: Object as PropType<Job | JobLite>,
       required: true,
     },
     jobCount: {
@@ -26,9 +33,13 @@ const component = defineComponent({
       return store.getters.project_items;
     });
 
+    const user = ref<BCMSUser | undefined>(undefined);
+
     const duration = ref(
       props.job && props.job.finishedAt > 0
-        ? props.job.finishedAt - props.job.createdAt
+        ? props.job.finishedAt -
+            props.job.createdAt -
+            (props.job.inQueueFor || 0)
         : 0
     );
 
@@ -48,29 +59,39 @@ const component = defineComponent({
     }
 
     const timeInterval = setInterval(() => {
-      if (
-        props.job.status === JobStatus.RUNNING ||
-        props.job.status === JobStatus.QUEUE
-      ) {
+      if (props.job.status === JobStatus.RUNNING) {
         try {
-          // TODO: For QUEUE remove queue time and prevent interval tick
-          duration.value = Date.now() - props.job.createdAt;
-          if (
-            props.job.status !== JobStatus.RUNNING &&
-            props.job.status !== JobStatus.QUEUE
-          ) {
-            duration.value = props.job.finishedAt - props.job.createdAt;
-
+          duration.value =
+            Date.now() - props.job.createdAt - (props.job.inQueueFor || 0);
+          if (props.job.status !== JobStatus.RUNNING) {
             clearInterval(timeInterval);
+
+            duration.value =
+              props.job.finishedAt -
+              props.job.createdAt -
+              (props.job.inQueueFor || 0);
           }
         } catch (error) {
           // ignore
         }
+      } else if (props.job.status === JobStatus.QUEUE) {
+        duration.value = 0;
       }
     }, 1000);
 
+    onMounted(async () => {
+      await window.bcms.util.throwable(
+        async () => {
+          return await window.bcms.sdk.user.get(props.job.userId);
+        },
+        async (result) => {
+          user.value = result;
+        }
+      );
+    });
+
     return () => (
-      <li class="grid grid-cols-1 gap-5 leading-tight -tracking-wider items-center justify-between relative py-5 border-b border-dark border-opacity-20 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px] 2xl:py-3">
+      <li class="grid grid-cols-1 gap-5 leading-tight -tracking-wider items-center justify-between relative py-5 border-b border-dark border-opacity-20 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] 2xl:py-3">
         <div
           class="col-start-1 col-end-2 2xl:pl-2.5 2xl:col-start-auto 2xl:col-end-auto"
           title={`${props.jobCount - props.index}.`}
@@ -95,9 +116,15 @@ const component = defineComponent({
         <div
           class="col-start-1 col-end-2 font-medium min-w-max before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"
           data-column-name="Duration"
-          title={parseMillis(duration.value)}
+          title={
+            props.job.status === JobStatus.QUEUE
+              ? '0s'
+              : parseMillis(duration.value)
+          }
         >
-          {parseMillis(duration.value)}
+          {props.job.status === JobStatus.QUEUE
+            ? '0s'
+            : parseMillis(duration.value)}
         </div>
         <div
           class="col-start-1 col-end-2 font-medium italic before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"
@@ -107,7 +134,7 @@ const component = defineComponent({
           {props.job.repo.branch}
         </div>
         <div
-          class="col-start-1 col-end-2 font-medium before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"
+          class="col-start-1 col-end-2 font-medium truncate before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"
           data-column-name="Project"
           title={projectById(props.job.project).value?.name}
         >
@@ -128,28 +155,46 @@ const component = defineComponent({
           {new Date(props.job.createdAt).toLocaleTimeString()}
         </div>
         <div
+          class="col-start-1 col-end-2 font-medium min-w-max truncate before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"
+          data-column-name="User"
+          title={user.value ? user.value.username : 'Loading...'}
+        >
+          {user.value ? user.value.username : 'Loading...'}
+        </div>
+        <div
           class={`flex justify-end col-start-2 col-end-3 row-start-1 2xl:col-start-auto 2xl:col-end-auto 2xl:row-start-auto 2xl:justify-center ${
-            props.job.status === JobStatus.RUNNING ||
-            props.job.status === JobStatus.QUEUE
+            props.job.status === JobStatus.RUNNING
               ? 'opacity-0 pointer-events-none'
               : ''
           }`}
         >
-          <BCMSButton
-            kind="ghost"
-            size="s"
-            class="group hover:shadow-none focus:shadow-none"
-            onClick={() => {
-              window.bcms.modal.custom.jobDetails.show({
-                jobId: props.job._id,
-              });
-            }}
-          >
-            <BCMSIcon
-              src="/eye/show"
-              class="w-6 h-6 text-grey fill-current transition-colors duration-300 group-hover:text-dark group-focus-visible:text-dark"
-            />
-          </BCMSButton>
+          {props.job.status !== JobStatus.QUEUE ? (
+            <BCMSButton
+              kind="ghost"
+              size="s"
+              class="group hover:shadow-none focus:shadow-none"
+              onClick={() => {
+                window.bcms.modal.custom.jobDetails.show({
+                  jobId: props.job._id,
+                });
+              }}
+            >
+              <BCMSIcon
+                src="/eye/show"
+                class="w-6 h-6 text-grey fill-current transition-colors duration-300 group-hover:text-dark group-focus-visible:text-dark"
+              />
+            </BCMSButton>
+          ) : (
+            <BCMSButton
+              kind="danger"
+              size="s"
+              onClick={() => {
+                // TODO: Implement job abort
+              }}
+            >
+              Abort
+            </BCMSButton>
+          )}
         </div>
       </li>
     );

@@ -1,12 +1,12 @@
 <script lang="tsx">
 import { computed, defineComponent, PropType } from '@vue/runtime-core';
 import { useStore } from '../../store';
-import { JobLite, JobStatus } from '../../../backend/types';
+import { Job, JobStatus } from '../../../backend/types';
 
 const component = defineComponent({
   props: {
     job: {
-      type: Object as PropType<JobLite>,
+      type: Object as PropType<Job>,
       required: true,
     },
     duration: Number,
@@ -25,7 +25,10 @@ const component = defineComponent({
 
     const getDuration = () => {
       return computed(() => {
-        const duration = props.job.finishedAt - props.job.createdAt;
+        const duration =
+          props.job.finishedAt -
+          props.job.createdAt -
+          (props.job.inQueueFor || 0);
 
         if (duration < 0) {
           return '0s';

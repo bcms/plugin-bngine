@@ -39,11 +39,16 @@ const component = defineComponent({
           `Are you sure you want to build ${firstProject.value.name}?`
         )
       ) {
-        await window.bcms.util.throwable(async () => {
-          await api.job.start({
-            projectId: projects.value[0]._id,
-          });
-        });
+        await window.bcms.util.throwable(
+          async () => {
+            await api.job.start({
+              projectId: projects.value[0]._id,
+            });
+          },
+          async () => {
+            jobCount.value = jobCount.value + 1;
+          }
+        );
       }
     }
 
@@ -104,7 +109,14 @@ const component = defineComponent({
           {projects.value.length > 1 ? (
             <BCMSButton
               kind="secondary"
-              onClick={() => window.bcms.modal.custom.otherProjects.show({})}
+              onClick={() =>
+                window.bcms.modal.custom.otherProjects.show({
+                  onDone: () => {
+                    console.log('here');
+                    jobCount.value = jobCount.value + 1;
+                  },
+                })
+              }
             >
               Other
             </BCMSButton>

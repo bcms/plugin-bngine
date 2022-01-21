@@ -28,13 +28,17 @@ const component = defineComponent({
     const job = computed<Job | undefined>(() => {
       return store.getters.job_findOne((e) => e._id === props.job._id) as Job;
     });
-    const duration = ref(job.value ? Date.now() - job.value.createdAt : 0);
+    const duration = ref(
+      job.value
+        ? Date.now() - job.value.createdAt - (props.job.inQueueFor || 0)
+        : 0
+    );
 
     const timeInterval = setInterval(() => {
       if (job.value && job.value.pipe) {
         try {
           duration.value =
-            Date.now() - job.value.createdAt - job.value.inQueueFor;
+            Date.now() - job.value.createdAt - (job.value.inQueueFor || 0);
 
           if (job.value.pipe.length > 0) {
             job.value.pipe[job.value.pipe.length - 1].timeToExec =
