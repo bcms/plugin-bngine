@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { RoleName, User } from '@becomes/cms-sdk';
+
   import { GeneralService, Layout, ManagerLayout, sdk } from '@becomes/cms-ui';
   import { onMount } from 'svelte';
   import type { Project, JobLite, Job, ProjectModified } from './types';
@@ -16,6 +18,7 @@
       selected: false,
     },
   ];
+  let user: User;
   let projects: ProjectModified[] = [];
   let jobs: JobLite[] = [];
   let selectedView = 'Builds';
@@ -44,6 +47,8 @@
   onMount(async () => {
     const p: Project[] = await GeneralService.errorWrapper(
       async () => {
+        user = await sdk.user.get();
+        console.log(user);
         return sdk.send({
           url: '/plugin/bngine/project/all',
           method: 'GET',
@@ -92,14 +97,16 @@
   on:openItem={(event) => {
     selectedView = event.detail.name;
   }}
-  items={navItems.map((e) => {
-    if (e.name === selectedView) {
-      e.selected = true;
-    } else {
-      e.selected = false;
-    }
-    return e;
-  })}
+  items={!user || user.roles[0].name !== RoleName.ADMIN
+    ? []
+    : navItems.map((e) => {
+        if (e.name === selectedView) {
+          e.selected = true;
+        } else {
+          e.selected = false;
+        }
+        return e;
+      })}
 >
   {#if selectedView === 'Projects'}
     <ProjectsView

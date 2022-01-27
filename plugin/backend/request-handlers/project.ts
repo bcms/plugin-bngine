@@ -289,7 +289,7 @@ export class ProjectRequestHandler {
       );
     }
     const jwt = JWTSecurity.checkAndValidateAndGet(authorization, {
-      roles: [RoleName.ADMIN, RoleName.USER],
+      roles: [RoleName.ADMIN],
       permission: PermissionName.WRITE,
       JWTConfig: JWTConfigService.get('user-token-config'),
     });
@@ -348,7 +348,7 @@ export class ProjectRequestHandler {
       );
     }
     const jwt = JWTSecurity.checkAndValidateAndGet(authorization, {
-      roles: [RoleName.ADMIN, RoleName.USER],
+      roles: [RoleName.ADMIN],
       permission: PermissionName.WRITE,
       JWTConfig: JWTConfigService.get('user-token-config'),
     });
@@ -432,7 +432,7 @@ export class ProjectRequestHandler {
       );
     }
     const jwt = JWTSecurity.checkAndValidateAndGet(authorization, {
-      roles: [RoleName.ADMIN, RoleName.USER],
+      roles: [RoleName.ADMIN],
       permission: PermissionName.DELETE,
       JWTConfig: JWTConfigService.get('user-token-config'),
     });
@@ -467,7 +467,7 @@ export class ProjectRequestHandler {
   ): Promise<void> {
     const error = HttpErrorFactory.instance('deletePreview', this.logger);
     const jwt = JWTSecurity.checkAndValidateAndGet(authorization, {
-      roles: [RoleName.ADMIN, RoleName.USER],
+      roles: [RoleName.ADMIN],
       permission: PermissionName.DELETE,
       JWTConfig: JWTConfigService.get('user-token-config'),
     });
