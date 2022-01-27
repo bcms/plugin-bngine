@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { escape } from 'html-escaper';
   import type { JobPipeModified } from '../../types';
   import { PlusIcon } from '@becomes/cms-ui/src/components/icons';
 
@@ -11,7 +10,7 @@
   function parseText(txt: string, type: 'err' | 'out') {
     return `
       <span${type === 'err' ? ' class="err"' : ''}>
-        ${escape(txt).replace(/ /g, '&nbsp;')}
+        ${txt.replace(/ /g, '&nbsp;')}
       </span>
       <br />
     `;
