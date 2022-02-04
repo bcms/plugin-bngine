@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { BCMSButton, BCMSEmptyView } from '@becomes/cms-ui/components';
+import { BCMSButton } from '@becomes/cms-ui/components';
 import {
   computed,
   defineComponent,
@@ -127,7 +127,9 @@ const component = defineComponent({
         {runningJob.value ? <BCMSRunningJob job={runningJob.value} /> : ''}
         <div>
           {jobs.value.length === 0 ? (
-            <BCMSEmptyView message="There are no active or logged jobs." />
+            <div class="text-center text-grey text-2xl mb-10">
+              There are no active or logged jobs.
+            </div>
           ) : (
             <>
               <h1 class="text-3xl leading-tight mb-7.5">Completed Jobs</h1>

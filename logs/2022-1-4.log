@@ -1,0 +1,8 @@
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mmiddleware[0m > CORS Middleware --> / 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mmiddleware[0m > Body Parser Middleware --> / 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mmiddleware[0m > Request Logger Middleware --> / 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mcontroller[0m > Server controller 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mcontroller[0m >     --> /login 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mmiddleware[0m > Exception handler --> /* 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mmiddleware[0m > 404 --> /* 
+[37m[INFO][0m [[36m2/4/2022, 11:08:12 AM[0m] [1m[35mPurple Cheetah[0m [35mStart Server[0m > working... 
