@@ -123,13 +123,13 @@
       }
     },
   );
-  let jobsModified: JobModified[];
+  let jobsModified: JobModified[] = [];
   let jobDetails: JobModified;
   let runningJob: JobModified;
   let productionProject: Project;
   let stagingProject: Project;
   let previewProject: Project;
-  let hasRunningJob: boolean = false;
+  let hasRunningJob: boolean = true;
 
   async function startJob(
     projectName: string,
@@ -249,15 +249,18 @@
       // ignore
     }
   }, 1000);
+  let lastJobLength = 0;
   beforeUpdate(() => {
     if (projects) {
       productionProject = projects.find((e) => e.name === 'production');
       stagingProject = projects.find((e) => e.name === 'staging');
       previewProject = projects.find((e) => e.name === 'preview');
     }
-    if (jobs) {
-      const runningJob = jobs.find((e) => e.status === 'RUNNING');
-      if (runningJob) {
+    if (jobs && jobs.length !== lastJobLength) {
+      lastJobLength = jobs.length;
+      const activeJob = jobs.find((e) => e.status === 'RUNNING');
+      if (activeJob) {
+        runningJob = parseJob(activeJob);
         hasRunningJob = true;
       } else {
         hasRunningJob = false;
@@ -350,7 +353,9 @@
         <h4 class="bngine--builds-jobs-title">Running Job</h4>
         <div class="mt-20 build--running-job">
           <BngineJobInfo job={runningJob} disableDetails={true} />
-          <BngineJobPipe jobPipe={runningJob.pipe} />
+          {#if runningJob.pipe}
+            <BngineJobPipe jobPipe={runningJob.pipe} />
+          {/if}
         </div>
       </div>
     {/if}

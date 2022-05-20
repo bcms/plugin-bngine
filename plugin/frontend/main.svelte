@@ -48,7 +48,6 @@
     const p: Project[] = await GeneralService.errorWrapper(
       async () => {
         user = await sdk.user.get();
-        console.log(user);
         return sdk.send({
           url: '/plugin/bngine/project/all',
           method: 'GET',
