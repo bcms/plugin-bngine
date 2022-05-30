@@ -7,7 +7,7 @@ import {
   onMounted,
   PropType,
   ref,
-} from '@vue/runtime-core';
+} from 'vue';
 import { Job, JobLite, JobStatus } from '../../../backend/types';
 import { useStore } from '../../store';
 

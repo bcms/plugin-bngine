@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { computed, defineComponent, PropType } from 'vue';
+import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router';
 
 const component = defineComponent({
@@ -16,13 +16,18 @@ const component = defineComponent({
   setup(props) {
     const route = useRoute();
     const onRoute = computed(() => {
-      const hash = route.hash.replace('#', '');
+      const hash = route.hash;
       return props.routes.find((e) => e.path === hash);
     });
+    const loaded = ref(false)
+
+    onMounted(() => {
+      loaded.value = true;
+    })
 
     return () => (
       <div>
-        {onRoute.value ? (
+        {onRoute.value && loaded.value ? (
           <onRoute.value.component />
         ) : (
           <div>Route does not exist</div>

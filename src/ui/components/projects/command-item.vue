@@ -4,7 +4,7 @@ import {
   BCMSTextInput,
   BCMSToggleInput,
 } from '@becomes/cms-ui/components';
-import { defineComponent, PropType } from '@vue/runtime-core';
+import { defineComponent, PropType } from 'vue';
 import { ProjectRunCmd } from 'src/backend/types';
 
 const component = defineComponent({

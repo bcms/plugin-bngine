@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { defineComponent } from '@vue/runtime-core';
+import { defineComponent } from 'vue';
 
 const component = defineComponent({
   props: {

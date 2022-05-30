@@ -1,6 +1,5 @@
 <script lang="tsx">
 import { defineComponent, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
 import {
   JobSocketEventName,
   JobSocketEventNew,
@@ -8,17 +7,13 @@ import {
   JobSocketEventPipeCreate,
   useApi,
 } from './api';
-import {
-  BCMSAddProjectModal,
-  BCMSJobDetailsModal,
-  BCMSOtherProjectsModal,
-  Layout,
-} from './components';
-import BCMSPluginRouter from './router/view.vue';
+import RouterView from './router/view.vue';
+import { Layout } from './components';
 import { useStore } from './store';
 import { StoreMutationTypes } from './types';
 import Home from './views/home.vue';
 import Projects from './views/projects.vue';
+import { useRoute } from 'vue-router';
 
 const component = defineComponent({
   setup() {
@@ -33,7 +28,7 @@ const component = defineComponent({
       },
       {
         name: 'Projects',
-        path: 'projects',
+        path: '#projects',
         component: Projects,
       },
     ];
@@ -98,18 +93,15 @@ const component = defineComponent({
     return () => (
       <>
         <Layout sideNavItems={routes}>
-          <BCMSPluginRouter route={route} routes={routes} />
+          <RouterView route={route} routes={routes} />
         </Layout>
-        <BCMSAddProjectModal />
+        {/*<BCMSAddProjectModal />
         <BCMSJobDetailsModal />
-        <BCMSOtherProjectsModal />
+        <BCMSOtherProjectsModal />*/}
+        <div id="plugin_nav" />
       </>
     );
   },
 });
 export default component;
 </script>
-
-<style lang="scss">
-@import './assets/styles/_main.scss';
-</style>

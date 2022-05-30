@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { BCMSButton } from '@becomes/cms-ui/components';
-import { computed, defineComponent, onMounted } from '@vue/runtime-core';
+import { computed, defineComponent, onMounted } from 'vue';
 import { useApi } from '../api';
 import { BCMSProjectItem } from '../components';
 import { useStore } from '../store';

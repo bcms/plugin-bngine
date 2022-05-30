@@ -4,7 +4,7 @@ import {
   defineComponent,
   onMounted,
   PropType,
-} from '@vue/runtime-core';
+} from 'vue';
 import { BCMSJobItem } from '.';
 import { Job, JobLite } from '../../../backend/types';
 import { useApi } from '../../api';

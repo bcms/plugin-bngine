@@ -6,7 +6,7 @@ import {
   onMounted,
   onUnmounted,
   ref,
-} from '@vue/runtime-core';
+} from 'vue';
 import { JobStatus } from '../../backend/types';
 import { useApi } from '../api';
 import { BCMSJobsList, BCMSRunningJob } from '../components';

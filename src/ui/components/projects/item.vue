@@ -10,7 +10,7 @@ import {
   onMounted,
   PropType,
   ref,
-} from '@vue/runtime-core';
+} from 'vue';
 import { useApi } from '../../api';
 import { BCMSCommandItem, BCMSVariableItem } from '.';
 import BCMSProjectSectionWrapper from './section-wrapper.vue';

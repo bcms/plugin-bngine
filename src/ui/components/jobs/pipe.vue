@@ -7,7 +7,7 @@ import {
   onUnmounted,
   PropType,
   ref,
-} from '@vue/runtime-core';
+} from 'vue';
 import {
   JobSocketEventName,
   JobSocketEventPipeUpdate,

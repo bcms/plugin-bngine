@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { computed, defineComponent, PropType } from '@vue/runtime-core';
+import { computed, defineComponent, PropType } from 'vue';
 import { useStore } from '../../store';
 import { Job, JobStatus } from '../../../backend/types';
 

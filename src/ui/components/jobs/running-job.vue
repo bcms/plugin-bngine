@@ -7,7 +7,7 @@ import {
   onUnmounted,
   PropType,
   ref,
-} from '@vue/runtime-core';
+} from 'vue';
 import { useApi } from '../../api';
 import { useStore } from '../../store';
 import { Job, JobLite } from '../../../backend/types';
