@@ -7,31 +7,32 @@ import {
   JobSocketEventPipeCreate,
   useApi,
 } from './api';
-import RouterView from './router/view.vue';
-import { Layout } from './components';
+import {
+  BCMSAddProjectModal,
+  BCMSJobDetailsModal,
+  BCMSOtherProjectsModal,
+  Layout,
+} from './components';
 import { useStore } from './store';
 import { StoreMutationTypes } from './types';
-import Home from './views/home.vue';
-import Projects from './views/projects.vue';
-import { useRoute } from 'vue-router';
+import { RouterView } from 'vue-router';
 
 const component = defineComponent({
   setup() {
     const api = useApi();
     const store = useStore();
-    const route = useRoute();
-    const routes = [
-      {
-        name: 'Builds',
-        path: '',
-        component: Home,
-      },
-      {
-        name: 'Projects',
-        path: '#projects',
-        component: Projects,
-      },
-    ];
+    // const routes = [
+    //   {
+    //     name: 'Builds',
+    //     path: '',
+    //     component: Home,
+    //   },
+    //   {
+    //     name: 'Projects',
+    //     path: '#projects',
+    //     component: Projects,
+    //   },
+    // ];
 
     const jobEventUnsub = window.bcms.sdk.socket.subscribe(
       JobSocketEventName.JOB,
@@ -92,13 +93,13 @@ const component = defineComponent({
 
     return () => (
       <>
-        <Layout sideNavItems={routes}>
-          <RouterView route={route} routes={routes} />
-        </Layout>
-        {/*<BCMSAddProjectModal />
-        <BCMSJobDetailsModal />
-        <BCMSOtherProjectsModal />*/}
         <div id="plugin_nav" />
+        <Layout>
+          <RouterView />
+        </Layout>
+        <BCMSAddProjectModal />
+        <BCMSJobDetailsModal />
+        <BCMSOtherProjectsModal />
       </>
     );
   },

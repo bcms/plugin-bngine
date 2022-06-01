@@ -1,12 +1,6 @@
 <script lang="tsx">
 import { BCMSButton } from '@becomes/cms-ui/components';
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  ref,
-} from 'vue';
+import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { JobStatus } from '../../backend/types';
 import { useApi } from '../api';
 import { BCMSJobsList, BCMSRunningJob } from '../components';
@@ -112,7 +106,6 @@ const component = defineComponent({
               onClick={() =>
                 window.bcms.modal.custom.otherProjects.show({
                   onDone: () => {
-                    console.log('here');
                     jobCount.value = jobCount.value + 1;
                   },
                 })

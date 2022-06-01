@@ -5,7 +5,11 @@ export function defaultEntryMutations<Item>(getId: (item: Item) => string): {
 } {
   return {
     set(srcItems, items): void {
-      if (items instanceof Array) {
+      if (
+        typeof items === 'object' &&
+        typeof (items as Item[]).filter === 'function'
+      ) {
+        items = items as Item[];
         for (let i = 0; i < items.length; i++) {
           let found = false;
           const itemId = getId(items[i]);
@@ -22,6 +26,7 @@ export function defaultEntryMutations<Item>(getId: (item: Item) => string): {
           }
         }
       } else {
+        items = items as Item;
         let found = false;
         const itemId = getId(items);
         for (let i = 0; i < srcItems.length; i++) {

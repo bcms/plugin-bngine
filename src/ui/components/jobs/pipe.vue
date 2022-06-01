@@ -31,7 +31,7 @@ const component = defineComponent({
     const api = useApi();
 
     let isFirstLogFetch = true;
-    const showOutput = ref(false);
+    const showOutput = ref(false); 
 
     const output = computed(
       () =>

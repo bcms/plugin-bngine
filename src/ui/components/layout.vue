@@ -1,73 +1,71 @@
 <script lang="tsx">
-import { BCMSManagerNav} from '@becomes/cms-ui/components';
-import { defineComponent, PropType, Teleport, ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { LayoutSideNavItem } from '../types';
+import { BCMSManagerNav, BCMSSpinner } from '@becomes/cms-ui/components';
+import { defineComponent, ref, Teleport } from 'vue';
+import { useRoute } from 'vue-router';
+import { useApi } from '../api';
+import type { BCMSAddProjectModalOutputData } from '../types';
 
 const component = defineComponent({
-  props: {
-    sideNavItems: Array as PropType<LayoutSideNavItem[]>,
-  },
-  setup(props, ctx) {
+  setup(_props, ctx) {
+    const api = useApi();
     const route = useRoute();
-    const router = useRouter();
-    const loaded = ref(false);
+    const showSpinner = ref(false);
 
-    onMounted(() => {
-      loaded.value = true;
-    });
+    async function addNewProject(data: BCMSAddProjectModalOutputData) {
+      showSpinner.value = true;
+      await window.bcms.util.throwable(
+        async () => {
+          await api.project.create({
+            name: data.projectName,
+            repo: data.repo,
+            vars: [],
+            run: [],
+          });
+        },
+        async () => {
+          window.bcms.notification.success('Successfully added new project');
+        },
+        async (err) => {
+          window.bcms.notification.error((err as Error).message);
+        }
+      );
+      showSpinner.value = false;
+    }
 
     return () => (
-      <>
-        {loaded.value ? (
-          <div id={route.hash}>
-            <Teleport to="#plugin_nav">
-              <BCMSManagerNav
-                label="Build engine"
-                actionText=""
-                items={
-                  props.sideNavItems
-                    ? props.sideNavItems.map((item) => {
-                        return {
-                          name: item.name,
-                          link: `/dashboard/plugin/bcms-plugin---name${item.path}`,
-                          selected: route.hash === item.path,
-                          onClick() {
-                            router.push(item.path);
-                          },
-                        };
-                      })
-                    : []
-                  // [
-                  //   {
-                  //     name: 'Builds',
-                  //     link: '/dashboard/plugin/bcms-plugin---name',
-                  //     selected: route.hash === '',
-                  //     onClick() {
-                  //       router.push('');
-                  //     },
-                  //   },
-                  //   {
-                  //     name: 'Projects',
-                  //     link: '/dashboard/plugin/bcms-plugin---name#projects',
-                  //     selected: route.hash === '#projects',
-                  //     onClick() {
-                  //       router.push('#projects');
-                  //     },
-                  //   },
-                  // ]
-                }
-                onAction={() => {
-                  // Do nothing
-                }}
-              />
-            </Teleport>
-            <div>{ctx.slots.default ? ctx.slots.default() : ''}</div>
-          </div>
-        ) : (
-          <div>Loading</div>
-        )}
-      </>
+      <div id={route.hash}>
+        <Teleport to="#plugin_nav">
+          <BCMSManagerNav
+            class="bngineNav"
+            style="left: 0 !important;"
+            label="Build engine"
+            actionText={route.path === '/projects' ? 'Add new project' : ''}
+            items={[
+              {
+                name: 'Builds',
+                link: '/',
+                selected: route.path === '/',
+              },
+              {
+                name: 'Projects',
+                link: '/projects',
+                selected: route.path === '/projects',
+              },
+            ]}
+            onAction={() => {
+              window.bcms.modal.custom.addProject.show({
+                onDone: async (data) => {
+                  await addNewProject(data);
+                },
+              });
+            }}
+          />
+        </Teleport>
+        <div class="desktop:relative desktop:pl-[200px] lg:pl-[260px] px-5 desktop:py-10">
+          {ctx.slots.default ? ctx.slots.default() : ''}
+        </div>
+        <BCMSSpinner show={showSpinner.value} />
+      </div>
     );
   },
 });

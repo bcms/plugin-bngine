@@ -129,9 +129,9 @@ const component = defineComponent({
         <div
           class="col-start-1 col-end-2 font-medium italic before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"
           data-column-name="Branch"
-          title={props.job.repo.branch}
+          title={props.job.repo?.branch}
         >
-          {props.job.repo.branch}
+          {props.job.repo?.branch}
         </div>
         <div
           class="col-start-1 col-end-2 font-medium truncate before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto 2xl:font-normal"

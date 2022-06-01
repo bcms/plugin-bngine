@@ -1,1 +1,11 @@
 @import './components/index';
+
+.bngineNav {
+  .managerLayout--sideNav-footer {
+    left: 0 !important;
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

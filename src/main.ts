@@ -11,7 +11,7 @@ import './ui/assets/styles/_main.scss';
 declare global {
   interface Window {
     // Is declared in components/content/node-nav.vue
-    editorNodeEnter(data: { element: HTMLElement }): void;
+     editorNodeEnter(data: { element: HTMLElement }): void;
     editorNodeLeave(data: { element: HTMLElement }): void;
 
     bcms: BCMSGlobalScopeMain<CustomModals, BCMSBngineCustomSocketEvents>;
@@ -20,10 +20,13 @@ declare global {
 }
 
 window.pluginName = 'bcms-plugin---name';
+window.bcms = window.parent.bcms;
 
 registerModals();
 
-const app = createApp(App);
+const app = createApp(App, {
+  namespace: 'plugin',
+});
 app.directive('cy', cy);
 app.directive('clickOutside', clickOutside);
 app.directive('tooltip', tooltip);

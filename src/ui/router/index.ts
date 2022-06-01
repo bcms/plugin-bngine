@@ -1,8 +1,21 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
+import Home from '../views/home.vue';
+import Projects from '../views/projects.vue';
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes: [],
+  history: createWebHashHistory('/dashboard/plugin/bcms-plugin---name'),
+  routes: [
+    {
+      path: '/',
+      name: 'PluginHome',
+      component: Home,
+    },
+    {
+      path: '/projects',
+      name: 'PluginProjects',
+      component: Projects,
+    },
+  ],
 });
 
 export default router;

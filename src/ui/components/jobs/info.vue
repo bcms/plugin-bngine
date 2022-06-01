@@ -70,7 +70,7 @@ const component = defineComponent({
             </div>
           </div>
           <h5 class="mb-5 leading-tight font-semibold">
-            {props.job.repo.branch}
+            {props.job.repo?.branch}
           </h5>
           <div class="flex items-center justify-between">
             <div>
