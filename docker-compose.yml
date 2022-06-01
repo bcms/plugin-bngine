@@ -5,8 +5,8 @@ services:
     ports:
       - '3000:3000'
       - '8080:8080'
-    # logging:
-    #   driver: none
+    logging:
+      driver: none
   shim:
     depends_on:
       - proxy
@@ -18,7 +18,7 @@ services:
   backend:
     depends_on:
       - shim
-    image: 'becomes/cms-backend-local:1.0.19'
+    image: 'becomes/cms-backend-local:1.0.20'
     ports:
       - '1280:8080'
     volumes:
@@ -55,8 +55,8 @@ services:
     build: .
     ports:
       - '1281:8080'
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
     volumes:
       - type: bind
         source: ./public
@@ -64,3 +64,6 @@ services:
       - type: bind
         source: ./src
         target: /app/src
+      - type: bind
+        source: ./tailwind.config.js
+        target: /app/tailwind.config.js
