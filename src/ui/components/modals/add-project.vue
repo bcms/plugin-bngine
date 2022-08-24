@@ -4,7 +4,7 @@ import {
   BCMSAddProjectModalInputData,
   BCMSAddProjectModalOutputData,
 } from 'src/ui/types';
-import { BCMSModalWrapper, BCMSTextInput } from '@becomes/cms-ui/components';
+import { BCMSModalWrapper, BCMSTextAreaInput, BCMSTextInput } from '@becomes/cms-ui/components';
 import { defineComponent, ref } from 'vue';
 
 interface ValidationType {
@@ -176,12 +176,14 @@ const component = defineComponent({
               invalidText={modalData.value.repo.branch.error}
               v-model={modalData.value.repo.branch.value}
             />
-            <BCMSTextInput
+            <BCMSTextAreaInput
               label="Private SSH Key"
               placeholder="Private SSH Key"
               invalidText={modalData.value.repo.sshKey.error}
               helperText="SSH key which have read access to the repository."
-              v-model={modalData.value.repo.sshKey.value}
+              onInput={(value) => {
+                modalData.value.repo.sshKey.value = value;
+              }}
             />
           </div>
         </BCMSModalWrapper>
