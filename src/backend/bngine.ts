@@ -121,7 +121,8 @@ export async function createBngine(): Promise<Bngine> {
   }
 
   return {
-    start(job, project, vars) {
+    start(job, _project, vars) {
+      const project: Project = JSON.parse(JSON.stringify(_project));
       project.vars.push({
         key: 'cwd',
         value: process.cwd(),
@@ -183,6 +184,7 @@ export async function createBngine(): Promise<Bngine> {
                     if (run.command.indexOf(key) === -1) {
                       loop = false;
                     } else {
+                      console.log(key, variable.value);
                       run.command = run.command.replace(key, variable.value);
                     }
                   }
