@@ -18,7 +18,7 @@ services:
   backend:
     depends_on:
       - shim
-    image: 'becomes/cms-backend-local:1.0.20'
+    image: 'becomes/cms-backend-local:1.0.25'
     ports:
       - '1280:8080'
     volumes:
@@ -49,6 +49,9 @@ services:
       - type: bind
         source: ./storage
         target: /app/storage
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
   plugin:
     depends_on:
       - backend
