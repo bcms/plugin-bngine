@@ -8,14 +8,14 @@
     "lint:vue": "vue-cli-service lint",
     "build:backend": "tsc --project tsconfig.backend.json",
     "bundle": "bcms --plugin bundle",
-    "deploy": "bcms --plugin deploy --co http://localhost:8081"
+    "deploy": "bcms --plugin deploy"
   },
   "devDependencies": {
     "@banez/queue": "^1.0.0",
-    "@becomes/cms-backend": "^3.0.0-alpha.5",
-    "@becomes/cms-cli": "^2.2.4",
-    "@becomes/cms-sdk": "^3.0.0",
-    "@becomes/cms-ui": "^3.0.0-alpha.21",
+    "@becomes/cms-backend": "^3.1.1",
+    "@becomes/cms-cli": "^2.3.3",
+    "@becomes/cms-sdk": "^3.2.0",
+    "@becomes/cms-ui": "^3.1.1",
     "@becomes/purple-cheetah": "^3.5.1",
     "@becomes/purple-cheetah-mod-fsdb": "^1.1.1",
     "@becomes/purple-cheetah-mod-jwt": "^1.1.0",
@@ -35,7 +35,7 @@
     "@vue/compiler-sfc": "^3.2.11",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^6.7.2",
+    "eslint": "^7.30.0",
     "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-vue": "^7.17.0",
     "gsap": "file:packs/gsap-bonus.tgz",
