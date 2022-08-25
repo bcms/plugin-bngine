@@ -31,7 +31,7 @@ export async function createBngine(): Promise<Bngine> {
     };
     try {
       await System.exec(pipe.cmd, (type, chunk) => {
-        exo[type] = chunk;
+        exo[type] += chunk;
         // TODO: Trigger pipe socket event update
         // TODO: Improve implementation
         socketManager.emitToScope({
