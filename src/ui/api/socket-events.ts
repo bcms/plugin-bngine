@@ -1,4 +1,4 @@
-import { JobPipe } from '@backend/types';
+import type { JobPipe } from '../../backend/types';
 
 // eslint-disable-next-line no-shadow
 export enum JobSocketEventName {

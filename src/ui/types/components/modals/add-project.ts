@@ -1,4 +1,4 @@
-import { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
+import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
 
 export interface BCMSAddProjectModalOutputData {
   projectName: string;

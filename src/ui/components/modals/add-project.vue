@@ -1,10 +1,14 @@
 <script lang="tsx">
-import { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
-import {
+import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
+import type {
   BCMSAddProjectModalInputData,
   BCMSAddProjectModalOutputData,
-} from 'src/ui/types';
-import { BCMSModalWrapper, BCMSTextAreaInput, BCMSTextInput } from '@becomes/cms-ui/components';
+} from '../../types';
+import {
+  BCMSModalWrapper,
+  BCMSTextAreaInput,
+  BCMSTextInput,
+} from '@becomes/cms-ui/components';
 import { defineComponent, ref } from 'vue';
 
 interface ValidationType {

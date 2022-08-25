@@ -1,6 +1,6 @@
 import type { GetterTree, MutationTree } from 'vuex';
 import { defaultEntryGetters, defaultEntryMutations } from './_defaults';
-import { Job, JobLite } from '../../backend/types';
+import type { Job, JobLite } from '../../backend/types';
 import {
   StoreGetterTypes,
   StoreMutationTypes,

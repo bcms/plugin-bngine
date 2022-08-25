@@ -1,14 +1,14 @@
 <script lang="tsx">
-import { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
-import {
+import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
+import type {
   BCMSOtherProjectsModalInputData,
   BCMSOtherProjectsModalOutputData,
-} from 'src/ui/types';
+} from '../../types';
 import { BCMSButton, BCMSModalWrapper } from '@becomes/cms-ui/components';
 import { computed, defineComponent, ref } from 'vue';
 import { useStore } from '../../store';
 import { useApi } from '../../api';
-import { Project } from '@backend/types';
+import type { Project } from '../../../backend/types';
 
 type Data = BCMSModalInputDefaults<BCMSOtherProjectsModalOutputData>;
 

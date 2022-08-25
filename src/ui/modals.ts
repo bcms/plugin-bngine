@@ -1,5 +1,5 @@
-import { BCMSModalServiceItem } from '@becomes/cms-ui/types';
-import {
+import type { BCMSModalServiceItem } from '@becomes/cms-ui/types';
+import type {
   BCMSAddProjectModalInputData,
   BCMSAddProjectModalOutputData,
   BCMSJobDetailsModalInputData,

@@ -5,7 +5,7 @@ import { store } from './ui/store';
 import App from './ui/app.vue';
 import router from './ui/router';
 import { CustomModals, registerModals } from './ui/modals';
-import { BCMSBngineCustomSocketEvents } from './ui/api';
+import type { BCMSBngineCustomSocketEvents } from './ui/api';
 import './ui/assets/styles/_main.scss';
 
 declare global {

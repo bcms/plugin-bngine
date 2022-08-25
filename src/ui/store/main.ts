@@ -1,5 +1,5 @@
 import { createLogger, createStore, GetterTree, MutationTree } from 'vuex';
-import { Store, StoreGetters, StoreMutations, StoreState } from '../types';
+import type { Store, StoreGetters, StoreMutations, StoreState } from '../types';
 import * as ProjectStore from './project';
 import * as JobStore from './job';
 

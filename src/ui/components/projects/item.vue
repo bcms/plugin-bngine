@@ -4,17 +4,15 @@ import {
   BCMSCodeEditor,
   BCMSTextInput,
 } from '@becomes/cms-ui/components';
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  PropType,
-  ref,
-} from 'vue';
+import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 import { useApi } from '../../api';
 import { BCMSCommandItem, BCMSVariableItem } from '.';
 import BCMSProjectSectionWrapper from './section-wrapper.vue';
-import { Project, ProjectRunCmd, ProjectVar } from 'src/backend/types';
+import type {
+  Project,
+  ProjectRunCmd,
+  ProjectVar,
+} from '../../../backend/types';
 
 const component = defineComponent({
   props: {
