@@ -184,7 +184,6 @@ export async function createBngine(): Promise<Bngine> {
                     if (run.command.indexOf(key) === -1) {
                       loop = false;
                     } else {
-                      console.log(key, variable.value);
                       run.command = run.command.replace(key, variable.value);
                     }
                   }
