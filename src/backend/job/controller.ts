@@ -24,7 +24,7 @@ import {
 } from '../types';
 import { createBodyCheckerAndJwtChecker, IDUtil } from '../util';
 import type { BCMSUserCustomPool } from '@becomes/cms-backend/types';
-import { BCMSConfig } from '@becomes/cms-backend/src/config';
+import { BCMSConfig } from '@becomes/cms-backend/config';
 import { ProjectVarFSDBSchema } from '../schemas';
 
 interface Setup {
