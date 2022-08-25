@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:vue": "vue-cli-service serve --host 0.0.0.0 --port 8080",
+    "dev:ui": "vue-cli-service serve --host 0.0.0.0 --port 8080",
     "build:ui": "vue-cli-service build --dest dist/ui",
     "lint:vue": "vue-cli-service lint",
     "build:backend": "tsc --project tsconfig.backend.json",
@@ -57,6 +57,7 @@
     "@becomes/cms-backend": "@becomes/cms-backend"
   },
   "dependencies": {
+    "ansi-to-html": "^0.7.2",
     "html-escaper": "^3.0.3"
   }
 }
