@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev:vue": "vue-cli-service serve --host 0.0.0.0 --port 8080",
-    "build:vue": "vue-cli-service build --dest dist/ui",
+    "build:ui": "vue-cli-service build --dest dist/ui",
     "lint:vue": "vue-cli-service lint",
     "build:backend": "tsc --project tsconfig.backend.json",
     "bundle": "bcms --plugin bundle",
