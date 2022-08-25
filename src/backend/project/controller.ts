@@ -13,18 +13,20 @@ import {
 import { FS, HTTPStatus } from '@becomes/purple-cheetah/types';
 import { ProjectFactory } from '.';
 import { Repo } from '../repo';
-import {
+import type {
   BodyCheckerOutput,
   ProjectGitRepo,
-  ProjectGitRepoFSDBSchema,
   ProjectProtected,
   ProjectRunCmd,
-  ProjectRunCmdFSDBSchema,
   ProjectVar,
-  ProjectVarFSDBSchema,
 } from '../types';
 import { createBodyCheckerAndJwtChecker, ProjectHelper, System } from '../util';
 import { createProjectRepo } from './repository';
+import {
+  ProjectGitRepoFSDBSchema,
+  ProjectRunCmdFSDBSchema,
+  ProjectVarFSDBSchema,
+} from '../schemas';
 
 interface Setup {
   fs: FS;

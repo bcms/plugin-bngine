@@ -1,13 +1,7 @@
 <script lang="tsx">
-import { BCMSUser } from '@becomes/cms-sdk/types';
+import type { BCMSUser } from '@becomes/cms-sdk/types';
 import { BCMSButton, BCMSIcon } from '@becomes/cms-ui/components';
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  PropType,
-  ref,
-} from 'vue';
+import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 import { Job, JobLite, JobStatus } from '../../../backend/types';
 import { useStore } from '../../store';
 

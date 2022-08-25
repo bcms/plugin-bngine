@@ -1,13 +1,9 @@
 import { BCMSConfig } from '@becomes/cms-backend/config';
 import { createMongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb';
 import { createFSDBRepository } from '@becomes/purple-cheetah-mod-fsdb';
-import {
-  ProjectFSDBSchema,
-  ProjectMongoDBSchema,
-  ProjectRepoMethods,
-  Project,
-} from '../types';
+import type { ProjectRepoMethods, Project } from '../types';
 import { Repo } from '../repo';
+import { ProjectFSDBSchema, ProjectMongoDBSchema } from '../schemas';
 
 export function createProjectRepo(): void {
   const name = 'Project repository';

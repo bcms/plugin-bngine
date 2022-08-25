@@ -1,5 +1,6 @@
-import { ProjectVar, Job, JobLite } from '../../backend/types';
-import { Store, StoreMutationTypes } from '../types';
+import type { ProjectVar, Job, JobLite } from '../../backend/types';
+import type { Store } from '../types';
+import { StoreMutationTypes } from '../types';
 
 export interface JobHandler {
   start(data: {

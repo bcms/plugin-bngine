@@ -1,13 +1,13 @@
 <script lang="tsx">
-import { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
-import {
+import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
+import type {
   BCMSJobDetailsModalInputData,
   BCMSJobDetailsModalOutputData,
-} from 'src/ui/types';
+} from '../../types';
 import { BCMSModalWrapper } from '@becomes/cms-ui/components';
 import { defineComponent, ref } from 'vue';
 import { BCMSJobsInfo, BCMSJobsPipe } from '../jobs';
-import { Job } from '../../../backend/types';
+import type { Job } from '../../../backend/types';
 import { useApi } from '../../api';
 
 interface Data extends BCMSModalInputDefaults<BCMSJobDetailsModalOutputData> {

@@ -5,7 +5,7 @@ import {
   BCMSIcon,
 } from '@becomes/cms-ui/components';
 import { defineComponent, PropType } from 'vue';
-import { ProjectVar } from 'src/backend/types';
+import type { ProjectVar } from '../../../backend/types';
 
 const component = defineComponent({
   props: {

@@ -1,6 +1,6 @@
-import { BCMSStoreGetterQuery } from '@becomes/cms-ui/types';
+import type { BCMSStoreGetterQuery } from '@becomes/cms-ui/types';
 import { StoreGetterTypes, StoreMutationTypes, StoreState } from '.';
-import { Project } from '../../../backend/types';
+import type { Project } from '../../../backend/types';
 
 type EntityItem = Project;
 

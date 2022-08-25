@@ -10,7 +10,7 @@ import {
 } from 'vue';
 import { useApi } from '../../api';
 import { useStore } from '../../store';
-import { Job, JobLite } from '../../../backend/types';
+import type { Job, JobLite } from '../../../backend/types';
 import { BCMSJobsInfo, BCMSJobsPipe } from '.';
 
 const component = defineComponent({

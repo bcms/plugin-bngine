@@ -1,8 +1,9 @@
+import { JobFSDBSchema, JobMongoDBSchema } from '../schemas';
 import { BCMSConfig } from '@becomes/cms-backend/config';
 import { createFSDBRepository } from '@becomes/purple-cheetah-mod-fsdb';
 import { createMongoDBCachedRepository } from '@becomes/purple-cheetah-mod-mongodb';
 import { Repo } from '../repo';
-import { Job, JobFSDBSchema, JobMongoDBSchema, JobRepoMethods } from '../types';
+import type { Job, JobRepoMethods } from '../types';
 
 export function createJobRepo(): void {
   const name = 'Job repository';

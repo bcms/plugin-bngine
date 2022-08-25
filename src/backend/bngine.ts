@@ -1,3 +1,4 @@
+import { BCMSConfig } from '@becomes/cms-backend/config';
 import { useFS, useLogger } from '@becomes/purple-cheetah';
 import { useSocket } from '@becomes/purple-cheetah-mod-socket';
 import * as path from 'path';
@@ -7,7 +8,11 @@ import { createQueue, IDUtil, System } from './util';
 
 export async function createBngine(): Promise<Bngine> {
   const queue = createQueue({ name: 'Bngine' });
-  const fs = useFS();
+  const fs = useFS({
+    base: BCMSConfig.local
+      ? path.join(process.cwd(), 'storage', 'bngine')
+      : '/bcms-share/bngine',
+  });
   const logger = useLogger({ name: 'Bngine' });
   const socketManager = useSocket();
 
@@ -49,8 +54,8 @@ export async function createBngine(): Promise<Bngine> {
     } catch (error) {
       pipe.status = JobStatus.FAIL;
     }
-    await fs.save(path.join(process.cwd(), pipe.stdout), exo.stdout);
-    await fs.save(path.join(process.cwd(), pipe.stderr), exo.stderr);
+    await fs.save(pipe.stdout.split('/'), exo.stdout);
+    await fs.save(pipe.stderr.split('/'), exo.stderr);
     pipe.timeToExec = Date.now() - pipe.createdAt;
     job.pipe.push(pipe);
     socketManager.emitToScope({
@@ -62,7 +67,7 @@ export async function createBngine(): Promise<Bngine> {
       },
     });
   }
-  async function initRepo(job: Job, project: Project, logsBasePath: string) {
+  async function initRepo(job: Job, project: Project, logsBasePath: string[]) {
     // Checkout to branch
     {
       const pipe: JobPipe = {
@@ -82,8 +87,8 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-      pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
-      pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
+      pipe.stdout = `${logsBasePath.join('/')}/${pipe.id}_out`;
+      pipe.stderr = `${logsBasePath.join('/')}/${pipe.id}_err`;
       await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
@@ -109,8 +114,8 @@ export async function createBngine(): Promise<Bngine> {
         status: JobStatus.RUNNING,
         timeToExec: -1,
       };
-      pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
-      pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
+      pipe.stdout = `${logsBasePath.join('/')}/${pipe.id}_out`;
+      pipe.stderr = `${logsBasePath.join('/')}/${pipe.id}_err`;
       await runPipe(job, project, pipe);
       if (pipe.status === JobStatus.FAIL && pipe.ignoreIfFail === false) {
         job.status = JobStatus.FAIL;
@@ -150,9 +155,9 @@ export async function createBngine(): Promise<Bngine> {
         async handler() {
           const date = new Date();
           const dateString = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
-          const logsBasePath = `storage/bngine/${dateString}`;
-          if (!(await fs.exist(path.join(process.cwd(), logsBasePath)))) {
-            await fs.mkdir(path.join(process.cwd(), logsBasePath));
+          const logsBasePath = ['logs', `${dateString}`];
+          if (!(await fs.exist(logsBasePath))) {
+            await fs.mkdir(logsBasePath);
           }
           job.inQueueFor = Date.now() - job.createdAt;
           job.status = JobStatus.RUNNING;
@@ -199,8 +204,8 @@ export async function createBngine(): Promise<Bngine> {
                   status: JobStatus.RUNNING,
                   timeToExec: -1,
                 };
-                pipe.stderr = `${logsBasePath}/${pipe.id}_err`;
-                pipe.stdout = `${logsBasePath}/${pipe.id}_out`;
+                pipe.stderr = `${logsBasePath.join('/')}/${pipe.id}_err.log`;
+                pipe.stdout = `${logsBasePath.join('/')}/${pipe.id}_out.log`;
                 await runPipe(internalJob, project, pipe);
 
                 if (

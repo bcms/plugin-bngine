@@ -1,6 +1,6 @@
 import type { GetterTree, MutationTree } from 'vuex';
 import { defaultEntryGetters, defaultEntryMutations } from './_defaults';
-import { Project } from '../../backend/types';
+import type { Project } from '../../backend/types';
 import {
   StoreGetterTypes,
   StoreMutationTypes,

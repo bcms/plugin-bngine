@@ -1,6 +1,6 @@
-import { BCMSStoreGetterQuery } from '@becomes/cms-ui/types';
+import type { BCMSStoreGetterQuery } from '@becomes/cms-ui/types';
 import { StoreGetterTypes, StoreMutationTypes, StoreState } from '.';
-import { Job, JobLite } from '../../../backend/types';
+import type { Job, JobLite } from '../../../backend/types';
 
 type EntityItem = Job | JobLite;
 

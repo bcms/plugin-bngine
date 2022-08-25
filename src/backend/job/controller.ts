@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   createController,
   createControllerMethod,
@@ -20,10 +21,11 @@ import {
   JobLite,
   JobStatus,
   ProjectVar,
-  ProjectVarFSDBSchema,
 } from '../types';
 import { createBodyCheckerAndJwtChecker, IDUtil } from '../util';
 import type { BCMSUserCustomPool } from '@becomes/cms-backend/types';
+import { BCMSConfig } from '@becomes/cms-backend/src/config';
+import { ProjectVarFSDBSchema } from '../schemas';
 
 interface Setup {
   bngine: Bngine;
@@ -80,7 +82,9 @@ export const JobController = createController<Setup>({
     return {
       bngine,
       fs: useFS({
-        base: process.cwd(),
+        base: BCMSConfig.local
+          ? path.join(process.cwd(), 'storage', 'bngine')
+          : '/bcms-share/bngine',
       }),
     };
   },
@@ -190,10 +194,10 @@ export const JobController = createController<Setup>({
           }
           let stdout = '';
           let stderr = '';
-          if (await fs.exist(pipe.stdout, true)) {
+          if (await fs.exist(pipe.stdout.split('/'), true)) {
             stdout = await fs.readString(pipe.stdout);
           }
-          if (await fs.exist(pipe.stderr, true)) {
+          if (await fs.exist(pipe.stderr.split('/'), true)) {
             stderr = await fs.readString(pipe.stderr);
           }
           return { stderr, stdout };

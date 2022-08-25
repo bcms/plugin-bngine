@@ -1,19 +1,16 @@
 <script lang="tsx">
 import { escape } from 'html-escaper';
 import { BCMSIcon } from '@becomes/cms-ui/components';
-import {
-  computed,
-  defineComponent,
-  onUnmounted,
-  PropType,
-  ref,
-} from 'vue';
+import { computed, defineComponent, onUnmounted, PropType, ref } from 'vue';
+import AnsiToHtml from 'ansi-to-html';
 import {
   JobSocketEventName,
   JobSocketEventPipeUpdate,
   useApi,
 } from '../../api';
 import { JobPipe, JobStatus } from '../../../backend/types';
+
+const converter = new AnsiToHtml();
 
 const component = defineComponent({
   props: {
@@ -31,24 +28,33 @@ const component = defineComponent({
     const api = useApi();
 
     let isFirstLogFetch = true;
-    const showOutput = ref(false); 
+    const showOutput = ref(false);
 
     const output = computed(
       () =>
         `${
           log.value.stdout
-            ? log.value.stdout
-                .split('\n')
-                .map((txt) => parseText(txt, 'out'))
-                .join('')
-            : ''
+            ? `<pre>${converter.toHtml(escape(log.value.stdout))}</pre>`
+            : // ? log.value.stdout
+              //     .split('\n')
+              //     .map((txt) => parseText(txt, 'out'))
+              //     .join('')
+              ''
         } ${
           log.value.stderr
-            ? log.value.stderr
-                .split('\n')
-                .map((txt) => parseText(txt, 'err'))
-                .join('')
-            : ''
+            ? `<div style="color: red; font-weight: bold; margin: ${
+                log.value.stdout ? '30px' : '0'
+              } 0 10px 0;">
+                  ➤ ERRORS ↴↴↴
+              </div>
+              <pre style="border-left: 1px solid red; padding-left: 13px">${converter.toHtml(
+                escape(log.value.stderr)
+              )}</pre>`
+            : // ? log.value.stderr
+              //     .split('\n')
+              //     .map((txt) => parseText(txt, 'err'))
+              //     .join('')
+              ''
         }`
     );
 
@@ -71,14 +77,14 @@ const component = defineComponent({
       }
     );
 
-    function parseText(txt: string, type: 'err' | 'out') {
-      return `
-      <span class="whitespace-nowrap ${type === 'err' ? 'text-red' : ''}">
-        ${escape(txt).replace(/ /g, '&nbsp;')}
-      </span>
-      <br />
-    `;
-    }
+    // function parseText(txt: string, type: 'err' | 'out') {
+    //   return `
+    //   <span class="whitespace-nowrap ${type === 'err' ? 'text-red' : ''}">
+    //     ${escape(txt).replace(/ /g, '&nbsp;')}
+    //   </span>
+    //   <br />
+    // `;
+    // }
 
     function parseMillis(millis: number) {
       if (millis > 60000) {

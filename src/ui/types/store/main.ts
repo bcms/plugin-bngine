@@ -1,7 +1,7 @@
-import { Project, Job, JobLite } from '../../../backend/types';
-import { CommitOptions, DispatchOptions, Store as VuexStore } from 'vuex';
-import { StoreProjectGetters, StoreProjectMutations } from './project';
-import { StoreJobGetters, StoreJobMutations } from './job';
+import type { Project, Job, JobLite } from '../../../backend/types';
+import type { CommitOptions, DispatchOptions, Store as VuexStore } from 'vuex';
+import type { StoreProjectGetters, StoreProjectMutations } from './project';
+import type { StoreJobGetters, StoreJobMutations } from './job';
 
 export interface StoreState {
   project: Project[];

@@ -1,12 +1,7 @@
 <script lang="tsx">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  PropType,
-} from 'vue';
+import { computed, defineComponent, onMounted, PropType } from 'vue';
 import { BCMSJobItem } from '.';
-import { Job, JobLite } from '../../../backend/types';
+import type { Job, JobLite } from '../../../backend/types';
 import { useApi } from '../../api';
 import { useStore } from '../../store';
 
