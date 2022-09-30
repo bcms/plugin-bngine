@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router';
 
@@ -19,11 +18,11 @@ const component = defineComponent({
       const hash = route.hash;
       return props.routes.find((e) => e.path === hash);
     });
-    const loaded = ref(false)
+    const loaded = ref(false);
 
     onMounted(() => {
       loaded.value = true;
-    })
+    });
 
     return () => (
       <div>
@@ -37,4 +36,3 @@ const component = defineComponent({
   },
 });
 export default component;
-</script>

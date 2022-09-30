@@ -12,6 +12,7 @@ import {
   BCMSOtherProjectsModal,
   Layout,
 } from './components';
+import PluginLayout from './components/plugin-layout';
 import { useStore } from './store';
 import { StoreMutationTypes } from './types';
 import { RouterView } from 'vue-router';
@@ -93,12 +94,14 @@ const component = defineComponent({
     return () => (
       <>
         <div id="plugin_nav" />
-        <Layout>
-          <RouterView />
-        </Layout>
-        <BCMSAddProjectModal />
-        <BCMSJobDetailsModal />
-        <BCMSOtherProjectsModal />
+        <PluginLayout>
+          <Layout>
+            <RouterView />
+          </Layout>
+          <BCMSAddProjectModal />
+          <BCMSJobDetailsModal />
+          <BCMSOtherProjectsModal />
+        </PluginLayout>
       </>
     );
   },
