@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from '../views/home.vue';
-import Projects from '../views/projects.vue';
+import Home from '../views/home';
+import Projects from '../views/projects';
 
 const router = createRouter({
   history: createWebHashHistory('/dashboard/plugin/bcms-plugin---name'),

@@ -1,4 +1,3 @@
-<script lang="tsx">
 import {
   BCMSButton,
   BCMSCodeEditor,
@@ -7,7 +6,7 @@ import {
 import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 import { useApi } from '../../api';
 import { BCMSCommandItem, BCMSVariableItem } from '.';
-import BCMSProjectSectionWrapper from './section-wrapper.vue';
+import BCMSProjectSectionWrapper from './section-wrapper';
 import type {
   Project,
   ProjectRunCmd,
@@ -345,4 +344,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

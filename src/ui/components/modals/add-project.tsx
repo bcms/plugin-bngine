@@ -1,4 +1,3 @@
-<script lang="tsx">
 import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
 import type {
   BCMSAddProjectModalInputData,
@@ -196,4 +195,3 @@ const component = defineComponent({
   },
 });
 export default component;
-</script>

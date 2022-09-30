@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { computed, defineComponent, onMounted, PropType } from 'vue';
 import { BCMSJobItem } from '.';
 import type { Job, JobLite } from '../../../backend/types';
@@ -64,4 +63,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

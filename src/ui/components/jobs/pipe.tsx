@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { escape } from 'html-escaper';
 import { BCMSIcon } from '@becomes/cms-ui/components';
 import { computed, defineComponent, onUnmounted, PropType, ref } from 'vue';
@@ -183,4 +182,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { BCMSButton } from '@becomes/cms-ui/components';
 import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { JobStatus } from '../../backend/types';
@@ -135,4 +134,3 @@ const component = defineComponent({
   },
 });
 export default component;
-</script>

@@ -1,4 +1,3 @@
-<script lang="tsx">
 import {
   computed,
   defineComponent,
@@ -105,4 +104,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

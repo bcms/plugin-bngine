@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { BCMSManagerNav, BCMSSpinner } from '@becomes/cms-ui/components';
 import { defineComponent, ref, Teleport } from 'vue';
 import { useRoute } from 'vue-router';
@@ -70,4 +69,3 @@ const component = defineComponent({
   },
 });
 export default component;
-</script>

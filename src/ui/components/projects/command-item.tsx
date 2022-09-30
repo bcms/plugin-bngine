@@ -1,4 +1,3 @@
-<script lang="tsx">
 import {
   BCMSIcon,
   BCMSTextInput,
@@ -114,4 +113,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

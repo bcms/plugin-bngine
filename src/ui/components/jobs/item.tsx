@@ -1,4 +1,3 @@
-<script lang="tsx">
 import type { BCMSUser } from '@becomes/cms-sdk/types';
 import { BCMSButton, BCMSIcon } from '@becomes/cms-ui/components';
 import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
@@ -196,4 +195,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

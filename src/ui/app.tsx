@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { defineComponent, onUnmounted } from 'vue';
 import {
   JobSocketEventName,
@@ -105,4 +104,3 @@ const component = defineComponent({
   },
 });
 export default component;
-</script>

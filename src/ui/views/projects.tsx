@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { computed, defineComponent, onMounted } from 'vue';
 import { useApi } from '../api';
 import { BCMSProjectItem } from '../components';
@@ -34,4 +33,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

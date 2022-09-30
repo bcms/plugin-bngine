@@ -1,4 +1,3 @@
-<script lang="tsx">
 import {
   BCMSTextInput,
   BCMSPasswordInput,
@@ -72,4 +71,3 @@ const component = defineComponent({
 });
 
 export default component;
-</script>

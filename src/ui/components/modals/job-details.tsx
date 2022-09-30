@@ -1,4 +1,3 @@
-<script lang="tsx">
 import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
 import type {
   BCMSJobDetailsModalInputData,
@@ -125,4 +124,3 @@ const component = defineComponent({
   },
 });
 export default component;
-</script>
