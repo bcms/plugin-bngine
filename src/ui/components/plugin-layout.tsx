@@ -15,7 +15,7 @@ const component = defineComponent({
     });
 
     return () => (
-      <div id="test" class={theme.value}>
+      <div class={theme.value}>
         {ctx.slots.default ? ctx.slots.default() : <></>}
       </div>
     );

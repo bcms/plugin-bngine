@@ -62,7 +62,7 @@ const component = defineComponent({
         >
           <BCMSIcon
             src="/trash"
-            class="w-6 h-6 text-dark opacity-50 fill-current transition-all duration-300 group-hover:opacity-100 group-hover:text-red group-focus-visible:opacity-100 group-focus-visible:text-red"
+            class="w-6 h-6 text-dark opacity-50 fill-current transition-all duration-300 group-hover:opacity-100 group-hover:text-red group-focus-visible:opacity-100 group-focus-visible:text-red dark:text-grey dark:opacity-100"
           />
         </button>
       </div>

@@ -124,7 +124,7 @@ const component = defineComponent({
             </div>
           ) : (
             <>
-              <h1 class="text-3xl leading-tight mb-7.5">Completed Jobs</h1>
+              <h1 class="text-3xl leading-tight mb-7.5 dark:text-light">Completed Jobs</h1>
               <BCMSJobsList jobs={jobs.value} jobCount={jobCount.value} />
             </>
           )}

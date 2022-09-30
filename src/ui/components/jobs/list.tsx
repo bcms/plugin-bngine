@@ -36,7 +36,7 @@ const component = defineComponent({
 
     return () => (
       <ul>
-        <li class="hidden border-b border-grey border-opacity-50 py-4 relative font-semibold gap-5 leading-tight -tracking-0.01 items-center justify-between 2xl:grid 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px]">
+        <li class="hidden border-b border-grey border-opacity-50 py-4 relative font-semibold gap-5 leading-tight -tracking-0.01 items-center justify-between 2xl:grid 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] dark:text-light">
           <div></div>
           <div>Status</div>
           <div>Duration</div>

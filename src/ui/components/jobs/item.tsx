@@ -84,7 +84,7 @@ const component = defineComponent({
     });
 
     return () => (
-      <li class="grid grid-cols-1 gap-5 leading-tight -tracking-wider items-center justify-between relative py-5 border-b border-dark border-opacity-20 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] 2xl:py-3">
+      <li class="grid grid-cols-1 gap-5 leading-tight -tracking-wider items-center justify-between relative py-5 border-b border-dark border-opacity-20 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] 2xl:py-3 dark:text-light">
         <div
           class="col-start-1 col-end-2 2xl:pl-2.5 2xl:col-start-auto 2xl:col-end-auto"
           title={`${props.jobCount - props.index}.`}
@@ -98,8 +98,8 @@ const component = defineComponent({
               : props.job.status === JobStatus.FAIL
               ? 'text-red'
               : props.job.status === JobStatus.QUEUE
-              ? 'text-pink'
-              : 'text-dark'
+              ? 'text-pink dark:text-yellow'
+              : 'text-dark dark:text-light'
           } font-medium before:content-[attr(data-column-name)] before:w-15 before:inline-block before:font-medium before:text-grey before:text-xs before:leading-tight 2xl:before:hidden 2xl:col-start-auto 2xl:col-end-auto`}
           data-column-name="Status"
           title={props.job.status}
@@ -174,7 +174,7 @@ const component = defineComponent({
             >
               <BCMSIcon
                 src="/eye/show"
-                class="w-6 h-6 text-grey fill-current transition-colors duration-300 group-hover:text-dark group-focus-visible:text-dark"
+                class="w-6 h-6 text-grey fill-current transition-colors duration-300 group-hover:text-dark group-focus-visible:text-dark dark:group-hover:text-light dark:group-focus-visible:text-light"
               />
             </BCMSButton>
           ) : (

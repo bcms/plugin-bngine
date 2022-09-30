@@ -77,7 +77,7 @@ const component = defineComponent({
         {job.value && job.value.pipe && (
           <>
             <div class="mb-7.5">
-              <h4 class="text-xl leading-tight mb-7.5 lg:text-2xl 2xl:text-4xl">
+              <h4 class="text-xl leading-tight mb-7.5 lg:text-2xl 2xl:text-4xl dark:text-light">
                 Running Job
               </h4>
               <div class="mt-5">

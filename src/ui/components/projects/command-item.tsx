@@ -74,7 +74,7 @@ const component = defineComponent({
                 >
                   <BCMSIcon
                     src="/arrow/up"
-                    class="w-6 h-6 text-dark opacity-50 fill-current transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+                    class="w-6 h-6 text-dark opacity-50 fill-current transition-all duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 dark:text-grey dark:opacity-100 dark:group-hover:text-light dark:group-focus-visible:text-light"
                   />
                 </button>
               )}
@@ -85,14 +85,14 @@ const component = defineComponent({
                 >
                   <BCMSIcon
                     src="/arrow/down"
-                    class="w-6 h-6 text-dark opacity-50 fill-current transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+                    class="w-6 h-6 text-dark opacity-50 fill-current transition-all duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 dark:text-grey dark:opacity-100 dark:group-hover:text-light dark:group-focus-visible:text-light"
                   />
                 </button>
               )}
               <button class="group flex" onClick={() => ctx.emit('remove')}>
                 <BCMSIcon
                   src="/trash"
-                  class="w-6 h-6 text-dark opacity-50 fill-current transition-all duration-300 group-hover:opacity-100 group-hover:text-red group-focus-visible:opacity-100 group-focus-visible:text-red"
+                  class="w-6 h-6 text-dark opacity-50 fill-current transition-all duration-300 group-hover:opacity-100 group-hover:text-red group-focus-visible:opacity-100 group-focus-visible:text-red dark:text-grey dark:opacity-100"
                 />
               </button>
             </div>

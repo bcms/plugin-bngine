@@ -51,7 +51,7 @@ const component = defineComponent({
       <div class="flex mb-5">
         <div class="w-full">
           <div class="flex items-center justify-between mb-5">
-            <h3 class="text-xl leading-tight capitalize truncate mr-3 lg:text-2xl xl:text-[28px]">
+            <h3 class="text-xl leading-tight capitalize truncate mr-3 lg:text-2xl xl:text-[28px] dark:text-light">
               {projectById(props.job.project).value?.name}
             </h3>
             <div
@@ -61,17 +61,17 @@ const component = defineComponent({
                   : props.job.status === JobStatus.FAIL
                   ? 'text-red'
                   : props.job.status === JobStatus.QUEUE
-                  ? 'text-pink'
-                  : 'text-dark'
+                  ? 'text-pink dark:text-yellow'
+                  : 'text-dark dark:text-light'
               }`}
             >
               {props.job.status}
             </div>
           </div>
-          <h5 class="mb-5 leading-tight font-semibold">
+          <h5 class="mb-5 leading-tight font-semibold dark:text-light">
             {props.job.repo?.branch}
           </h5>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between dark:text-light">
             <div>
               Duration:{' '}
               <span class="font-semibold">

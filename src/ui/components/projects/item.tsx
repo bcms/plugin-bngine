@@ -176,8 +176,8 @@ const component = defineComponent({
     return () => (
       <div
         class={`flex flex-col border rounded-2.5 transition-colors duration-300 hover:border-green focus-within:border-green ${
-          expanded.value ? 'border-green' : 'border-grey'
-        }`}
+          expanded.value ? 'border-green dark:border-yellow' : 'border-grey'
+        } dark:hover:border-yellow dark:focus-within:border-yellow`}
       >
         <div class="flex flex-col">
           <button
@@ -186,7 +186,9 @@ const component = defineComponent({
               expanded.value = !expanded.value;
             }}
           >
-            <span class="text-xl capitalize">{props.project.name}</span>
+            <span class="text-xl capitalize dark:text-light">
+              {props.project.name}
+            </span>
             <div class="flex items-center gap-4">
               <BCMSButton
                 kind="secondary"
@@ -206,8 +208,8 @@ const component = defineComponent({
                 viewBox="0 0 14 8"
                 class={`fill-current w-3.5 h-3.5 ${
                   expanded.value
-                    ? 'rotate-180 text-opacity-100'
-                    : 'text-dark text-opacity-50'
+                    ? 'rotate-180 text-opacity-100 dark:text-light'
+                    : 'text-dark text-opacity-50 dark:text-light dark:text-opacity-50'
                 } transition-all duration-300`}
               >
                 <path

@@ -137,8 +137,10 @@ const component = defineComponent({
         <button
           class={`text-dark flex items-center text-left w-full p-4 font-medium ${
             showOutput.value
-              ? 'bg-light rounded-t-2xl'
-              : 'bg-white rounded-2xl shadow-cardLg'
+              ? 'bg-light rounded-t-2xl dark:bg-dark dark:bg-opacity-20'
+              : 'bg-white rounded-2xl shadow-cardLg dark:bg-dark dark:bg-opacity-20'
+          } dark:text-light ${
+            props.inRunningJob ? 'dark:bg-grey dark:bg-opacity-20' : ''
           }`}
           onClick={getLogs}
         >
@@ -158,12 +160,12 @@ const component = defineComponent({
                 ? 'text-green'
                 : props.pipe.status === JobStatus.FAIL &&
                   props.pipe.ignoreIfFail
-                ? 'text-yellow'
+                ? 'text-yellow dark:text-grey'
                 : props.pipe.status === JobStatus.FAIL
                 ? 'text-red'
                 : props.pipe.status === JobStatus.QUEUE
-                ? 'text-pink'
-                : 'text-dark'
+                ? 'text-pink dark:text-yellow'
+                : 'text-dark dark:text-light'
             }`}
           >
             {props.pipe.title}
@@ -172,7 +174,7 @@ const component = defineComponent({
         </button>
         {showOutput.value && (
           <div
-            class="max-h-[500px] overflow-auto text-[10px] leading-normal tracking-widest p-5 bg-white font-mono"
+            class="max-h-[500px] overflow-auto text-[10px] leading-normal tracking-widest p-5 bg-white font-mono dark:bg-grey dark:bg-opacity-30 dark:text-light"
             v-html={output.value}
           />
         )}
