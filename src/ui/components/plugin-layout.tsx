@@ -1,24 +1,33 @@
-import { defineComponent, onUnmounted, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted } from 'vue';
 
 const component = defineComponent({
   setup(_, ctx) {
-    const theme = ref(window.bcms.sdk.storage.get('theme') || 'light');
     const storageUnsub = window.bcms.sdk.storage.subscribe<string>(
       'theme',
       (val) => {
-        theme.value = val;
+        if (val === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
       }
     );
+
+    onMounted(() => {
+      const theme = window.bcms.sdk.storage.get('theme');
+
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    });
 
     onUnmounted(() => {
       storageUnsub();
     });
 
-    return () => (
-      <div class={theme.value}>
-        {ctx.slots.default ? ctx.slots.default() : <></>}
-      </div>
-    );
+    return () => <div>{ctx.slots.default ? ctx.slots.default() : <></>}</div>;
   },
 });
 
