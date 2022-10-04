@@ -15,8 +15,4 @@ module.exports = createBcmsConfig({
     fs: true,
   },
   plugins: ['bcms-plugin---name'],
-  /**
-   * Only letters and numbers are allowed in plugin name.
-   */
-  pluginName: 'Hello World'
 });

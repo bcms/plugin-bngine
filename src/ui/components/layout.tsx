@@ -1,5 +1,6 @@
+import { BCMSJwtRoleName } from '@becomes/cms-sdk/types';
 import { BCMSManagerNav, BCMSSpinner } from '@becomes/cms-ui/components';
-import { defineComponent, ref, Teleport } from 'vue';
+import { defineComponent, onMounted, ref, Teleport } from 'vue';
 import { useRoute } from 'vue-router';
 import { useApi } from '../api';
 import type { BCMSAddProjectModalOutputData } from '../types';
@@ -9,6 +10,7 @@ const component = defineComponent({
     const api = useApi();
     const route = useRoute();
     const showSpinner = ref(false);
+    const showProjects = ref(false);
 
     async function addNewProject(data: BCMSAddProjectModalOutputData) {
       showSpinner.value = true;
@@ -31,6 +33,29 @@ const component = defineComponent({
       showSpinner.value = false;
     }
 
+    onMounted(async () => {
+      showSpinner.value = true;
+      await window.bcms.util.throwable(
+        async () => {
+          return await window.bcms.sdk.user.get();
+        },
+        async (result) => {
+          if (result.roles[0].name === BCMSJwtRoleName.ADMIN) {
+            showProjects.value = true;
+          } else {
+            const policy = result.customPool.policy.plugins?.find(
+              (e) => e.name === window.pluginName
+            );
+            console.log(policy)
+            if (policy && policy.fullAccess) {
+              showProjects.value = true;
+            }
+          }
+        }
+      );
+      showSpinner.value = false;
+    });
+
     return () => (
       <div id={route.hash}>
         <Teleport to="#plugin_nav">
@@ -39,18 +64,28 @@ const component = defineComponent({
             style="left: 0 !important;"
             label="Build engine"
             actionText={route.path === '/projects' ? 'Add new project' : ''}
-            items={[
-              {
-                name: 'Builds',
-                link: '/',
-                selected: route.path === '/',
-              },
-              {
-                name: 'Projects',
-                link: '/projects',
-                selected: route.path === '/projects',
-              },
-            ]}
+            items={
+              showProjects.value
+                ? [
+                    {
+                      name: 'Builds',
+                      link: '/',
+                      selected: route.path === '/',
+                    },
+                    {
+                      name: 'Projects',
+                      link: '/projects',
+                      selected: route.path === '/projects',
+                    },
+                  ]
+                : [
+                    {
+                      name: 'Builds',
+                      link: '/',
+                      selected: route.path === '/',
+                    },
+                  ]
+            }
             onAction={() => {
               window.bcms.modal.custom.addProject.show({
                 onDone: async (data) => {

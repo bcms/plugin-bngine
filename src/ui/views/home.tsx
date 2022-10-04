@@ -1,6 +1,11 @@
+import {
+  BCMSJwtRoleName,
+  BCMSUser,
+  BCMSUserPolicyPlugin,
+} from '@becomes/cms-sdk/types';
 import { BCMSButton } from '@becomes/cms-ui/components';
 import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
-import { JobStatus } from '../../backend/types';
+import { JobStatus, Project } from '../../backend/types';
 import { useApi } from '../api';
 import { BCMSJobsList, BCMSRunningJob } from '../components';
 import { useStore } from '../store';
@@ -12,24 +17,45 @@ const component = defineComponent({
     const CHUNK_SIZE = 20;
     const jobCount = ref(0);
     let atChunk = 0;
+    const user = ref<BCMSUser | undefined>();
 
     const jobs = computed(() => {
       return store.getters.job_items;
     });
-    const projects = computed(() => store.getters.project_items);
-    const firstProject = computed(() => projects.value[0]);
+    const projects = computed(() =>
+      store.getters.project_items.filter((project) =>
+        checkProjectAccess(project)
+      )
+    );
+    const firstProject = computed(() => {
+      if (checkProjectAccess(projects.value[0])) {
+        return projects.value[0];
+      }
+      return undefined;
+    });
     const runningJob = computed(() => {
       const test = store.getters.job_findOne(
         (e) => e.status === JobStatus.RUNNING || e.status === JobStatus.QUEUE
       );
       return test;
     });
+    const policy = ref<BCMSUserPolicyPlugin | undefined>();
+
+    function checkProjectAccess(project?: Project): boolean {
+      return (
+        user.value?.roles[0].name === BCMSJwtRoleName.ADMIN ||
+        policy.value?.fullAccess ||
+        policy.value?.options.find(
+          (e) => e.name === `Run project ${project?.name}`
+        )?.value[0] === 'true'
+      );
+    }
 
     async function buildFirstProject() {
       if (
         await window.bcms.confirm(
           `Start build`,
-          `Are you sure you want to build ${firstProject.value.name}?`
+          `Are you sure you want to build ${firstProject.value?.name}?`
         )
       ) {
         await window.bcms.util.throwable(
@@ -74,6 +100,17 @@ const component = defineComponent({
       await window.bcms.util.throwable(async () => {
         jobCount.value = await api.job.count();
       });
+      await window.bcms.util.throwable(
+        async () => {
+          return await window.bcms.sdk.user.get();
+        },
+        async (result) => {
+          user.value = result;
+          policy.value = result.customPool.policy.plugins?.find(
+            (e) => e.name === window.pluginName
+          );
+        }
+      );
       atChunk = parseInt(`${jobCount.value / CHUNK_SIZE}`) + 1;
 
       nextChunk();
@@ -92,12 +129,10 @@ const component = defineComponent({
     return () => (
       <div>
         <header class="flex items-center justify-between mb-[70px]">
-          {firstProject.value ? (
+          {firstProject.value && (
             <BCMSButton onClick={buildFirstProject}>
               {firstProject.value.name}
             </BCMSButton>
-          ) : (
-            ''
           )}
           {projects.value.length > 1 ? (
             <BCMSButton
@@ -124,7 +159,9 @@ const component = defineComponent({
             </div>
           ) : (
             <>
-              <h1 class="text-3xl leading-tight mb-7.5 dark:text-light">Completed Jobs</h1>
+              <h1 class="text-3xl leading-tight mb-7.5 dark:text-light">
+                Completed Jobs
+              </h1>
               <BCMSJobsList jobs={jobs.value} jobCount={jobCount.value} />
             </>
           )}

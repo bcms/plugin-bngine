@@ -12,27 +12,15 @@ import {
   BCMSOtherProjectsModal,
   Layout,
 } from './components';
-import PluginLayout from './components/plugin-layout';
 import { useStore } from './store';
 import { StoreMutationTypes } from './types';
 import { RouterView } from 'vue-router';
+import { BCMSPluginLayout } from '@becomes/cms-ui/components';
 
 const component = defineComponent({
   setup() {
     const api = useApi();
     const store = useStore();
-    // const routes = [
-    //   {
-    //     name: 'Builds',
-    //     path: '',
-    //     component: Home,
-    //   },
-    //   {
-    //     name: 'Projects',
-    //     path: '#projects',
-    //     component: Projects,
-    //   },
-    // ];
 
     const jobEventUnsub = window.bcms.sdk.socket.subscribe(
       JobSocketEventName.JOB,
@@ -94,14 +82,14 @@ const component = defineComponent({
     return () => (
       <>
         <div id="plugin_nav" />
-        <PluginLayout>
+        <BCMSPluginLayout>
           <Layout>
             <RouterView />
           </Layout>
           <BCMSAddProjectModal />
           <BCMSJobDetailsModal />
           <BCMSOtherProjectsModal />
-        </PluginLayout>
+        </BCMSPluginLayout>
       </>
     );
   },

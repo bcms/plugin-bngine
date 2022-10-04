@@ -1,4 +1,3 @@
-import type { BCMSUser } from '@becomes/cms-sdk/types';
 import { BCMSButton, BCMSIcon } from '@becomes/cms-ui/components';
 import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 import { Job, JobLite, JobStatus } from '../../../backend/types';
@@ -26,7 +25,11 @@ const component = defineComponent({
       return store.getters.project_items;
     });
 
-    const user = ref<BCMSUser | undefined>(undefined);
+    const user = computed(() =>
+      window.bcms.vue.store.getters.user_findOne(
+        (e) => e._id === props.job.userId
+      )
+    );
 
     const duration = ref(
       props.job && props.job.finishedAt > 0
@@ -73,14 +76,9 @@ const component = defineComponent({
     }, 1000);
 
     onMounted(async () => {
-      await window.bcms.util.throwable(
-        async () => {
-          return await window.bcms.sdk.user.get(props.job.userId);
-        },
-        async (result) => {
-          user.value = result;
-        }
-      );
+      await window.bcms.util.throwable(async () => {
+        return await window.bcms.sdk.user.get(props.job.userId);
+      });
     });
 
     return () => (
