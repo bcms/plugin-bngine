@@ -18,7 +18,7 @@ services:
   backend:
     depends_on:
       - shim
-    image: 'becomes/cms-backend-local:1.0.26'
+    image: 'becomes/cms-backend-local:1.0.27'
     ports:
       - '1280:8080'
     volumes:
@@ -58,8 +58,8 @@ services:
     build: .
     ports:
       - '1281:8080'
-    # logging:
-    #   driver: none
+    logging:
+      driver: none
     volumes:
       - type: bind
         source: ./public
