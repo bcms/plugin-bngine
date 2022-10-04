@@ -1,11 +1,36 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "types": ["webpack-env"],
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "importsNotUsedAsValues": "error",
+    "paths": {
+      "@bcms-components/*": ["node_modules/@becomes/cms-ui/components/*"],
+      "@bcms-components": ["node_modules/@becomes/cms-ui/components"],
+      "@bcms": ["node_modules/@becomes/cms-backend/src"],
+      "@bcms/*": ["node_modules/@becomes/cms-backend/src/*"],
+      "@becomes/cms-backend": ["node_modules/@becomes/cms-backend/src"],
+      "@becomes/cms-backend/*": ["node_modules/@becomes/cms-backend/src/*"]
+    }
   },
-  "include": ["src/**/*", "plugins/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "node_modules/@becomes/cms-ui/**/*.vue",
+    "node_modules/@becomes/cms-ui/**/*.ts"
+  ]
 }

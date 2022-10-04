@@ -2,16 +2,23 @@
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
-    "sourceMap": true,
-    "baseUrl": "./",
-    "outDir": "dist/backend",
-    "incremental": true,
-    "esModuleInterop": true
+    "strict": true,
+    "target": "ES2020",
+    "outDir": "./dist/backend",
+    "baseUrl": ".",
+    "rootDir": "src/backend",
+    "skipLibCheck": true,
+    "paths": {
+      "@bcms": ["node_modules/@becomes/cms-backend/src"],
+      "@bcms/*": ["node_modules/@becomes/cms-backend/src/*"],
+      "@becomes/cms-backend": ["node_modules/@becomes/cms-backend/src"],
+      "@becomes/cms-backend/*": ["node_modules/@becomes/cms-backend/src/*"]
+    }
   },
-  "include": ["plugin/backend/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/backend/**/*", "node_modules/@becomes/cms-backend/**/*.ts"]
 }

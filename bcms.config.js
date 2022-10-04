@@ -1,34 +1,18 @@
-const { BCMSConfigBuilder } = require('@becomes/cms-bundler');
+const { createBcmsConfig } = require('@becomes/cms-backend/config');
 
-module.exports = BCMSConfigBuilder({
-  backend: {
-    port: 1282,
-    security: {
-      jwt: {
-        issuer: 'localhost',
-        secret: 'secret',
-      },
-    },
-    database: {
-      // fs: 'bcms',
-      mongodb: {
-        selfHosted: {
-          host: '192.168.1.10',
-          port: 27017,
-          name: 'pinkerton_v2',
-          user: 'test',
-          password: 'test1234',
-          prefix: 'pinkerton',
-        },
-      },
-    },
+module.exports = createBcmsConfig({
+  port: process.env.PORT ? parseInt(process.env.PORT, 10) : 8080,
+  local: true,
+  jwt: {
+    expireIn: process.env.JWT_EXP_AFTER
+      ? parseInt(process.env.JWT_EXP_AFTER, 10)
+      : 600000000,
+    scope: process.env.JWT_SCOPE || 'localhost',
+    secret: process.env.JWT_SECRET || 'secret',
   },
-  plugins: [
-    {
-      name: 'bngine',
-      frontend: {
-        displayName: 'Build Engine',
-      },
-    },
-  ],
+  database: {
+    prefix: process.env.DB_PRFX || 'bcms',
+    fs: true,
+  },
+  plugins: ['bcms-plugin---name'],
 });

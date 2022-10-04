@@ -1,0 +1,400 @@
+openapi: '3.0.0'
+info:
+  version: '2.0.0'
+  title: 'BCMS Plugin Build Engine - REST API'
+  description: 'This is Swagger documentation for the BCMS Plugin Build Engine REST API. It is recommended to use provided tools (like @becomes/cms-client) for communication with CMS but if you need to implement some custom solution this documentation will help you.'
+  contact:
+    name: 'Becomes'
+    url: 'https://thebcms.com/contact'
+    email: 'dev@thebcms.com'
+servers:
+  - url: 'http://localhost:@PORT/api/plugin/@PLUGIN_NAME'
+    description: 'Localhost'
+paths:
+  /project/all:
+    get:
+      tags:
+        - Project
+      summary: Get all projects
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+  /project:
+    post:
+      tags:
+        - Project
+      summary: Create a new project
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                repo:
+                  $ref: '#/components/schemas/ProjectGitRepo'
+                vars:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectVar'
+                run:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectRunCmd'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+    put:
+      tags:
+        - Project
+      summary: Update project
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                repo:
+                  $ref: '#/components/schemas/ProjectGitRepo'
+                vars:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectVar'
+                run:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectRunCmd'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+
+  /project/{id}:
+    get:
+      tags:
+        - Project
+      summary: Get one project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+    delete:
+      tags:
+        - Project
+      summary: Delete project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+
+  /project/directory/{id}:
+    get:
+      tags:
+        - Project
+      summary: Get directory of project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /project/{projectId}/branches:
+    get:
+      tags:
+        - Project
+      summary: Get all branches of project
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /job/start:
+    post:
+      tags:
+        - Job
+      summary: Create a new job
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId:
+                  type: string
+                branches:
+                  type: string
+                vars:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProjectVar'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job:
+                    $ref: '#/components/schemas/Job'
+  /job/all:
+    get:
+      tags:
+        - Job
+      summary: Get all jobs
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          description: limit
+        - in: query
+          name: offset
+          schema:
+            type: number
+          description: offset
+        - in: query
+          name: projectId
+          schema:
+            type: string
+          description: put project id
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job:
+                    $ref: '#/components/schemas/Job'
+  /job/{id}:
+    get:
+      tags:
+        - Job
+      summary: Get one project
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id project
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Job'
+
+components:
+  schemas:
+    ProjectGitRepo:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        sshKey:
+          type: string
+        branch:
+          type: string
+    ProjectVar:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    ProjectRunCmd:
+      type: object
+      properties:
+        title:
+          type: string
+        command:
+          type: string
+        ignoreIfFail:
+          type: boolean
+    Project:
+      type: object
+      properties:
+        _id:
+          type: string
+        createAt:
+          type: number
+        updatedAt:
+          type: number
+        name:
+          type: string
+        repo:
+          $ref: '#/components/schemas/ProjectGitRepo'
+        vars:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectVar'
+        run:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectRunCmd'
+    JobStatus:
+      type: string
+      enum:
+        - SUCCESS
+        - FAIL
+        - RUNNING
+        - QUEUE
+        - CANCELED
+
+    JobPipe:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: number
+        timeToExec:
+          type: number
+        title:
+          type: string
+        cmd:
+          type: string
+        ignoreIfFail:
+          type: boolean
+        stdout:
+          type: string
+        stderr:
+          type: string
+        status:
+          $ref: '#/components/schemas/JobStatus'
+    Job:
+      type: object
+      properties:
+        userId:
+          type: string
+        finishedAt:
+          type: number
+        inQueueFor:
+          type: number
+        repo:
+          type: object
+          properties:
+            name:
+              type: string
+            branch:
+              type: string
+        running:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        project:
+          type: string
+        pipe:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobPipe'
+
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
