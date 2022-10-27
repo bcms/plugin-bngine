@@ -37,6 +37,9 @@ export async function createBngine(): Promise<Bngine> {
     try {
       await System.exec(pipe.cmd, (type, chunk) => {
         exo[type] += chunk;
+        if (type === 'stderr') {
+          exo.stdout += chunk;
+        }
         // TODO: Trigger pipe socket event update
         // TODO: Improve implementation
         socketManager.emitToScope({
@@ -44,8 +47,8 @@ export async function createBngine(): Promise<Bngine> {
           eventName: 'JOB_PIPE_UPDATE',
           eventData: {
             j: job._id,
-            stdout: type === 'stdout' ? chunk : '',
-            stderr: type === 'stderr' ? chunk : '',
+            stdout: chunk,
+            stderr: '',
             pid: pipe.id,
           },
         });
