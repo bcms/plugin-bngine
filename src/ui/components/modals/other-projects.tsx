@@ -111,7 +111,7 @@ const component = defineComponent({
           {projects.value.map((project) => {
             return (
               <div class="flex items-center justify-between mb-3">
-                <div class="font-medium">{project.name}</div>
+                <div class="font-medium dark:text-light">{project.name}</div>
                 <BCMSButton
                   kind="secondary"
                   onClick={() => startBuild(project)}
