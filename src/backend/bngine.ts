@@ -35,11 +35,12 @@ export async function createBngine(): Promise<Bngine> {
       stderr: '',
     };
     try {
-      await System.exec(pipe.cmd, (type, chunk) => {
-        exo[type] += chunk;
-        if (type === 'stderr') {
-          exo.stdout += chunk;
-        }
+      await System.exec(pipe.cmd, (_type, chunk) => {
+        exo.stdout += chunk;
+        // exo[type] += chunk;
+        // if (type === 'stderr') {
+        //   exo.stdout += chunk;
+        // }
         // TODO: Trigger pipe socket event update
         // TODO: Improve implementation
         socketManager.emitToScope({

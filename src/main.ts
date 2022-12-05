@@ -24,9 +24,7 @@ window.bcms = window.parent.bcms;
 
 registerModals();
 
-const app = createApp(App, {
-  namespace: 'plugin',
-});
+const app = createApp(App);
 app.directive('cy', cy);
 app.directive('clickOutside', clickOutside);
 app.directive('tooltip', tooltip);

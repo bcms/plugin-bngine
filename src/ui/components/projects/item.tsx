@@ -13,6 +13,20 @@ import type {
   ProjectVar,
 } from '../../../backend/types';
 
+interface ProjectJsonData {
+  general: {
+    projectName: string;
+    repo: {
+      url: string;
+      name: string;
+      branch: string;
+      sshKey: string;
+    };
+  };
+  variables: ProjectVar[];
+  commands: ProjectRunCmd[];
+}
+
 const component = defineComponent({
   props: {
     project: {
@@ -53,7 +67,7 @@ const component = defineComponent({
     });
 
     const projectDataJSON = computed(() => {
-      const JSONStructure = {
+      const output: ProjectJsonData = {
         general: {
           projectName: projectData.value.name.value,
           repo: {
@@ -66,8 +80,9 @@ const component = defineComponent({
         variables: projectData.value.variables,
         commands: projectData.value.commands,
       };
-      return JSON.stringify(JSONStructure, null, 4);
+      return JSON.stringify(output, null, 2);
     });
+    const projectDataJSONHasErrors = ref(false);
 
     function addNewVariable() {
       projectData.value.variables.push({
@@ -121,6 +136,12 @@ const component = defineComponent({
     }
 
     function updateProject() {
+      if (projectDataJSONHasErrors.value) {
+        window.bcms.notification.error(
+          `JSON object for project "${props.project.name}" cannot be parsed.`
+        );
+        return;
+      }
       window.bcms.util.throwable(
         async () => {
           return await api.project.update({
@@ -223,7 +244,28 @@ const component = defineComponent({
           {expanded.value && (
             <div class="px-5 pb-5">
               {showJSON.value ? (
-                <BCMSCodeEditor code={projectDataJSON.value} />
+                <BCMSCodeEditor
+                  code={projectDataJSON.value}
+                  onChange={(value) => {
+                    try {
+                      const data: ProjectJsonData = JSON.parse(value);
+                      projectData.value.name.value = data.general.projectName;
+                      projectData.value.repo.branch.value =
+                        data.general.repo.branch;
+                      projectData.value.repo.name.value =
+                        data.general.repo.name;
+                      projectData.value.repo.sshKey.value =
+                        data.general.repo.sshKey;
+                      projectData.value.repo.url.value = data.general.repo.url;
+                      projectData.value.variables = data.variables;
+                      projectData.value.commands = data.commands;
+                      projectDataJSONHasErrors.value = false;
+                    } catch (error) {
+                      console.warn(error);
+                      projectDataJSONHasErrors.value = true;
+                    }
+                  }}
+                />
               ) : (
                 <>
                   <BCMSProjectSectionWrapper title="General">
