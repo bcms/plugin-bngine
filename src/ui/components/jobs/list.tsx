@@ -36,15 +36,15 @@ const component = defineComponent({
 
     return () => (
       <ul>
-        <li class="hidden border-b border-grey border-opacity-50 py-4 relative font-semibold gap-5 leading-tight -tracking-0.01 items-center justify-between 2xl:grid 2xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] dark:text-light">
+        <li class="hidden border-b border-grey border-opacity-50 py-4 relative font-semibold gap-5 leading-tight -tracking-0.01 items-center justify-between desktop:grid desktop:grid-cols-[50px,80px,80px,100px,100px,80px,80px] xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] dark:text-light">
           <div></div>
           <div>Status</div>
           <div>Duration</div>
           <div>Branch</div>
           <div>Project</div>
           <div>Date</div>
-          <div>Time</div>
-          <div>User</div>
+          <div class="desktop:hidden xl:block">Time</div>
+          <div class="desktop:hidden xl:block">User</div>
           <div></div>
         </li>
         {jobs.value.map((job, index) => {
