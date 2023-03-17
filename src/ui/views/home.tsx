@@ -99,6 +99,7 @@ const component = defineComponent({
       document.body.addEventListener('scroll', onScroll);
       await window.bcms.util.throwable(async () => {
         jobCount.value = await api.job.count();
+        await window.bcms.sdk.user.getAll();
       });
       await window.bcms.util.throwable(
         async () => {

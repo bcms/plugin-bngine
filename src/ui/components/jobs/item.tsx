@@ -1,5 +1,5 @@
 import { BCMSButton, BCMSIcon } from '@becomes/cms-ui/components';
-import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
+import { computed, defineComponent, PropType, ref } from 'vue';
 import { Job, JobLite, JobStatus } from '../../../backend/types';
 import { useStore } from '../../store';
 
@@ -75,11 +75,11 @@ const component = defineComponent({
       }
     }, 1000);
 
-    onMounted(async () => {
-      await window.bcms.util.throwable(async () => {
-        return await window.bcms.sdk.user.get(props.job.userId);
-      });
-    });
+    // onMounted(async () => {
+    //   await window.bcms.util.throwable(async () => {
+    //     return await window.bcms.sdk.user.get(props.job.userId);
+    //   });
+    // });
 
     return () => (
       <li class="grid grid-cols-1 gap-5 leading-tight -tracking-wider items-center justify-between relative py-5 border-b border-dark border-opacity-20 desktop:grid-cols-[50px,80px,80px,100px,100px,80px,80px] desktop:py-3 xl:grid-cols-[50px,80px,80px,100px,100px,80px,80px,80px,80px] dark:text-light">
