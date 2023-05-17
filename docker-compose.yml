@@ -1,41 +1,27 @@
 version: '3.9'
 services:
-  proxy:
-    build: 'proxy/.'
-    ports:
-      - '3000:3000'
-      - '8080:8080'
-    logging:
-      driver: none
   shim:
-    depends_on:
-      - proxy
+    hostname: bcms-plugin-shim
+    container_name: bcms-plugin-shim
     image: 'becomes/cms-shim-local:1.0.5'
     ports:
-      - '1279:1279'
-    logging:
-      driver: none
+      - 1279:1279
   backend:
-    depends_on:
-      - shim
-    image: 'becomes/cms-backend-local:1.0.32'
-    ports:
-      - '1280:8080'
+    hostname: bcms-plugin-backend
+    container_name: bcms-plugin-backend
+    image: 'becomes/cms-backend-local:1.0.35'
     volumes:
       - type: bind
         source: ./bcms.config.js
         target: /app/bcms.config.js
       - type: bind
-        source: ./bngine-api.spec.yml
-        target: /app/bngine-api.spec.yml
-      - type: bind
         source: ./shim.json
         target: /app/shim.json
       - type: bind
-        source: ./src/backend
+        source: ./backend
         target: /app/plugins/bcms-plugin---name/backend
       - type: bind
-        source: ./node_modules/@becomes/cms-ui/public
+        source: ./ui/node_modules/@becomes/cms-ui/public
         target: /app/public
       - type: bind
         source: ./db
@@ -44,29 +30,33 @@ services:
         source: ./uploads
         target: /app/uploads
       - type: bind
-        source: ./bngine-workspace
-        target: /app/bngine-workspace
-      - type: bind
         source: ./storage
         target: /app/storage
       - type: bind
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
+        source: ./backend-logs
+        target: /app/backend-logs
   plugin:
-    depends_on:
-      - backend
+    hostname: bcms-plugin-ui
+    container_name: bcms-plugin-ui
     build: .
-    ports:
-      - '1281:8080'
-    logging:
-      driver: none
     volumes:
       - type: bind
-        source: ./public
+        source: ./ui/public
         target: /app/public
       - type: bind
-        source: ./src
+        source: ./ui/src
         target: /app/src
       - type: bind
-        source: ./tailwind.config.js
-        target: /app/tailwind.config.js
+        source: ./ui/tailwind.config.cjs
+        target: /app/tailwind.config.cjs
+      - type: bind
+        source: ./ui/vite.config.ts
+        target: /app/vite.config.ts
+  proxy:
+    depends_on:
+      - shim
+      - backend
+      - plugin
+    build: 'proxy/.'
+    ports:
+      - '8080:8080'

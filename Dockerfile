@@ -1,9 +1,9 @@
-FROM node:14-slim
+FROM node:16-slim
 
 WORKDIR /app
 
-COPY . /app
+COPY ./ui /app
 
 RUN npm i
 
-ENTRYPOINT [ "npm", "run", "dev:ui" ]
+ENTRYPOINT [ "npm", "run", "dev" ]
