@@ -1,0 +1,6 @@
+node_modules
+dist
+/uploads
+/npm-tool.cjs
+bcms.config.js
+/tailwind.config.cjs
