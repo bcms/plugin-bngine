@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@banez/vue-array-store": "^1.2.0",
+    "@types/html-escaper": "^3.0.0",
+    "ansi-to-html": "^0.7.2",
+    "html-escaper": "^3.0.3",
     "vue": "^3.2.47"
   },
   "devDependencies": {

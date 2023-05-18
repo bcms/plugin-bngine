@@ -9,7 +9,7 @@ services:
   backend:
     hostname: bcms-plugin-backend
     container_name: bcms-plugin-backend
-    image: 'becomes/cms-backend-local:1.0.35'
+    image: 'becomes/cms-backend-local:1.0.36'
     volumes:
       - type: bind
         source: ./bcms.config.js

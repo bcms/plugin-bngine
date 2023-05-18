@@ -6,13 +6,14 @@ import '@becomes/cms-ui/styles/_main.scss';
 import './styles/_main.scss';
 import { CustomModals, registerModals } from './modals';
 import type { BCMSGlobalScopeMain } from '@bcms-ui/types';
+import type { BCMSBngineCustomSocketEvents } from './api';
 
 declare global {
   interface Window {
     editorNodeEnter(data: { element: HTMLElement }): void;
     editorNodeLeave(data: { element: HTMLElement }): void;
 
-    bcms: BCMSGlobalScopeMain<CustomModals>;
+    bcms: BCMSGlobalScopeMain<CustomModals, BCMSBngineCustomSocketEvents>;
     pluginName: string;
   }
 }
