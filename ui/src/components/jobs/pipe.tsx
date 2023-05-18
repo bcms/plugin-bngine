@@ -1,16 +1,16 @@
 import { computed, defineComponent, onUnmounted, PropType, ref } from 'vue';
 import { escape } from 'html-escaper';
 import AnsiToHtml from 'ansi-to-html';
-import type { JobPipe } from '@backend/job';
+import type { JobPipe as JobPipeType } from '@backend/job';
 import { api, JobSocketEventName, JobSocketEventPipeUpdate } from '@ui/api';
 import { BCMSIcon } from '@ui/bcms-ui/components';
 
 const converter = new AnsiToHtml();
 
-const component = defineComponent({
+export const JobPipe = defineComponent({
   props: {
     pipe: {
-      type: Object as PropType<JobPipe>,
+      type: Object as PropType<JobPipeType>,
       required: true,
     },
     jobId: {
@@ -150,14 +150,13 @@ const component = defineComponent({
           </div>
           <span
             class={`mr-auto ${
-              props.pipe.status === JobStatus.SUCCESS
+              props.pipe.status === 'SUCCESS'
                 ? 'text-green'
-                : props.pipe.status === JobStatus.FAIL &&
-                  props.pipe.ignoreIfFail
+                : props.pipe.status === 'FAIL' && props.pipe.ignoreIfFail
                 ? 'text-yellow dark:text-grey'
-                : props.pipe.status === JobStatus.FAIL
+                : props.pipe.status === 'FAIL'
                 ? 'text-red'
-                : props.pipe.status === JobStatus.QUEUE
+                : props.pipe.status === 'QUEUE'
                 ? 'text-pink dark:text-yellow'
                 : 'text-dark dark:text-light'
             }`}
@@ -176,5 +175,3 @@ const component = defineComponent({
     );
   },
 });
-
-export default component;

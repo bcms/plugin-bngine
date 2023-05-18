@@ -1,12 +1,12 @@
+import type { ProjectRunCmd } from '@backend/project';
 import {
   BCMSIcon,
   BCMSTextInput,
   BCMSToggleInput,
-} from '@becomes/cms-ui/components';
+} from '@ui/bcms-ui/components';
 import { defineComponent, PropType } from 'vue';
-import type { ProjectRunCmd } from '../../../backend/types';
 
-const component = defineComponent({
+export const ProjectCommandItem = defineComponent({
   props: {
     command: {
       type: Object as PropType<ProjectRunCmd>,
@@ -111,5 +111,3 @@ const component = defineComponent({
     );
   },
 });
-
-export default component;

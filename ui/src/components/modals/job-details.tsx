@@ -7,14 +7,14 @@ import type {
   BCMSJobDetailsModalOutputData,
 } from '@ui/types';
 import { defineComponent, ref } from 'vue';
-import { BCMSJobsInfo, BCMSJobsPipe } from '../jobs';
+import { JobInfo, JobPipe } from '../jobs';
 
 interface Data extends BCMSModalInputDefaults<BCMSJobDetailsModalOutputData> {
   job?: Job;
   jobId: string;
 }
 
-const component = defineComponent({
+export const JobDetailsModal = defineComponent({
   setup() {
     const show = ref(false);
     const modalData = ref<Data>(getData());
@@ -104,12 +104,11 @@ const component = defineComponent({
             }
             {modalData.value.job ? (
               <>
-                <BCMSJobsInfo job={modalData.value.job} />
+                <JobInfo job={modalData.value.job} />
                 <div class="pb-5">
                   {modalData.value.job.pipe.map((pipe) => {
                     const job = modalData.value.job as Job;
-
-                    return <BCMSJobsPipe pipe={pipe} jobId={job._id} />;
+                    return <JobPipe pipe={pipe} jobId={job._id} />;
                   })}
                 </div>
               </>
@@ -122,4 +121,3 @@ const component = defineComponent({
     };
   },
 });
-export default component;

@@ -1,3 +1,3 @@
-export { default as BCMSAddProjectModal } from './add-project';
-export { default as BCMSJobDetailsModal } from './job-details';
-export { default as BCMSOtherProjectsModal } from './other-projects';
+export * from './add-project';
+export * from './job-details';
+export * from './other-projects';

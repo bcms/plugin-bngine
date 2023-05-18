@@ -11,7 +11,7 @@ import { computed, defineComponent, ref } from 'vue';
 
 type Data = BCMSModalInputDefaults<BCMSOtherProjectsModalOutputData>;
 
-const component = defineComponent({
+export const OtherProjectsModal = defineComponent({
   setup() {
     const show = ref(false);
     const modalData = ref<Data>(getData());
@@ -124,4 +124,3 @@ const component = defineComponent({
     };
   },
 });
-export default component;
