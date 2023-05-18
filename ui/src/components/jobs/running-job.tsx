@@ -1,3 +1,6 @@
+import type { Job, JobLite } from '@backend/job';
+import { api } from '@ui/api';
+import { store } from '@ui/store';
 import {
   computed,
   defineComponent,
@@ -7,12 +10,10 @@ import {
   PropType,
   ref,
 } from 'vue';
-import { useApi } from '../../api';
-import { useStore } from '../../store';
-import type { Job, JobLite } from '../../../backend/types';
-import { BCMSJobsInfo, BCMSJobsPipe } from '.';
+import { JobInfo } from './info';
+import { JobPipe } from './pipe';
 
-const component = defineComponent({
+export const JobRunning = defineComponent({
   props: {
     job: {
       type: Object as PropType<Job | JobLite>,
@@ -20,12 +21,10 @@ const component = defineComponent({
     },
   },
   setup(props) {
-    const api = useApi();
-    const store = useStore();
     let idBuffer = '';
 
     const job = computed<Job | undefined>(() => {
-      return store.getters.job_findOne((e) => e._id === props.job._id) as Job;
+      return store.job.find((e) => e._id === props.job._id) as Job;
     });
     const duration = ref(
       job.value
@@ -82,11 +81,11 @@ const component = defineComponent({
               </h4>
               <div class="mt-5">
                 <div class="mb-5">
-                  <BCMSJobsInfo job={job.value} duration={duration.value} />
+                  <JobInfo job={job.value} duration={duration.value} />
                 </div>
                 {job.value.pipe.map((pipe, index) => {
                   return (
-                    <BCMSJobsPipe
+                    <JobPipe
                       key={index}
                       pipe={pipe}
                       jobId={props.job._id}
@@ -102,5 +101,3 @@ const component = defineComponent({
     );
   },
 });
-
-export default component;

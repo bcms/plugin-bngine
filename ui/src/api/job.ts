@@ -55,7 +55,7 @@ export class JobHandler {
         Authorization: '',
       },
     });
-    store.jobLite.set(result.jobs);
+    store.jobLite.set([...result.jobs]);
     this.getAllLetch[query] = true;
     return result.jobs;
   }

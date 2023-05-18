@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue';
 
-const component = defineComponent({
+export const ProjectSectionWrapper = defineComponent({
   props: {
     title: {
       type: String,
@@ -18,5 +18,3 @@ const component = defineComponent({
     );
   },
 });
-
-export default component;

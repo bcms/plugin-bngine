@@ -25,7 +25,7 @@ interface Data extends BCMSModalInputDefaults<BCMSAddProjectModalOutputData> {
   };
 }
 
-const component = defineComponent({
+export const ProjectAddModal = defineComponent({
   setup() {
     const show = ref(false);
     const modalData = ref<Data>(getData());
@@ -194,4 +194,3 @@ const component = defineComponent({
     };
   },
 });
-export default component;

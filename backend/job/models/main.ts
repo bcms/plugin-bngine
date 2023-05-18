@@ -59,7 +59,7 @@ export const JobSchema: ObjectSchema = {
     __required: true,
   },
   status: {
-    __type: 'number',
+    __type: 'string',
     __required: true,
   },
   project: {

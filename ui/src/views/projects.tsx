@@ -1,14 +1,12 @@
+import { api } from '@ui/api';
+import { ProjectItem } from '@ui/components';
+import { store } from '@ui/store';
 import { computed, defineComponent, onMounted } from 'vue';
-import { BCMSProjectItem } from '../components';
-import { useStore } from '../store';
 
 const component = defineComponent({
   setup() {
-    const api = useApi();
-    const store = useStore();
-
     const projects = computed(() => {
-      return store.getters.project_items;
+      return store.project.items();
     });
 
     onMounted(async () => {
@@ -23,7 +21,7 @@ const component = defineComponent({
       <>
         <div class="grid grid-cols-1 gap-5 mb-5">
           {projects.value.map((project) => (
-            <BCMSProjectItem project={project} />
+            <ProjectItem project={project} />
           ))}
         </div>
       </>
