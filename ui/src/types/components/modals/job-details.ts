@@ -1,4 +1,4 @@
-import type { BCMSModalInputDefaults } from '@becomes/cms-ui/types';
+import type { BCMSModalInputDefaults } from '@ui/bcms-ui/types';
 
 export type BCMSJobDetailsModalOutputData = void;
 export interface BCMSJobDetailsModalInputData

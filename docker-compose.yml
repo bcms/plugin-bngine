@@ -1,8 +1,8 @@
 version: '3.9'
 services:
   shim:
-    hostname: bcms-plugin-shim
-    container_name: bcms-plugin-shim
+    hostname: bcms-shim
+    container_name: bcms-shim
     image: 'becomes/cms-shim-local:1.0.5'
     ports:
       - 1279:1279

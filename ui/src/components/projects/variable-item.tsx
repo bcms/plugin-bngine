@@ -1,12 +1,12 @@
+import type { ProjectVar } from '@backend/project';
 import {
-  BCMSTextInput,
-  BCMSPasswordInput,
   BCMSIcon,
-} from '@becomes/cms-ui/components';
+  BCMSPasswordInput,
+  BCMSTextInput,
+} from '@ui/bcms-ui/components';
 import { defineComponent, PropType } from 'vue';
-import type { ProjectVar } from '../../../backend/types';
 
-const component = defineComponent({
+export const ProjectVariableItem = defineComponent({
   props: {
     variable: {
       type: Object as PropType<ProjectVar>,
@@ -69,5 +69,3 @@ const component = defineComponent({
     );
   },
 });
-
-export default component;

@@ -1,17 +1,18 @@
+import type {
+  ProjectProtected,
+  ProjectRunCmd,
+  ProjectVar,
+} from '@backend/project';
+import { api } from '@ui/api';
 import {
   BCMSButton,
   BCMSCodeEditor,
   BCMSTextInput,
-} from '@becomes/cms-ui/components';
+} from '@ui/bcms-ui/components';
 import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
-import { useApi } from '../../api';
-import { BCMSCommandItem, BCMSVariableItem } from '.';
-import BCMSProjectSectionWrapper from './section-wrapper';
-import type {
-  Project,
-  ProjectRunCmd,
-  ProjectVar,
-} from '../../../backend/types';
+import { ProjectSectionWrapper } from './section-wrapper';
+import { ProjectCommandItem } from './command-item';
+import { ProjectVariableItem } from './variable-item';
 
 interface ProjectJsonData {
   general: {
@@ -27,15 +28,14 @@ interface ProjectJsonData {
   commands: ProjectRunCmd[];
 }
 
-const component = defineComponent({
+export const ProjectItem = defineComponent({
   props: {
     project: {
-      type: Object as PropType<Project>,
+      type: Object as PropType<ProjectProtected>,
       required: true,
     },
   },
   setup(props) {
-    const api = useApi();
     const expanded = ref(false);
     const showJSON = ref(false);
 
@@ -189,7 +189,7 @@ const component = defineComponent({
       projectData.value.repo.url.value = propProject.repo.url;
       projectData.value.repo.name.value = propProject.repo.name;
       projectData.value.repo.branch.value = propProject.repo.branch;
-      projectData.value.repo.sshKey.value = propProject.repo.sshKey;
+      projectData.value.repo.sshKey.value = '';
       projectData.value.variables = propProject.vars;
       projectData.value.commands = propProject.run;
     });
@@ -268,7 +268,7 @@ const component = defineComponent({
                 />
               ) : (
                 <>
-                  <BCMSProjectSectionWrapper title="General">
+                  <ProjectSectionWrapper title="General">
                     <div class="grid grid-cols-1 gap-7 sm:grid-cols-2">
                       <BCMSTextInput
                         label="Name"
@@ -305,10 +305,10 @@ const component = defineComponent({
                         v-model={projectData.value.repo.sshKey.value}
                       />
                     </div>
-                  </BCMSProjectSectionWrapper>
-                  <BCMSProjectSectionWrapper title="Variables">
+                  </ProjectSectionWrapper>
+                  <ProjectSectionWrapper title="Variables">
                     {projectData.value.variables.map((variable, index) => (
-                      <BCMSVariableItem
+                      <ProjectVariableItem
                         key={index}
                         variable={variable}
                         first={index === 0}
@@ -331,10 +331,10 @@ const component = defineComponent({
                         : 'new'}{' '}
                       variable
                     </BCMSButton>
-                  </BCMSProjectSectionWrapper>
-                  <BCMSProjectSectionWrapper title="Commands">
+                  </ProjectSectionWrapper>
+                  <ProjectSectionWrapper title="Commands">
                     {projectData.value.commands.map((command, index) => (
-                      <BCMSCommandItem
+                      <ProjectCommandItem
                         key={index}
                         command={command}
                         first={index === 0}
@@ -368,7 +368,7 @@ const component = defineComponent({
                         : 'new'}{' '}
                       command
                     </BCMSButton>
-                  </BCMSProjectSectionWrapper>
+                  </ProjectSectionWrapper>
                 </>
               )}
               <div class="flex justify-end space-x-2">
@@ -386,5 +386,3 @@ const component = defineComponent({
     );
   },
 });
-
-export default component;

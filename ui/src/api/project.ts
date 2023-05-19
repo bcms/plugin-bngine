@@ -22,7 +22,7 @@ export class ProjectHandler {
         Authorization: '',
       },
     });
-    store.project.set(result.projects);
+    store.project.set([...result.projects]);
     this.getAllLetch = true;
     return result.projects;
   }

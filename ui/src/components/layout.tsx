@@ -1,6 +1,6 @@
 import { BCMSJwtRoleName } from '@becomes/cms-sdk/types';
-import { BCMSManagerNav, BCMSSpinner } from '@becomes/cms-ui/components';
 import { api } from '@ui/api';
+import { BCMSManagerNav, BCMSSpinner } from '@ui/bcms-ui/components';
 import type { BCMSAddProjectModalOutputData } from '@ui/types';
 import { defineComponent, onMounted, ref, Teleport } from 'vue';
 import { useRoute } from 'vue-router';
@@ -45,7 +45,6 @@ export const Layout = defineComponent({
             const policy = result.customPool.policy.plugins?.find(
               (e) => e.name === window.pluginName
             );
-            console.log(policy);
             if (policy && policy.fullAccess) {
               showProjects.value = true;
             }
